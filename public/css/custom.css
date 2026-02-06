@@ -1,34 +1,49 @@
-/* Poore page se edit cursor aur text selection control karne ke liye */
-html, body {
-    caret-color: transparent; /* Ye blinking cursor ko gayab kar dega */
-}
 
-/* Agar aap chahte hain ki text select hi na ho (optional) */
-/* .no-select {
-    user-select: none;
-} */
-
-/* Sirf input fields aur textareas mein cursor dikhna chahiye */
-input, textarea, [contenteditable="true"] {
-    caret-color: auto !important; /* Yahan cursor normal dikhega */
+/* Branding ko hamesha center mein rakhne ke liye */
+.navbar-brand-centered {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    white-space: nowrap;
 }
-/* Mobile Responsiveness tweaks */
-@media (max-width: 576px) {
+#menu-toggle {
+    display: none !important; /* Default hidden */
+}
+/* Mobile responsive fix */
+@media (max-width: 768px) {
     .navbar-brand-centered h2 {
-        font-size: 1rem !important; /* Mobile par font thoda chhota */
+        font-size: 1rem !important; /* Mobile par text thoda chhota */
+    }
+    
+    /* Toggle button ko priority dene ke liye */
+   #menu-toggle {
+        display: flex !important; /* Sirf mobile par dikhega */
+        cursor: pointer;
+    }
+    .text-end {
+        text-align: center !important;
+        margin-top: 10px;
+    }
+    .btn-3d-success {
+        margin-right: 0 !important; /* Mobile par center rahega */
+        width: 90%;
     }
 }
-
-/* Smooth Slide Animation for Dropdown */
-.animate {
-    animation-duration: 0.3s;
-    animation-fill-mode: both;
+/* Center Branding Logic */
+/* Dropdown Animation & 3D Shadow */
+.dropdown-menu {
+    border-radius: 12px !important;
+    min-width: 200px;
 }
 
-@keyframes slideIn {
-    0% { transform: translateY(1rem); opacity: 0; }
-    100% { transform: translateY(0rem); opacity: 1; }
+.dropdown-item:hover {
+    background-color: #f8f9fc;
+    color: #4e73df;
+    transform: scale(1.02);
+    transition: all 0.2s ease;
 }
+
 /* 1. Sidebar Base (Desktop) */
 .sidebar {
     width: 230px;
@@ -38,10 +53,21 @@ input, textarea, [contenteditable="true"] {
     top: 0;
     left: 0;
     z-index: 1050;
-    transition: left 0.3s ease-in-out;
+   transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 2. Nav Links & 3D Hover Effect */
+/* Sidebar icons ko specific glow dene ke liye */
+.sidebar-menu .nav-link i {
+    width: 25px; /* Alignment sahi rahegi */
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.sidebar-menu .nav-link:hover i {
+    color: #ffca2c !important; /* Gold/Amber */
+    text-shadow: 0 0 8px rgba(13, 110, 253, 0.6);
+}
 .sidebar-menu .nav-link {
     position: relative;
     padding: 12px 20px;
@@ -79,11 +105,13 @@ input, textarea, [contenteditable="true"] {
 /* 4. Responsive Logic (Mobile) */
 @media (max-width: 768px) {
     .sidebar {
-        left: -230px; /* Hide by default */
+        left: -230px;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .sidebar.active {
-        left: 0; /* Show on toggle */
+        left: 0;
+        box-shadow: 10px 0 25px rgba(0,0,0,0.3);
     }
 
     .main-content {
@@ -139,6 +167,74 @@ body {
 }
 
 /* 3D Button Style */
+/* Search Button 3D Style (Blue) */
+.btn-3d-primary {
+    background: linear-gradient(to bottom, #0d6efd, #0b5ed7) !important;
+    border: none !important;
+    border-bottom: 4px solid #084298 !important; /* Bottom depth shadow */
+    color: white !important;
+    transition: all 0.1s ease !important;
+}
+
+.btn-3d-primary:hover {
+    background: linear-gradient(to bottom, #3185ff, #0d6efd) !important;
+    transform: translateY(-2px); /* Hover par halka upar uthega */
+    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.4) !important;
+}
+
+.btn-3d-primary:active {
+    transform: translateY(2px) !important; /* Click karne par dabega */
+    border-bottom: 1px solid #084298 !important;
+}
+
+/* Reset Button 3D Style (Grey) */
+.btn-3d-secondary {
+    background: linear-gradient(to bottom, #6c757d, #5a6268) !important;
+    border: none !important;
+    border-bottom: 4px solid #3d4246 !important;
+    color: white !important;
+    transition: all 0.1s ease !important;
+}
+
+.btn-3d-secondary:hover {
+    background: linear-gradient(to bottom, #868e96, #6c757d) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3) !important;
+}
+
+.btn-3d-secondary:active {
+    transform: translateY(2px) !important;
+    border-bottom: 1px solid #3d4246 !important;
+}
+.btn-3d-warning {
+    background: linear-gradient(to bottom, #ffc107, #e0a800) !important;
+    border: none !important;
+    border-bottom: 4px solid #b38600 !important; /* Depth effect */
+    transition: all 0.1s ease !important;
+    color: #212529 !important;
+}
+
+.btn-3d-warning:hover {
+    background: linear-gradient(to bottom, #ffca2c, #ffc107) !important;
+    transform: translateY(-1px);
+}
+
+.btn-3d-warning:active {
+    transform: translateY(3px) !important; /* Button dabne wala effect */
+    border-bottom: 1px solid #b38600 !important;
+}
+
+.btn-3d-danger {
+    background: linear-gradient(to bottom, #dc3545, #a71d2a) !important;
+    border: none !important;
+    border-bottom: 4px solid #841622 !important;
+    transition: all 0.1s ease !important;
+}
+
+.btn-3d-danger:active {
+    transform: translateY(3px) !important; /* Button niche dabega */
+    border-bottom: 1px solid #841622 !important;
+}
 .btn-3d-success {
     background: linear-gradient(to bottom, #28a745, #218838);
     border: none;
@@ -159,26 +255,15 @@ body {
     border-bottom: 1px solid #1e7e34;
 }
 
-.btn-3d-secondary {
-    background: linear-gradient(to bottom, #6c757d, #5a6268);
-    border: none;
-    border-bottom: 4px solid #4e555b;
-    color: white;
-    transition: all 0.1s;
-}
-
-.btn-3d-secondary:active {
-    transform: translateY(3px);
-    border-bottom: 1px solid #4e555b;
-}/* SweetAlert 3D Popup Customization */
+/* SweetAlert 3D Popup Customization */
 .swal2-3d-popup {
     border-radius: 20px !important;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2), 
-                inset 0 0 10px rgba(255,255,255,0.5) !important;
-    border: 1px solid rgba(255,255,255,0.3) !important;
-    transform: perspective(1000px) rotateX(2deg) !important;
+    background: linear-gradient(145deg, #ffffff, #f0f0f0) !important;
+    box-shadow: 20px 20px 60px #d9d9d9, 
+                -20px -20px 60px #ffffff !important; /* Neumorphic 3D Effect */
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    transform: perspective(1000px) rotateX(2deg) !important; /* Halka sa 3D tilt */
 }
-
 .swal2-3d-title {
     color: #4e73df !important;
     font-weight: 800 !important;
@@ -189,38 +274,71 @@ body {
 .swal2-timer-progress-bar {
     background: linear-gradient(to right, #4e73df, #224abe) !important;
 }
-/* Branding ko hamesha center mein rakhne ke liye */
-.navbar-brand-centered {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    white-space: nowrap;
+
+/* Pagination 3D Styling */
+.pagination {
+    gap: 5px;
 }
 
-/* Mobile responsive fix */
+.page-item .page-link {
+    border: none;
+    border-radius: 5px !important;
+    background: #ffffff;
+    color: #4e73df;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.page-item.active .page-link {
+    background: linear-gradient(45deg, #4e73df, #224abe) !important;
+    box-shadow: 0 4px 10px rgba(78, 115, 223, 0.4);
+    transform: translateY(-2px);
+}
+
+.page-item .page-link:hover {
+    background: #f8f9fc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+/* Responsive Table Fix */
 @media (max-width: 768px) {
-    .navbar-brand-centered h2 {
-        font-size: 1rem !important; /* Mobile par text thoda chhota */
+    /* Table ke text ko mobile par chhota karein taaki fit ho sake */
+    .table-responsive .table {
+        font-size: 0.75rem !important; 
     }
     
-    /* Toggle button ko priority dene ke liye */
-    #menu-toggle {
-        position: relative;
-        z-index: 1101;
+    /* Padding kam karein taaki width bache */
+    .table td, .table th {
+        padding: 5px 2px !important;
+    }
+
+    /* Action buttons ko aur chhota karein mobile ke liye */
+    .btn-sm {
+        padding: 0.2rem 0.4rem !important;
+        font-size: 0.7rem !important;
     }
 }
-/* Center Branding Logic */
-/* Dropdown Animation & 3D Shadow */
-.dropdown-menu {
-    border-radius: 12px !important;
-    min-width: 200px;
+/* Table ko Professional 3D Card Look dene ke liye */
+.table-responsive {
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* 3D Shadow */
+    background: #fff;
+    padding: 10px;
 }
 
-.dropdown-item:hover {
-    background-color: #f8f9fc;
-    color: #4e73df;
-    transform: scale(1.02);
-    transition: all 0.2s ease;
+/* Table Header Dark & Bold */
+.table thead {
+    background: #212529;
+    color: #fff;
+    border-radius: 10px 10px 0 0;
 }
 
+/* Table Row Hover effect */
+.table tbody tr {
+    transition: transform 0.2s ease;
+}
+.table tbody tr:hover {
+    background-color: #f8f9fc !important;
+    transform: scale(1.01); /* Halka sa pop-up effect */
+    z-index: 1;
+}

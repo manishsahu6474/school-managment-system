@@ -1,43 +1,41 @@
 @extends('layouts.app')
 
 @section('content')
-<!DOCTYPE html>
-<html>
-<head>
-    
-</head>
-
-<body class="bg-light">
-<div class="container mt-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-3 ">
-        <h3><i class="bi bi-people-fill"></i> Student List</h3>
-        <a href="{{ route('students.create') }}" class="btn btn-success btn-3d">
-            <i class="bi bi-plus-circle"></i> Add Student
-        </a>
+   <div class="container-fluid px-md-5">
+    <div class="row mb-3 mt-2 align-items-center">
+    <div class="col-md-6 text-start">
+        <h3 class="fw-bold text-dark mb-0 d-inline-block p-2" style="margin-left: 10px;">
+            <i class="fas fa-user-graduate text-primary me-2"></i> Student List
+        </h3>
     </div>
 
-    {{-- Search --}}
-    <form method="GET" action="{{ route('students.index') }}" class="row g-2 mb-3">
-        <div class="col-md-4">
-            <input type="text"
-                   name="search"
-                   class="form-control"
-                   placeholder="Search name / email / class"
-                   value="{{ $search ?? '' }}">
-        </div>
-        <div class="col-md-2">
-            <button class="btn btn-primary btn-3d w-100">
-                <i class="bi bi-search"></i> Search
-            </button>
-        </div>
-        <div class="col-md-2">
-            <a href="{{ route('students.index') }}" class="btn btn-secondary btn-3d w-100">
-                <i class="bi bi-arrow-clockwise"></i> Reset
-            </a>
-        </div>
-    </form>
+    <div class="col-md-6 text-end">
+        <a href="{{ route('students.create') }}" class="btn btn-success btn-3d-success shadow-sm px-4" style="margin-right: 30px;">
+            <i class="fas fa-plus-circle me-2"></i> Add Student
+        </a>
+    </div>
+</div>
 
+    {{-- Search --}}
+   <div class="row justify-content-center mb-5">
+        <div class="col-md-10 col-lg-8">
+            <div class="card card-3d border-0 p-4">
+                <form method="GET" action="{{ route('students.index') }}" class="row g-3">
+                    <div class="col-md-7">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                            <input type="text" name="search" class="form-control border-start-0" 
+                                   placeholder="Search by name, email or class..." value="{{ $search ?? '' }}">
+                        </div>
+                    </div>
+                    <div class="col-md-5 d-flex gap-2">
+                        <button class="btn  btn-3d-primary w-100 fw-bold" type="submit">SEARCH</button>
+                        <a href="{{ route('students.index') }}" class="btn btn-secondary btn-3d-secondary w-100 fw-bold">RESET</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     {{-- SweetAlert Success --}}
     @if(session('success'))
     <script>
@@ -52,48 +50,48 @@
     @endif
 
     {{-- Table --}}
-    <div class="card shadow-sm card-header text-center">
-        <div class="card-body p-0">
-            <table class="table table-bordered table-hover mb-0">
-                <thead class="table-dark">
+    <div class="card  card-3d shadow-lg border-0 card-header text-center">
+        <div class="card-body p-0 table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-primary text-white">
                 <tr class="text-center">
                     <th>S.No.</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>DOB</th>
+                    <th>Phone No.</th>
                     <th>Class</th>
-                    <th width="160">Action</th>
+                    <th width="180">Action</th>
                 </tr>
                 </thead>
 
                 <tbody>
                 @forelse($students as $student)
-                    <tr>
+                    <tr class="text-center">
                         <td>{{ $student->id }}</td>
                         <td>{{ $student->name }}</td>
                         <td>{{ $student->email }}</td>
                         <td>{{ \Carbon\Carbon::parse($student->dob)->format('d-m-Y') }}</td>
+                        <td>{{ $student->phone }}</td>
                         <td>{{ $student->class }}</td>
                         <td>
                             <a href="{{ route('students.edit',$student->id) }}"
-                               class="btn btn-warning btn-sm btn-3d">
-                                <i class="bi bi-pencil-square"></i>
+                               class="btn btn-sm btn-3d-warning shadow-sm">
+                                <i class="fas fa-edit"></i>
                             </a>
 
-                            <form action="{{ route('students.destroy',$student->id) }}"
-                                  method="POST"
-                                  class="d-inline delete-form">
-                                @csrf
-                                @method('DELETE')
-                                <button class="btn btn-danger btn-sm btn-3d">
-                                    <i class="bi bi-trash"></i>
-                                </button>
+                            <form action="{{ route('students.destroy', $student->id) }}" method="POST" class="d-inline delete-form">
+                                 @csrf
+                                 @method('DELETE')
+                            <button type="button" class="btn btn-sm btn-3d-danger  delete-btn ">
+                                  <i class="fas fa-trash"></i>
+                             </button>
                             </form>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="text-center text-muted">
+                        <td colspan="7" class="text-center text-muted">
                             No students found
                         </td>
                     </tr>
@@ -103,12 +101,15 @@
         </div>
     </div>
 
-    {{-- Pagination --}}
-    <div class="mt-3">
-        {{ $students->appends(['search' => $search])->links() }}
+        {{-- Pagination --}}
+       <div class="d-flex justify-content-between align-items-center mt-3 px-3">
+    <div class="small text-muted">
+        Showing {{ $students->firstItem() }} to {{ $students->lastItem() }} of {{ $students->total() }} students
     </div>
 
+    <div class="pagination-3d">
+        {{ $students->appends(['search' => $search])->links() }}
+    </div>
+</div>  
 </div>
-</body>
-</html>
 @endsection
