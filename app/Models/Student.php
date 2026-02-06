@@ -12,6 +12,7 @@ class Student extends Model
         'name',
         'email',
         'phone',
+        'class',
         'dob',
         'status'
     ];

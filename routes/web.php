@@ -20,4 +20,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::resource("students",StudentController::class);
-Route::view('dashboard','/dashboard');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');

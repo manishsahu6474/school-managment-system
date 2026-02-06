@@ -12,9 +12,19 @@ class StudentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $search = $request->search;
+
+       $students = Student::when($search, function ($query) use ($search) {
+            $query->where('name', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%")
+                  ->orWhere('class', 'like', "%$search%");
+        })
+        ->latest()
+        ->paginate(5);
+
+        return view('students.index', compact('students', 'search'));
     }
 
     /**
@@ -24,7 +34,7 @@ class StudentController extends Controller
      */
     public function create()
     {
-        //
+         return view('students.create');
     }
 
     /**
@@ -35,7 +45,18 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+        'name'  => 'required|string|max:100',
+        'email' => 'required|email|unique:students,email',
+        'dob'   => 'required|date',
+        'class' => 'required',
+        'phone' => 'required|nullable|digits:10',
+    ]);
+
+    Student::create($request->all());
+
+    return redirect()->route('students.index')
+           ->with('success','Student Added Successfully');
     }
 
     /**
@@ -46,7 +67,7 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
-        //
+        
     }
 
     /**
@@ -55,9 +76,13 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function edit(Student $student)
+    public function edit($id)
     {
-        //
+        // Student ka data ID ke basis par find karein
+        $student = Student::findOrFail($id);
+        
+        // Data ko edit view file ke sath bhejein
+        return view('students.edit', compact('student'));
     }
 
     /**
@@ -67,9 +92,21 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Student $student)
+    public function update(Request $request,$id)
     {
-        //
+        $request->validate([
+        'name'  => 'required',
+        'email' => 'required|email|unique:students,email,'.$id,
+        'phone' => 'nullable|digits:10',
+        'dob'   => 'required|date',
+        'class' => 'required'
+    ]);
+
+    $student = Student::findOrFail($id);
+    $student->update($request->all());
+
+    return redirect()->route('students.index')
+           ->with('success','Student Updated Successfully');
     }
 
     /**
