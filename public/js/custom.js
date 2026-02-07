@@ -20,32 +20,56 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
-document.addEventListener('DOMContentLoaded', function () {
-    // Aapka purana sidebar toggle code yahan rahega
-
-    // --- Naya Delete Logic ---
-    const deleteButtons = document.querySelectorAll('.delete-btn');
-
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function (e) {
-            const form = this.closest('form'); // Button ke parent form ko pakdega
-
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "Student ka data delete ho jayega!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!',
-                customClass: {
-                    popup: 'swal2-3d-popup' // Aapki 3D styling
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit(); // Agar user 'Yes' kahe tabhi delete hoga
-                }
-            });
-        });
+// Success Message ke liye Shiny 3D Function
+function showSuccessAlert(message) {
+    Swal.fire({
+        title: 'Success!',
+        text: message,
+        icon: 'success',
+        background: 'rgba(255, 255, 255, 0.9)', // Glassy Background
+        backdrop: `rgba(0, 122, 255, 0.1) blur(4px)`, // Apple Style Blur
+        showConfirmButton: false,
+        timer: 2000,
+        customClass: {
+            popup: 'card-morphism border-0 shadow-lg', // 3D Card Look
+            title: 'fw-bold text-success',
+        },
+        // Shiny Icon Animation
+        showClass: {
+            popup: 'animate__animated animate__fadeInDown'
+        },
+        hideClass: {
+            popup: 'animate__animated animate__fadeOutUp'
+        }
     });
-});
+}
+// delete ki functionalty
+// public/js/custom.js
+function deleteStudent(id) {
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#00d2ff', // Shiny Blue
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+        background: 'rgba(255, 255, 255, 0.95)',
+        backdrop: `rgba(0,0,0,0.4) blur(5px)` // Glass effect
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Form creation and submission
+            let form = document.createElement('form');
+            form.action = `/students/${id}`; // Yeh path check karein
+            form.method = 'POST';
+            form.innerHTML = `
+                <input type="hidden" name="_token" value="${token}">
+                <input type="hidden" name="_method" value="DELETE">
+            `;
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+}

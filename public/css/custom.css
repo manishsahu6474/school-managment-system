@@ -32,19 +32,58 @@
 }
 /* Center Branding Logic */
 /* Dropdown Animation & 3D Shadow */
+/* Dropdown container ko glassy aur shiny banane ke liye */
 .dropdown-menu {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(12px) !important; /* Apple style blur */
+    border: 1px solid rgba(0, 210, 255, 0.3) !important;
+    box-shadow: 0 10px 30px rgba(0, 210, 255, 0.15) !important;
     border-radius: 12px !important;
-    min-width: 200px;
+    padding: 10px !important;
+    overflow: hidden;
+    
+}
+/* Dropdown item professional shiny look */
+.dropdown-item {
+    position: relative;
+    overflow: hidden;
+    color: #444 !important;
+    transition: all 0.3s ease !important;
 }
 
 .dropdown-item:hover {
-    background-color: #f8f9fc;
-    color: #4e73df;
+    background: rgba(0, 122, 255, 0.05) !important; /* Bahut halka blue tint */
+    color: #0731ff !important; /* Apple Classic Blue */
+    
+    /* Soft White & Blue Glow */
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.8), 
+                0 0 15px rgb(234, 236, 238) !important;
+    
     transform: scale(1.02);
-    transition: all 0.2s ease;
+    padding-left: 1 0px !important;
 }
 
-/* 1. Sidebar Base (Desktop) */
+/* Shiny Animation (White Light Sweep) */
+.dropdown-item::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 30%;
+    height: 100%;
+    background: linear-gradient(
+        to right, 
+        transparent, 
+        rgba(255, 255, 255, 0.7), 
+        transparent
+    );
+    transform: skewX(-25deg);
+    transition: 0.5s;
+}
+
+.dropdown-item:hover::after {
+    left: 150%; /* Mouse le jane par ek chamak pass hogi */
+}/* 1. Sidebar Base (Desktop) */
 .sidebar {
     width: 230px;
     min-height: 100vh;
@@ -64,10 +103,7 @@
     transition: all 0.3s ease;
 }
 
-.sidebar-menu .nav-link:hover i {
-    color: #ffca2c !important; /* Gold/Amber */
-    text-shadow: 0 0 8px rgba(13, 110, 253, 0.6);
-}
+
 .sidebar-menu .nav-link {
     position: relative;
     padding: 12px 20px;
@@ -81,12 +117,15 @@
 }
 
 /* Glow & Lift on Hover */
-.sidebar-menu .nav-link:hover {
-    background: rgba(13, 110, 253, 0.15);
-    color: #ffffff !important;
-    transform: translateX(8px) translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3), 
-                0 0 10px rgba(13, 110, 253, 0.2);
+/* Sidebar icons ke liye Shiny Apple Glow */
+.sidebar-menu .nav-link:hover i {
+ color: #ffffff !important; /* Icon white rahega */
+    /* Tehrri (Triple) Layer Glow Effect */
+    text-shadow: 0 0 10px #00d2ff, 
+                 0 0 20px #00d2ff, 
+                 0 0 30px #00d2ff !important; 
+    transform: scale(1.2) translateY(-2px);
+    transition: all 0.3s ease-in-out;
 }
 
 /* Active State (Blue Box) */
@@ -135,12 +174,12 @@ body {
 
 /* 3D Card Effect */
 .card-3d {
-    border: none;
-    border-radius: 15px;
-    background: #ffffff;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 
-                0 1px 8px rgba(0, 0, 0, 0.06);
-    margin-top: 50px;
+    border-radius: 15px!important;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    cursor: pointer;
+    backdrop-filter: blur(10px); /* Glass effect */
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1) !important;
 }
 
 .card-header-3d {
@@ -148,6 +187,26 @@ body {
     border-radius: 15px 15px 0 0 !important;
     padding: 20px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+.card-3d:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.95) !important;
+    /* Soft Shiny Blue Glow */
+   border: 1.5px solid rgba(0, 122, 255, 0.2) !important;
+    box-shadow: 0 10px 25px rgba(0, 122, 255, 0.1) !important;
+}
+.card-3d:hover .icon-box {
+    transform: rotateY(180deg);
+    background: #00d2ff !important;
+    box-shadow: 0 0 15px #00d2ff !important;
+    transition: 0.6s;
+}
+.card-3d:hover .icon-box i {
+    color: white !important;
+}
+
+.icon-box {
+    transition: 0.4s;
 }
 
 /* Input Fields 3D Shadow */
@@ -269,6 +328,18 @@ body {
     font-weight: 800 !important;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
 }
+/* SweetAlert Button ko 3D banana */
+.swal2-styled.swal2-confirm {
+    border: none !important;
+    border-bottom: 4px solid rgba(0,0,0,0.2) !important;
+    box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3) !important;
+    transition: all 0.2s !important;
+}
+
+.swal2-styled.swal2-confirm:active {
+    transform: translateY(2px) !important;
+    border-bottom-width: 1px !important;
+}
 
 /* Progress bar color */
 .swal2-timer-progress-bar {
@@ -341,4 +412,37 @@ body {
     background-color: #f8f9fc !important;
     transform: scale(1.01); /* Halka sa pop-up effect */
     z-index: 1;
+}
+/* 3D Morphism Card Style */
+.card-morphism {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(15px); /* Glassy blur effect */
+    border-radius: 20px !important;
+    /* Soft 3D Shadow */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 
+                0 5px 15px rgba(0, 0, 0, 0.05) !important;
+    overflow: hidden;
+}
+
+/* Header with 3D Depth */
+.morphism-header {
+    background: linear-gradient(135deg, #1277f3, #0fdef1) !important;
+    border-bottom: 4px solid rgba(0, 0, 0, 0.15) !important;
+    padding: 20px !important;
+}
+
+/* Shiny Input Fields */
+.morphism-input {
+    background: rgba(255, 255, 255, 0.7) !important;
+    border: 1px solid #ddd !important;
+    border-radius: 12px !important;
+    padding: 12px 15px !important;
+    transition: all 0.3s ease;
+}
+
+.morphism-input:focus {
+    background: #fff !important;
+    border-color: #00d2ff !important;
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.2) !important; /* Shiny Blue Glow */
+    transform: translateY(-2px);
 }

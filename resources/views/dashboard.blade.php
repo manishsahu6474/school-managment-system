@@ -1,43 +1,58 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="row g-3">
+<div class="container-fluid py-4">
+    <div class="row g-4">
+        <div class="col-xl-3 col-md-6">
+            <a href="{{ route('students.index') }}" class="text-decoration-none">
+                <div class="card card-3d border-0 shadow-sm h-100" style="background: linear-gradient(145deg, #ffffff, #f0f0f0);">
+                    <div class="card-body text-center p-4">
+                        <div class="icon-box mb-3 mx-auto shadow-sm" style="background: #e7f1ff; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-user-graduate fa-2x text-primary"></i>
+                        </div>
+                        <h6 class="text-uppercase fw-bold text-muted mb-1">Total Students</h6>
+                        <h2 class="fw-bold text-dark mb-0">{{ $totalStudents }}</h2>
+                    </div>
+                </div>
+            </a>
+        </div>
 
-    <div class="col-md-3 col-sm-6">
-        <div class="card shadow-sm text-center">
-            <div class="card-body">
-                <h5>Total Students</h5>
-                <h3>120</h3>
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-3d border-0 shadow-sm h-100" style="background: linear-gradient(145deg, #ffffff, #f0f0f0);">
+                <div class="card-body text-center p-4">
+                    <div class="icon-box mb-3 mx-auto shadow-sm" style="background: #eaf8ef; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-chalkboard-teacher fa-2x text-success"></i>
+                    </div>
+                    <h6 class="text-uppercase fw-bold text-muted mb-1">Total Teachers</h6>
+                    <h2 class="fw-bold text-dark mb-0">{{ $totalTeachers }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-3d border-0 shadow-sm h-100" style="background: linear-gradient(145deg, #ffffff, #f0f0f0);">
+                <div class="card-body text-center p-4">
+                    <div class="icon-box mb-3 mx-auto shadow-sm" style="background: #fff8e6; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-school fa-2x text-warning"></i>
+                    </div>
+                    <h6 class="text-uppercase fw-bold text-muted mb-1">Total Classes</h6>
+                    <h2 class="fw-bold text-dark mb-0">{{ $totalClasses }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+            <div class="card card-3d border-0 shadow-sm h-100" style="background: linear-gradient(145deg, #ffffff, #f0f0f0);">
+                <div class="card-body text-center p-4">
+                    <div class="icon-box mb-3 mx-auto shadow-sm" style="background: #fdf2f2; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-book fa-2x text-danger"></i>
+                    </div>
+                    <h6 class="text-uppercase fw-bold text-muted mb-1">Total Subjects</h6>
+                    <h2 class="fw-bold text-dark mb-0">{{ $totalSubjects }}</h2>
+                </div>
             </div>
         </div>
     </div>
-
-    <div class="col-md-3 col-sm-6">
-        <div class="card shadow-sm text-center">
-            <div class="card-body">
-                <h5>Teachers</h5>
-                <h3>15</h3>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3 col-sm-6">
-        <div class="card shadow-sm text-center">
-            <div class="card-body">
-                <h5>Classes</h5>
-                <h3>8</h3>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3 col-sm-6">
-        <div class="card shadow-sm text-center">
-            <div class="card-body">
-                <h5>Subjects</h5>
-                <h3>24</h3>
-            </div>
-        </div>
-    </div>
-
 </div>
+
 @endsection

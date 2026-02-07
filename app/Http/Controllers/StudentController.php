@@ -15,8 +15,7 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
-
-       $students = Student::when($search, function ($query) use ($search) {
+        $students = Student::when($search, function ($query) use ($search) {
             $query->where('name', 'like', "%$search%")
                   ->orWhere('email', 'like', "%$search%")
                   ->orWhere('class', 'like', "%$search%");

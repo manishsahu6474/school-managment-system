@@ -83,9 +83,9 @@
                             <form action="{{ route('students.destroy', $student->id) }}" method="POST" class="d-inline delete-form">
                                  @csrf
                                  @method('DELETE')
-                            <button type="button" class="btn btn-sm btn-3d-danger  delete-btn ">
-                                  <i class="fas fa-trash"></i>
-                             </button>
+                            <button type="button" class="btn btn-sm btn-3d-danger" onclick="deleteStudent({{ $student->id }})">
+                                 <i class="fas fa-trash"></i>
+                            </button>
                             </form>
                         </td>
                     </tr>
