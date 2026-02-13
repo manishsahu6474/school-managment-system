@@ -1,11 +1,9 @@
 <?php
 
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\StudentController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
-use App\Models\User;
-
+use App\Http\Controllers\TeacherController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,5 +18,20 @@ use App\Models\User;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::resource("students",StudentController::class);
-Route::get('dashboard',[DashboardController::class, 'index'])->name('dashboard');
+
+/*Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard'); */
+Route::middleware(['auth', 'verified'])->group(function () {
+    
+    // 1. Dashboard Route (Jo total counts dikhayega)
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // 2. Student Module Routes
+    Route::resource('students', StudentController::class);
+
+    // 3. Teacher Module Routes
+    Route::resource('teachers', TeacherController::class);
+});
+require __DIR__.'/auth.php';
+//Route::resource('students', StudentController::class);

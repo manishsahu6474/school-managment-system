@@ -1,5 +1,4 @@
-
-/* Branding ko hamesha center mein rakhne ke liye */
+/* Branding - center  */
 .navbar-brand-centered {
     position: absolute;
     left: 50%;
@@ -30,7 +29,6 @@
         width: 90%;
     }
 }
-/* Center Branding Logic */
 /* Dropdown Animation & 3D Shadow */
 /* Dropdown container ko glassy aur shiny banane ke liye */
 .dropdown-menu {
@@ -157,19 +155,16 @@
         margin-left: 0 !important;
     }
 }
-/* 3D Button Effect */
-        .btn-3d {
-            box-shadow: 0 6px 0 rgba(0,0,0,0.2);
-            transition: all 0.1s ease-in-out;
-        }
-        .btn-3d:active {
-            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
-            transform: translateY(4px);
-        }
         /* Body Background */
 body {
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
+    font-family: 'Poppins', sans-serif !important; /* Apna purana font name yahan likhein */
+    font-size: 16px !important; /* Jo size aapko pehle sahi lagta tha */
+    line-height: 1.5;
+    h1, h2, h3, h4 {
+    font-weight: bold !important;
+}
 }
 
 /* 3D Card Effect */
@@ -180,14 +175,9 @@ body {
     backdrop-filter: blur(10px); /* Glass effect */
     border: 1px solid rgba(255, 255, 255, 0.5) !important;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1) !important;
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
 }
 
-.card-header-3d {
-    background: linear-gradient(45deg, #4e73df, #224abe);
-    border-radius: 15px 15px 0 0 !important;
-    padding: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
 .card-3d:hover {
     transform: translateY(-10px);
     background: rgba(255, 255, 255, 0.95) !important;
@@ -208,7 +198,23 @@ body {
 .icon-box {
     transition: 0.4s;
 }
+.icon-circle-shiny {
+    background: #e7f1ff;
+    width: 60px; 
+    height: 60px; 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.8); /* Shiny border edge */
+}
 
+.icon-circle-shiny:hover {
+    transform: scale(1.1) rotate(5deg); /* Chota sa animation */
+    background: #00d2ff; /* Hover par shiny blue */
+    color: white;
+}
 /* Input Fields 3D Shadow */
 .form-control-3d {
     border-radius: 8px;
@@ -288,6 +294,10 @@ body {
     border: none !important;
     border-bottom: 4px solid #841622 !important;
     transition: all 0.1s ease !important;
+}
+.btn-3d-danger:hover {
+    background: linear-gradient(to bottom,  #dc3545, #a71d2a) !important;
+    transform: translateY(-1px);
 }
 
 .btn-3d-danger:active {
@@ -409,7 +419,7 @@ body {
     transition: transform 0.2s ease;
 }
 .table tbody tr:hover {
-    background-color: #f8f9fc !important;
+    background-color: #ffffffef !important;
     transform: scale(1.01); /* Halka sa pop-up effect */
     z-index: 1;
 }

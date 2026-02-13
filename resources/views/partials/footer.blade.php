@@ -7,7 +7,7 @@
                 </p>
             </div>
             <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
-                <span class="badge bg-light text-dark py-2 px-3 border">Version 1.0.8</span>
+                <span class="badge bg-light text-dark py-2 px-3 border">Made by-MK</span>
             </div>
         </div>
     </div>

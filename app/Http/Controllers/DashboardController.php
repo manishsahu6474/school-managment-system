@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\student;
+use App\Models\teacher;
+
 class DashboardController extends Controller
 {
     //
     public function index()
     {
         $totalStudents = Student::count();
-        $totalTeachers = 0;
+        $totalTeachers = Teacher::count();
         $totalClasses  = 0;
         $totalSubjects = 0;
         

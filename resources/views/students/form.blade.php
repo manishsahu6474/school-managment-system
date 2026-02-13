@@ -42,8 +42,8 @@
                pattern="[0-9]{10}"> </div>
 </div>
 
-<div class="d-flex justify-content-center gap-3 mt-5">
-    <button type="submit" class="btn btn-3d-success px-5 py-2 fw-bold">
+<div class="d-flex flex-column flex-sm-row align-items-center justify-content-center gap-3 gap-sm-3 mt-4 mt-sm-5">
+    <button type="submit" class="btn btn-success btn-3d-success px-5 py-2 fw-bold">
         <i class="fas fa-check-circle me-1"></i> {{ isset($student) ? 'Update Data' : 'Save Student' }}
     </button>
     <a href="{{ route('students.index') }}" class="btn btn-3d-secondary px-5 py-2 fw-bold">

@@ -1,66 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Student Management</title>
+        <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-     {{-- Icons --}}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Custom CSS -->
-    <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Fonts -->
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- Scripts -->
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        <script src="{{ asset('js/app.js') }}" defer></script>
+        <script src="{{ asset('js/custom.js') }}">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
+    <body>
+                @if(session('success_update'))
+                <div id="session-success" data-message="{{session('success_update')}}"></div>
+                @endif
+            <div class="d-flex">
+            @include('partials.sidebar')
+            </div> 
+            <div class="main-content">
+                @include('partials.navbar')
 
-    <!-- Custom JS -->
-    <script src="{{ asset('js/custom.js') }}"></script>
-</head>
-<body>
-    @if(session('success'))
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        Swal.fire({
-            icon: 'success',
-            title: 'Done!',
-            text: "{{ session('success') }}",
-            background: '#fff',
-            // Shiny Blue 3D Button
-            confirmButtonColor: '#00d2ff', 
-            customClass: {
-                popup: 'rounded-20 shadow-3d', // Aapki purani 3D classes
-                confirmButton: 'btn-3d-success px-4 py-2' // Shiny Button
-            }
-        });
-    });
-</script>
-@endif
-<div>
-    
-    <div class="d-flex">
-        {{-- SIDEBAR --}}
-        @include('partials.sidebar')
-        </div>
-
-    <div class="main-content">
-        {{-- NAVBAR --}}
-         @include('partials.navbar')
-        <div class="container-fluid p-4">
-            @yield('content')
-        </div>
-
+                @if (isset($header))
+                <header class="bg-white shadow">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                     {{ $header }}
+                    </div>
+                </header>
+                @endif
+             <div class="container-fluid p-4 mt-4">
+                <main>
+                {{$slot}}
+                </main>
+             </div>
         @include('partials.footer')
     </div>
-    
-</div>
-
-
-
-</body>
+    </body>
 </html>

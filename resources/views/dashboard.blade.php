@@ -1,7 +1,18 @@
-@extends('layouts.app')
-
-@section('content')
-<div class="container-fluid py-4">
+<x-app-layout>
+    <div class="py-4">
+        <div class="container">
+            <div class="card card-morphism border-0">
+                <div class="card-header morphism-header text-white">
+                <h3 class="mb-0">Welcome to Student Management System</h3>
+                </div>
+                <div class="card-body p-5">
+                    <h4 class="text-dark">Hello, {{ Auth::user()->name }}!</h4>
+                    <p>Aap yahan se Students aur Teachers ko manage kar sakte hain.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid py-4">
     <div class="row g-4">
         <div class="col-xl-3 col-md-6">
             <a href="{{ route('students.index') }}" class="text-decoration-none">
@@ -54,5 +65,4 @@
         </div>
     </div>
 </div>
-
-@endsection
+</x-app-layout>

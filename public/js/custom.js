@@ -73,3 +73,24 @@ function deleteStudent(id) {
         }
     });
 }
+//logout ki functionalty
+function logoutConfirm() {
+    Swal.fire({
+        title: 'Logout Karein?',
+        text: "Kya aap sach mein session band karna chahte hain?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Haan, Logout!',
+        cancelButtonText: 'Nahi, ruko',
+        // Aapka purana 3D look yahan bhi kaam karega
+        customClass: {
+            popup: 'card-morphism'
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('logout-form').submit();
+        }
+    });
+}

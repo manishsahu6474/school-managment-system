@@ -1,0 +1,142 @@
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    /* 3D Background Gradient */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #fff;
+    overflow-x: hidden; /* Mobile pe side scroll rokne ke liye */
+    position: relative;
+}
+
+/* --- 3D Background Floating Shapes --- */
+.shape {
+    position: absolute;
+    filter: blur(50px);
+    z-index: -1;
+    animation: float 6s ease-in-out infinite;
+    opacity: 0.6;
+}
+.shape-1 {
+    top: -10%;
+    left: -10%;
+    width: 300px;
+    height: 300px;
+    background: #ff00cc;
+    border-radius: 50%;
+}
+.shape-2 {
+    bottom: 10%;
+    right: -5%;
+    width: 250px;
+    height: 250px;
+    background: #00d4ff;
+    border-radius: 50%;
+    animation-delay: 2s;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
+
+/* --- Glassmorphism Card (3D Look) --- */
+.glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(16px); /* Blurring effect */
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); /* Deep Shadow */
+    border-radius: 20px;
+    transition: transform 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px); /* Hover par upar uthega */
+}
+
+/* --- Navbar Glass Style --- */
+.navbar-glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* --- 3D Buttons --- */
+.btn-3d {
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    color: #764ba2;
+    font-weight: bold;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 35px;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-3d:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    color: #5b32b4;
+}
+
+.btn-outline-glass {
+    border: 2px solid rgba(255,255,255,0.6);
+    color: white;
+    border-radius: 50px;
+    padding: 10px 30px;
+    font-weight: 600;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-glass:hover {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    transform: scale(1.05);
+}
+
+/* --- Hero Image Animation --- */
+.hero-img-animate {
+    animation: float-img 4s ease-in-out infinite;
+    max-width: 100%;
+    height: auto;
+}
+
+@keyframes float-img {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-15px); }
+    100% { transform: translateY(0px); }
+}
+
+/* --- Mobile Responsiveness Adjustments --- */
+@media (max-width: 768px) {
+    h1.display-4 {
+        font-size: 2.5rem; /* Mobile pe heading choti */
+    }
+    .shape {
+        width: 150px;
+        height: 150px;
+    }
+    .glass-card {
+        padding: 20px !important; /* Mobile pe kam padding */
+    }
+}
+/* Responsive Fixes */
+@media (max-width: 576px) {
+    .glass-card {
+        padding: 20px !important; /* Mobile pe padding kam */
+    }
+    .display-4 {
+        font-size: 2rem; /* Font chota */
+    }
+}
+
+/* Input Group Fix for Glass Effect */
+.input-group-text {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(10px);
+}
