@@ -14,7 +14,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('students.index') }}"
+            <a href="{{ route('admin.students.index') }}"
                class="nav-link text-white {{ request()->routeIs('students.*') ? 'active' : '' }}">
              <i class="fas fa-user-graduate me-2"></i> Students
             </a>

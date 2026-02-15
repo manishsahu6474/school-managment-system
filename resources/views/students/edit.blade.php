@@ -1,5 +1,4 @@
-@extends('layouts.app')
-@section('content')
+<x-app-layout>
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-10 col-lg-8">
@@ -10,7 +9,7 @@
                     </h4>
                 </div>
                 <div class="card-body p-4 p-md-5">
-                    <form action="{{ route('students.update', $student->id) }}" method="POST">
+                    <form action="{{ route('admin.students.update', $student->id) }}" method="POST">
                         @csrf
                         @method('PUT')
                         @include('students.form')
@@ -20,4 +19,4 @@
         </div>
     </div>
 </div>
-@endsection
+</x-app-layout>

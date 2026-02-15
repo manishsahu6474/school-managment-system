@@ -1,3 +1,4 @@
+
 <div class="row g-4">
     <div class="col-md-6">
         <label class="form-label fw-bold text-muted ml-1">Student Name</label>
@@ -46,7 +47,7 @@
     <button type="submit" class="btn btn-success btn-3d-success px-5 py-2 fw-bold">
         <i class="fas fa-check-circle me-1"></i> {{ isset($student) ? 'Update Data' : 'Save Student' }}
     </button>
-    <a href="{{ route('students.index') }}" class="btn btn-3d-secondary px-5 py-2 fw-bold">
+    <a href="{{ route('admin.students.index') }}" class="btn btn-3d-secondary px-5 py-2 fw-bold">
         <i class="fas fa-arrow-left me-1"></i> Go Back
     </a>
 </div>

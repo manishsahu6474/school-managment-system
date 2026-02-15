@@ -59,7 +59,7 @@
                                 <input type="password" name="password_confirmation" required class="form-control form-glass border-start-0" placeholder="********" style="border-radius: 0 10px 10px 0;">
                             </div>
                         </div>
-
+                        
                         <div class="d-grid">
                             <button type="submit" class="btn btn-3d py-2 fs-5">
                                 Register Now <i class="fas fa-user-check ms-2"></i>

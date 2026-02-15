@@ -8,7 +8,7 @@
        </div>
 
         <div class="col-md-6 text-end">
-            <a href="{{ route('students.create') }}" 
+            <a href="{{ route('admin.students.create') }}" 
                class="btn btn-success btn-3d-success shadow-sm px-4" style="margin-right: 30px;">
                 <i class="fas fa-plus-circle me-2"></i> Add Student
             </a>
@@ -18,7 +18,7 @@
        <div class="row justify-content-center mb-5">
            <div class="col-md-10 col-lg-8">
              <div class="card card-3d border-0 p-4">
-                 <form method="GET" action="{{ route('students.index') }}" class="row g-3">
+                 <form method="GET" action="{{ route('admin.students.index') }}" class="row g-3">
                     <div class="col-md-7">
                         <div class="input-group">
                             <span class="input-group-text bg-white border-end-0 text-muted">
@@ -30,26 +30,45 @@
                     </div>
                      <div class="col-md-5 d-flex gap-2">
                             <button class="btn   btn-3d-primary w-100 fw-bold" type="submit">SEARCH</button>
-                            <a href="{{ route('students.index') }}" 
+                            <a href="{{ route('admin.students.index') }}" 
                                class="btn btn-secondary btn-3d-secondary w-100 fw-bold">RESET</a>
                     </div>
                 </form>
              </div>
            </div>
        </div>
-    {{-- SweetAlert Success --}}
-        @if(session('success'))
-            <script>
+       <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        
+        // 1. Check karein ki user kaise aaya hai (Reload, Link, ya Back Button)
+        // Modern browsers ke liye logic
+        var perfEntries = performance.getEntriesByType("navigation");
+        var navigationType = perfEntries.length > 0 ? perfEntries[0].type : "navigate";
+
+        // 2. Agar ye "Back Button" (back_forward) nahi hai, tabhi alert dikhao
+        if (navigationType !== 'back_forward') {
+            
+            @if(session('success'))
                 Swal.fire({
                     icon: 'success',
-                    title: 'Success',
+                    title: 'Success!',
                     text: "{{ session('success') }}",
-                    timer: 2000,
-                    showConfirmButton: false
+                    showConfirmButton: false,
+                    timer: 2000 // 2 second baad khud band ho jayega
                 });
-            </script>
-        @endif
-     {{-- Table --}}
+            @endif
+
+            @if(session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: "{{ session('error') }}",
+                });
+            @endif
+        }
+    });
+</script>
+         {{-- Table --}}
      <div class="card  card-3d ">
          <div class="card-body table-responsive">
                <table class="table ">
@@ -74,11 +93,11 @@
                                 <td>{{ $student->phone }}</td>
                                 <td>{{ $student->class }}</td>
                                 <td>
-                                    <a href="{{ route('students.edit',$student->id) }}"
+                                    <a href="{{ route('admin.students.edit',$student->id) }}"
                                      class="btn btn-sm btn-3d-warning shadow-sm">
                                      <i class="fas fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('students.destroy', $student->id) }}" method="POST" class="d-inline delete-form">
+                                    <form id="delete-form-{{ $student->id }}"action="{{ route('admin.students.destroy', $student->id) }}" method="POST" class="d-inline delete-form" style="display: none;">
                                         @csrf
                                         @method('DELETE')
                                        <button type="button" class="btn btn-sm btn-3d-danger" onclick="deleteStudent({{ $student->id }})">

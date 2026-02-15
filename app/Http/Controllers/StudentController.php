@@ -54,7 +54,7 @@ class StudentController extends Controller
 
     Student::create($request->all());
 
-    return redirect()->route('students.index')
+    return redirect()->route('admin.students.index')
            ->with('success','Student Added Successfully');
     }
 
@@ -104,7 +104,7 @@ class StudentController extends Controller
     $student = Student::findOrFail($id);
     $student->update($request->all());
 
-    return redirect()->route('students.index')
+    return redirect()->route('admin.students.index')
            ->with('success','Student Updated Successfully');
     }
 
@@ -121,6 +121,6 @@ class StudentController extends Controller
     $student->delete();
 
     // Success message ke sath wapas bhejein
-    return redirect()->route('students.index')->with('success', 'Student deleted successfully!');
+    return redirect()->route('admin.students.index')->with('success', 'Student deleted successfully!');
     }
 }
