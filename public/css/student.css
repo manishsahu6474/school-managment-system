@@ -1,0 +1,249 @@
+/* === 1. ROOT VARIABLES (Colors Change karne ke liye) === */
+:root {
+    --bg-color: #0f172a;
+    --text-white: #ffffff;
+    --text-gray: #94a3b8;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-hover: rgba(255, 255, 255, 0.15);
+    --primary-color: #3b82f6; /* Blue */
+    --accent-color: #8b5cf6;  /* Purple */
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-white);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    overflow-x: hidden;
+    position: relative;
+    min-height: 100vh;
+}
+
+/* === 2. BACKGROUND BLOBS (Animation) === */
+.blob-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.6;
+    animation: float 10s infinite ease-in-out;
+}
+
+.blob-1 { background: #7c3aed; width: 400px; height: 400px; top: -50px; left: -50px; }
+.blob-2 { background: #2563eb; width: 300px; height: 300px; bottom: 0; right: 0; animation-delay: 2s; }
+.blob-3 { background: #db2777; width: 250px; height: 250px; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+@keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -50px) scale(1.1); }
+    66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+
+/* === 3. GLASS EFFECT CLASSES === */
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+}
+
+.glass-hover:hover {
+    background: var(--glass-hover);
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+    border-color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+}
+
+/* === 4. LAYOUT === */
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+    padding: 20px;
+    gap: 20px;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.logo-area {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 20px;
+}
+
+.nav-links a {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: var(--text-gray);
+    text-decoration: none;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    transition: 0.3s;
+}
+
+.nav-links a:hover, .nav-links a.active {
+    background: var(--glass-hover);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.nav-links i { margin-right: 15px; width: 25px; text-align: center; }
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+/* Stats Cards */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 30px;
+}
+
+.card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.bg-green-glow { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+.bg-yellow-glow { background: rgba(234, 179, 8, 0.2); color: #facc15; }
+.bg-purple-glow { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+
+/* Table */
+.table-container { padding: 25px; }
+.styled-table { width: 100%; border-collapse: collapse; }
+.styled-table th { text-align: left; color: var(--text-gray); padding: 15px; border-bottom: 1px solid var(--glass-border); }
+.styled-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.02); }
+.styled-table tr:hover { background: rgba(255,255,255,0.03); }
+
+/* Buttons */
+.btn-logout {
+    width: 100%;
+    background: none;
+    border: none;
+    color: #f87171;
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 12px;
+}
+.btn-logout:hover { background: rgba(239, 68, 68, 0.1); }
+/* === 5. RESPONSIVE DESIGN (Mobile) === */
+
+/* Default: Menu Toggle Button Chhupa rahega (Desktop par) */
+.menu-toggle {
+    display: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: white;
+    margin-right: 15px;
+}
+
+/* Close Button inside Sidebar */
+.close-sidebar {
+    display: none;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-gray);
+}
+
+@media (max-width: 768px) {
+    
+    .dashboard-container {
+        flex-direction: column;
+        padding: 10px;
+    }
+
+    /* Sidebar ko Mobile par Chhupana */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -100%; /* Screen se bahar */
+        width: 280px;
+        height: 100vh;
+        z-index: 1000;
+        background: rgba(15, 23, 42, 0.95); /* Thoda dark background taaki text dikhe */
+        backdrop-filter: blur(20px);
+        transition: left 0.3s ease-in-out;
+        box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+    }
+    .logout-section {
+    margin-top: auto; /* Ye button ko bottom me dhakelta hai */
+    border-top: 1px solid var(--glass-border); /* Upar ek patli line */
+    padding-top: 20px; /* Line aur button ke beech gap */
+    margin-bottom: 10px; /* Bottom edge se thoda upar */
+}
+    /* Jab JS se 'active' class lagegi tab Sidebar aayega */
+    .sidebar.active {
+        left: 0;
+    }
+
+    /* Buttons dikhana mobile par */
+    .menu-toggle { display: block; }
+    .close-sidebar { display: block; }
+
+    /* Main Content Adjustments */
+    .header {
+        padding: 15px;
+        justify-content: flex-start; /* Logo aur naam pass me */
+    }
+
+    .header h1 {
+        font-size: 1.2rem; /* Naam chhota karo */
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr; /* Ek ke neeche ek card */
+    }
+
+    /* Table Scrollable banana */
+    .table-container {
+        overflow-x: auto;
+    }
+    
+    .styled-table {
+        min-width: 600px; /* Table ko scroll karne ke liye width */
+    }
+}

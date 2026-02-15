@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
 // Success Message ke liye Shiny 3D Function
 function showSuccessAlert(message) {
     Swal.fire({
@@ -60,16 +61,7 @@ function deleteStudent(id) {
         backdrop: `rgba(0,0,0,0.4) blur(5px)` // Glass effect
     }).then((result) => {
         if (result.isConfirmed) {
-            // Form creation and submission
-            let form = document.createElement('form');
-            form.action = `/students/${id}`; // Yeh path check karein
-            form.method = 'POST';
-            form.innerHTML = `
-                <input type="hidden" name="_token" value="${token}">
-                <input type="hidden" name="_method" value="DELETE">
-            `;
-            document.body.appendChild(form);
-            form.submit();
+          document.getElementById('delete-form-' + id).submit();
         }
     });
 }
