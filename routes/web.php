@@ -31,7 +31,7 @@ Route::get('/dashboard', function () {
     } 
     elseif ($role === 'teacher') {
         // Agar Teacher hai -> Teacher Dashboard dikhao
-        return view('teacher.dashboard');
+        return view('teachers.dashboard');
     } 
     else {
         // Agar Student hai (Registration ke baad yehi chalega)
@@ -52,6 +52,7 @@ Route::middleware(['auth', 'verified'])
         // 2. RESOURCE ROUTE (Ye hai wo magic line)
         // Admin ko Student par pura control de diya
         Route::resource('students', StudentController::class);
-
+        // Admin ko Teacher par pura control de diya
+        Route::resource('teachers', TeacherController::class);
     });
 require __DIR__.'/auth.php';

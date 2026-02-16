@@ -9,28 +9,28 @@
     <ul class="nav flex-column sidebar-menu">
         <li class="nav-item">
             <a href="{{ route('dashboard') }}" 
-               class="nav-link text-white {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+               class="nav-link text-white {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
              <i class="fas fa-chart-line me-2"></i> Dashboard
             </a>
         </li>
         <li class="nav-item">
             <a href="{{ route('admin.students.index') }}"
-               class="nav-link text-white {{ request()->routeIs('students.*') ? 'active' : '' }}">
+               class="nav-link text-white {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
              <i class="fas fa-user-graduate me-2"></i> Students
             </a>
         </li>
         <li class="nav-item">
-            <a href="#" class="nav-link text-white {{ request()->routeIs('teachers.*') ? 'active' : '' }}">
+            <a href="{{route('admin.teachers.index')}}" class="nav-link text-white {{ request()->routeIs('admin.teachers.*') ? 'active' : '' }}">
                 <i class="fas fa-chalkboard-teacher me-2"></i> Teachers
             </a>
         </li>
         <li class="nav-item">                                                   
-            <a href="#" class="nav-link text-white {{ request()->routeIs('classes.*') ? 'active' : '' }}">
+            <a href="#" class="nav-link text-white {{ request()->routeIs('admin.classes.*') ? 'active' : '' }}">
                 <i class="fas fa-school me-2"></i> Classes
             </a>
         </li>
         <li class="nav-item">
-            <a href="#" class="nav-link text-white {{ request()->routeIs('subject.*') ? 'active' : '' }}">
+            <a href="#" class="nav-link text-white {{ request()->routeIs('admin.subject.*') ? 'active' : '' }}">
                 <i class="fas fa-book-reader me-2"></i> Subjects
             </a>
         </li>
