@@ -58,14 +58,12 @@ class TeacherController extends Controller
                 'password'=>'required|min:8', 
             ]
         );
-        User::create(
-            [
+        User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password'=> Hash::make($request->password),
                 'role' => 'teacher',
-            ]
-        );
+        ]);
         return redirect()->route('admin.teachers.index')->with('success','New Teacher Added Successfully!');
     }
 

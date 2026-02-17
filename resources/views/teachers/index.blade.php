@@ -81,9 +81,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($teachers as $teacher)
+                        @forelse($teachers as $k => $teacher)
                             <tr class="text-center">
-                                <td>{{ $teacher->id }}</td>
+                                <td>{{ $k + 1}}</td>
                                 <td>{{ $teacher->name }}</td>
                                  <td>{{ $teacher->email }}</td>
                                 <td>

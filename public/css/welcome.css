@@ -9,6 +9,9 @@ body {
     color: #fff;
     overflow-x: hidden; /* Mobile pe side scroll rokne ke liye */
     position: relative;
+    margin: 0;
+    padding: 0;
+    
 }
 
 /* --- 3D Background Floating Shapes --- */
@@ -44,20 +47,92 @@ body {
 }
 
 /* --- Glassmorphism Card (3D Look) --- */
+/* 1. Pure Card par 3D Perspective effect */
 .glass-card {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(16px); /* Blurring effect */
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); /* Deep Shadow */
-    border-radius: 20px;
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    perspective: 1000px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    max-height: 90vh; 
+    overflow-y: auto; /* Agar screen bahut chhoti ho toh scroll bar aa jaye */
+    scrollbar-width: none;
+    backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+}
+.glass-card::-webkit-scrollbar {
+    display: none; /* Chrome/Safari ke liye scrollbar hide */
+}
+.mb-3 {
+    margin-bottom: 0.8rem !important;
 }
 
+.input-group-text, .form-control {
+    padding-top: 0.5rem;
+            padding-bottom: 0.5rem; /* Fields ki height thodi kam hogi */
+}
+
+/* Logo icon ko thoda chhota karne ke liye (Optional) */
+.fa-3x {
+    font-size: 2.2rem !important;
+}
 .glass-card:hover {
-    transform: translateY(-5px); /* Hover par upar uthega */
+    transform: translateY(-5px) rotateX(2deg); /* Halka sa upar aur tilt */
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
 }
 
+/* 2. Input fields aur Dropdown ka Hover */
+.form-glass {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    transition: all 0.1s ease !important;
+}
+
+.form-glass:focus, .form-glass:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    transform: scale(1.02); /* Halka sa bada hoga */
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* 3. Dropdown Options ko badiya dikhane ke liye */
+select.form-glass option {
+    background-color: #2b3a55; /* Dark background options ke liye */
+    color: white;
+    padding: 10px;
+}
+
+/* 4. 3D Button Effect */
+.btn-3d {
+    background: linear-gradient(145deg, #6e8efb, #a777e3);
+    border: none;
+    color: white;
+    transition: all 0.1s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    top: 0;
+}
+
+.btn-3d:hover {
+    top: -3px; /* Button upar uthega */
+    box-shadow: 0 8px 25px rgba(110, 142, 251, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-3d:active {
+    top: 2px; /* Dabane par niche jayega */
+}
+
+/* Icons ko chamkane ke liye */
+.input-group-text {
+    transition: all 0.3s ease;
+}
+
+.input-group:hover .input-group-text {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #ffc107 !important; /* Icon gold color ka ho jayega hover pe */
+}
 /* --- Navbar Glass Style --- */
 .navbar-glass {
     background: rgba(255, 255, 255, 0.1);
