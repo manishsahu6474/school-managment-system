@@ -456,3 +456,16 @@ body {
     box-shadow: 0 0 15px rgba(0, 210, 255, 0.2) !important; /* Shiny Blue Glow */
     transform: translateY(-2px);
 }
+.link-disabled{
+    pointer-events: none;
+    cursor: default;
+    text-decoration: none;
+    opacity: 0.7;
+}
+.title-underline {
+    height: 4px;
+    width: 60px;
+    background: linear-gradient(to right, #0d6efd, #0dcaf0);
+    border-radius: 2px;
+    margin-top: 5px;
+}

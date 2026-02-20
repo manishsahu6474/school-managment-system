@@ -43,9 +43,17 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    public function student()
+    public function setNameAttribute($value)
     {
-    return $this->hasOne(Student::class);
+        $this->attributes['name'] = ucwords(strtolower($value));
+    }
+    public function setEmailAttribute($value)
+    {
+        $this->attributes['email'] = strtolower($value);
     }
 
+    public function student()
+    {
+        return $this->hasOne(Student::class);
+    }
 }

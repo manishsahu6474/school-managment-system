@@ -124,12 +124,14 @@ class TeacherController extends Controller
      * @param  \App\Models\user  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $teacher)
+    public function destroy(Request $request , $id)
     {
         //
-        $teacher->delete();
+        $teacher = User::findorFail($id);
+        
+        
         return redirect()->route('admin.teachers.index')
-         ->with('success','Teacher Deleted Successdfully!');
+         ->with('success','Teacher Deleted Successfully!');
 
     }
 }

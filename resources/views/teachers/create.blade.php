@@ -5,7 +5,7 @@
             <div class="card card-morphism border-0 shadow-lg">
                 <div class="card-header morphism-header text-white">
                     <h4 class="mb-0 fw-bold">
-                        <i class="fas fa-user-plus me-2"></i> Add Student
+                        <i class="fas fa-user-plus me-2"></i> Add Teacher
                     </h4>
                 </div>
                 <div class="card-body p-4 p-md-5">

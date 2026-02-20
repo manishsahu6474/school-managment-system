@@ -1,6 +1,5 @@
 <x-app-layout>
-    
-    <div class="container-fluid px-md-5">
+    <div id="page-context" data-type="class-view" class="container-fluid px-md-5">
         <div class="container-fluid px-md-5">
             <div
                 class="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4 mt-3 position-relative gap-3">
@@ -8,17 +7,25 @@
                 <div class="d-none d-md-block" style="width: 180px;"></div>
 
                 <div class="text-center flex-grow-1">
-                    <h2 class="fw-bold text-dark text-uppercase  mb-0 display-6 main-heading">
-                        <i class="fas fa-users text-primary me-2"></i>
-                        Students List
+                    <h2 class="fw-bold text-dark text-upper mb-0 display-6 main-heading">
+                        <i class="fas fa-school text-primary me-2"></i>
+                        {{ $class_name }}<sup>th</sup> Class Students
                     </h2>
-                </div>
 
+                </div>
+                <div class="d-flex gap-2 text-center text-md-end ">
+                    {{-- Bulk Action Button --}}
+                    <button id="bulk-promote-btn" onclick="bulkPromote()"
+                        class="btn btn-primary btn-3d-primary shadow-sm px-4" style="display: none">
+                        <i class="fas fa-graduation-cap me-2"></i> Promote
+                    </button>
+                </div>
                 <div class="text-center text-md-end" style="min-width: 180px;">
                     <a href="{{ route('admin.students.create') }}"
-                        class="btn btn-success btn-3d-success shadow-sm w-100 fw-bold px-4">
+                        class="btn btn-success btn-3d-success shadow-sm px-4">
                         <i class="fas fa-plus-circle me-2"></i> Add Student
                     </a>
+
                 </div>
             </div>
         </div>
@@ -26,31 +33,66 @@
         <div class="row justify-content-center mb-5">
             <div class="col-md-10 col-lg-8">
                 <div class="card card-3d border-0 p-4">
-                    <form method="GET" action="{{ route('admin.students.index') }}" class="row g-3">
+                    <form method="GET" action="{{ route('admin.classes.students', $class_name) }}" class="row g-3">
                         <div class="col-md-7">
                             <div class="morpihsm-input">
-                                <span class=" bg-white border-end-0 text-muted">
+                                <span class="bg-white border-end-0 text-muted">
                                     <i class="bi bi-search"></i>
                                 </span>
                                 <input type="text" name="search" class="form-control border-start-0"
-                                    placeholder="Search ..." value="{{ $search ?? '' }}">
+                                    placeholder="Search..." value="{{ $search ?? '' }}">
                             </div>
                         </div>
                         <div class="col-md-5 d-flex gap-2">
                             <button class="btn   btn-3d-primary w-100 fw-bold" type="submit">SEARCH</button>
-                            <a href="{{ route('admin.students.index') }}"
+                            <a href="{{ route('admin.classes.students', $class_name) }}"
                                 class="btn btn-secondary btn-3d-secondary w-100 fw-bold">RESET</a>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+
+                // 1. Check karein ki user kaise aaya hai (Reload, Link, ya Back Button)
+                // Modern browsers ke liye logic
+                var perfEntries = performance.getEntriesByType("navigation");
+                var navigationType = perfEntries.length > 0 ? perfEntries[0].type : "navigate";
+
+                // 2. Agar ye "Back Button" (back_forward) nahi hai, tabhi alert dikhao
+                if (navigationType !== 'back_forward') {
+
+                    @if (session('success'))
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: "{{ session('success') }}",
+                            showConfirmButton: false,
+                            timer: 2000 // 2 second baad khud band ho jayega
+                        });
+                    @endif
+
+                    @if (session('error'))
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: "{{ session('error') }}",
+                        });
+                    @endif
+                }
+            });
+        </script>
+
         {{-- Table --}}
         <div class="card  card-3d ">
-            <div class="card-body table-responsive">
-                <table class="table ">
+            <div class="card-body table-responsive ">
+                <table class="table mb-0">
                     <thead class="text-center ">
                         <tr>
+                            <th width="50">
+                                <input type="checkbox" id="master-checkbox" class="form-check-input border-primary">
+                            </th>
                             <th>S.No.</th>
                             <th>Name</th>
                             <th>Father Name</th>
@@ -62,9 +104,13 @@
                             <th width="160">Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="table-container">
                         @forelse($students as $student)
-                            <tr class="text-center">
+                            <tr class="text-center align-middle">
+                                <td>
+                                    <input type="checkbox" class="student-checkbox form-check-input border-primary"
+                                        value="{{ $student->id }}">
+                                </td>
                                 {{-- S.No ke liye Pagination index use karein taaki har page pe 1 se shuru na ho --}}
                                 <td>{{ ($students->currentPage() - 1) * $students->perPage() + $loop->iteration }}</td>
 
@@ -113,7 +159,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center text-muted py-4">
+                                <td colspan="10" class="text-center text-muted py-4">
                                     <i class="fas fa-search mb-2 fa-2x"></i><br>
                                     No students found for "{{ $search }}"
                                 </td>
@@ -123,6 +169,7 @@
                 </table>
             </div>
         </div>
+
         {{-- Pagination --}}
         <div class="d-flex justify-content-between align-items-center mt-3 px-3">
             <div class="small text-muted">
@@ -134,4 +181,5 @@
             </div>
         </div>
     </div>
+
 </x-app-layout>

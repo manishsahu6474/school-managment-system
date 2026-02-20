@@ -27,12 +27,12 @@
                placeholder="Fathers Name" 
                value="{{ old('father_name', $student->father_name ?? '') }}" 
                required>
-        @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        @error('father_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
     
    <div class="col-md-6">
         <label class="form-label fw-bold text-muted ml-1">Roll Number</label>
-        <input type="text" name="roll_no" 
+        <input type="number" name="roll_no" 
                class="form-control morphism-input @error('roll_no') is-invalid @enderror" 
                placeholder="Assign Roll No." 
                value="{{ old('roll_no', $student->roll_no ?? '') }}">
@@ -44,7 +44,7 @@
         <label class="form-label fw-bold text-muted ml-1">Date of Birth</label>
         <input type="date" name="dob" 
                class="form-control morphism-input @error('dob') is-invalid @enderror" 
-               value="{{ old('dob', $student->dob ?? '') }}" 
+               value="{{ old('dob', isset($student->dob) ? substr($student->dob,0,10): '') }}" 
                required>
         @error('dob') <div class="invalid-feedback">{{ $message }}</div> @enderror
     </div>
@@ -54,8 +54,8 @@
         <label class="form-label fw-bold text-muted ml-1">Class</label>
         <select name="class" class="form-control morphism-input @error('class') is-invalid @enderror" required>
             <option value="" disabled {{ !isset($student->class) ? 'selected' : '' }}>Select Class</option>
-            @foreach(['9th', '10th', '11th', '12th'] as $cls)
-                <option value="{{ $cls }}" {{ old('class', $student->class ?? '') == $cls ? 'selected' : '' }}>{{ $cls }}</option>
+            @foreach(['9', '10', '11', '12'] as $cls)
+                <option value="{{ $cls }}" {{ old('class', $student->class ?? '') == $cls ? 'selected' : '' }}>{{ $cls }}th</option>
             @endforeach
         </select>
         @error('class') <div class="invalid-feedback">{{ $message }}</div> @enderror
@@ -65,7 +65,7 @@
     {{-- Phone Number (Student Table se) --}}
     <div class="col-md-12">
         <label class="form-label fw-bold text-muted ml-1">Phone Number</label>
-        <input type="text" name="phone" 
+        <input type="number" name="phone" 
                class="form-control morphism-input @error('phone') is-invalid @enderror" 
                placeholder="10 digit number" 
                value="{{ old('phone', $student->phone ?? '') }}" 

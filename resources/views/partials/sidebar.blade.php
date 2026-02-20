@@ -16,7 +16,7 @@
         <li class="nav-item">
             <a href="{{ route('admin.students.index') }}"
                class="nav-link text-white {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
-             <i class="fas fa-user-graduate me-2"></i> Students
+             <i class="fa fa-users me-2"></i> Students
             </a>
         </li>
         <li class="nav-item">
@@ -25,7 +25,7 @@
             </a>
         </li>
         <li class="nav-item">                                                   
-            <a href="#" class="nav-link text-white {{ request()->routeIs('admin.classes.*') ? 'active' : '' }}">
+            <a href="{{route('admin.classes.index')}}" class="nav-link text-white {{ request()->routeIs('admin.classes.*') ? 'active' : '' }}">
                 <i class="fas fa-school me-2"></i> Classes
             </a>
         </li>

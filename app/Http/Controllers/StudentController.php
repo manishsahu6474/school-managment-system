@@ -8,8 +8,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
+
 class StudentController extends Controller
 {
+    public function toggleStatus($id)
+    {
+        $student = Student::findOrFail($id);
+
+        // Status toggle logic
+        $newStatus = ($student->status == 1) ? 0 : 1;
+        $student->update(['status' => $newStatus]);
+
+        return response()->json([
+            'status' => 'success',
+            'newStatus' => $newStatus,
+            'message' => 'Student status updated successfully!'
+        ]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -23,7 +39,7 @@ class StudentController extends Controller
             ->whereHas('user', function ($q) {
                 // Sirf wahi records dikhao jinka role 'student' ho
                 $q->where('role', 'student');
-                $q->where('status', '1');
+                // $q->where('status', '1');
             })
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($subQuery) use ($search) {
@@ -49,7 +65,6 @@ class StudentController extends Controller
     public function create()
     {
         $student = new Student();
-        $student->setRelation('user', new User());
 
         return view('students.create', compact('student'));
     }
@@ -65,10 +80,11 @@ class StudentController extends Controller
         $request->validate([
             'name'  => 'required|string|max:100',
             'email' => 'required|email|unique:users,email',
+            'father_name' => 'nullable|string|max:100',
+            'roll_no'  => 'nullable|numeric|unique:students,roll_no',
             'dob'   => 'required|date',
             'class' => 'required',
-            'phone' => 'required|nullable|digits:10',
-            'roll_no'  => 'nullable|unique:students,roll_no',
+            'phone' => 'required|digits:10',
         ]);
 
         DB::transaction(function () use ($request) {
@@ -134,9 +150,11 @@ class StudentController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
+            'father_name' => 'nullable|string|max:100',
             'roll_no' => 'nullable|unique:students,roll_no,' . $student->id,
+            'dob'   => 'required|date',
             'class' => 'required',
-            'phone' => 'nullable|numeric',
+            'phone' => 'nullable|digits:10',
         ]);
 
         DB::transaction(function () use ($request, $user, $student) {
@@ -165,21 +183,37 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id = 0)
+    public function destroy($id)
     {
-        if($id > 0){            
-            // Student ko delete karein
-            $student = Student::find($id);
-            if (isset($student)) {
-                $student->status = '0';
-                $update = $student->save();
-                if($update){
-                    return redirect()->route('admin.students.index')->with('success', 'Student deleted successfully!');
-                }
-                return redirect()->route('admin.students.index')->with('error', 'Something went wrong, try again later.');
-            }
-            return redirect()->route('admin.students.index')->with('error', 'Student not found');
+
+        $student = Student::findOrFail($id);
+
+        if ($student->status == 0) {
+            return response()->json([
+                'status' => 'info',
+                'message' => 'Yeh student pehle se hi Inactive hai!'
+            ]);
         }
-        return redirect()->route('admin.students.index')->with('error', 'Something went wrong, try again later.');
+
+        $student->update(['status' => '0']);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Student status updated successfully!',
+            'newStatus' => 0
+        ]);
+    }
+    public function bulkPromote(Request $request)
+    {
+        $ids = $request->ids;
+        // Agar 12th pass kar chuke hain toh Inactive kar do
+        Student::whereIn('id', $ids)
+            ->where('class' ,'>=', 12)
+            ->update(['status' => 0]);
+
+        Student::whereIn('id', $ids)
+            ->where('class','<', 12)
+            ->increment('class');
+        return response()->json(['status' => 'success', 'message' => 'students, promoted in next class']);
     }
 }
