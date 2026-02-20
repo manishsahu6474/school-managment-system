@@ -13,10 +13,11 @@ class AddRoleToUsersTable extends Migration
      */
     public function up()
     {
+        if (!Schema::hasColumn('users', 'role')) {
         Schema::table('users', function (Blueprint $table) {
-            //
-             $table->string('role')->default('user');
+            $table->string('role')->default('admin')->after('email');
         });
+    }
     }
 
     /**
@@ -27,7 +28,7 @@ class AddRoleToUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            $table->dropColumn('role');
         });
     }
 }

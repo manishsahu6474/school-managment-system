@@ -15,8 +15,10 @@ class CreateStudentsTable extends Migration
     {
         Schema::create('students', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('father_name')->nullable();
+            $table->string('roll_no')->nullable()->unique();
+            $table->integer('class')->nullable();
             $table->string('phone')->nullable();
             $table->date('dob')->nullable();
             $table->boolean('status')->default(1);
