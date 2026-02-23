@@ -32,7 +32,7 @@
     
    <div class="col-md-6">
         <label class="form-label fw-bold text-muted ml-1">Roll Number</label>
-        <input type="number" name="roll_no" 
+        <input type="text" name="roll_no" 
                class="form-control morphism-input @error('roll_no') is-invalid @enderror" 
                placeholder="Assign Roll No." 
                value="{{ old('roll_no', $student->roll_no ?? '') }}">
@@ -65,7 +65,7 @@
     {{-- Phone Number (Student Table se) --}}
     <div class="col-md-12">
         <label class="form-label fw-bold text-muted ml-1">Phone Number</label>
-        <input type="number" name="phone" 
+        <input type="text" name="phone" 
                class="form-control morphism-input @error('phone') is-invalid @enderror" 
                placeholder="10 digit number" 
                value="{{ old('phone', $student->phone ?? '') }}" 

@@ -1,5 +1,5 @@
 <x-app-layout>
-    
+
     <div class="container-fluid px-md-5">
         <div class="container-fluid px-md-5">
             <div
@@ -48,25 +48,26 @@
         {{-- Table --}}
         <div class="card  card-3d ">
             <div class="card-body table-responsive">
-                <table class="table ">
-                    <thead class="text-center ">
+                <table class="table table-hover align-middle ">
+                    <thead class="table-light ">
                         <tr>
-                            <th>S.No.</th>
-                            <th>Name</th>
+                            <th class="text-center">S.No.</th>
+                            <th>Student Name</th>
                             <th>Father Name</th>
-                            <th>Roll NO.</th>
-                            <th>DOB</th>
+                            <th class="text-center">Roll NO.</th>
+                            <th class="text-center">DOB</th>
                             <th>Phone No.</th>
-                            <th>Class</th>
-                            <th>Status</th>
-                            <th width="160">Action</th>
+                            <th class="text-center">Class</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($students as $student)
-                            <tr class="text-center">
+                            <tr>
                                 {{-- S.No ke liye Pagination index use karein taaki har page pe 1 se shuru na ho --}}
-                                <td>{{ ($students->currentPage() - 1) * $students->perPage() + $loop->iteration }}</td>
+                                <td class="text-center">
+                                    {{ ($students->currentPage() - 1) * $students->perPage() + $loop->iteration }}</td>
 
                                 {{-- User table se Name aur Email fetch karna --}}
                                 <td class="fw-bold">{{ $student->user->name ?? 'N/A' }}</td>
@@ -76,11 +77,11 @@
                                 {{-- DOB check: Agar DOB null hai toh 'N/A' dikhayein --}}
                                 <td>{{ $student->dob ? \Carbon\Carbon::parse($student->dob)->format('d-M-Y') : 'Not Set' }}
                                 </td>
-                                <td>+91 {{ $student->phone ?? 'N/A' }}</td>
-                                <td>
-                                    <span class="badge bg-info text-dark">{{ $student->class }}<sup>th</sup></span>
+                                <td>{{ $student->phone ?? 'N/A' }}</td>
+                                <td class="text-center">
+                                    <span class="badge rounded-pill bg-info text-dark">{{ $student->class }}<sup>th</sup></span>
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     <form action="{{ route('admin.students.status', $student->id) }}" method="POST"
                                         style="display:inline;">
                                         @csrf
@@ -91,7 +92,7 @@
                                         </button>
                                     </form>
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
                                         <a href="{{ route('admin.students.edit', $student->id) }}"
                                             class="btn btn-sm btn-3d-warning shadow-sm">

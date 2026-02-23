@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\teacher;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
@@ -18,13 +19,22 @@ class TeacherController extends Controller
     {
         //
         $search = $request->search;
-        $teachers = User::where('role','teacher')
-        ->when($search, function ($query) use ($search) {
-                 $query->where(function($subQuery) use ($search){
-                 $subQuery->where('name', 'like', "%$search%")
-                  ->orWhere('email', 'like', "%$search%");
-                 });
-        })
+        $teachers  = Teacher::with('user')
+            ->whereHas('user', function ($q) {
+                // Sirf wahi records dikhao jinka role 'teacher' ho
+                $q->where('role', 'teacher');
+                // $q->where('status', '1');
+            })
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($subQuery) use ($search) {
+                    $subQuery->whereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%$search%")
+                            ->orWhere('subject', 'like', "%$search%");
+                    })
+                        ->orWhere('gender', 'like', "%$search%")
+                        ->orWhere('address', 'like', "%$search%");
+                });
+            })
         ->latest()
         ->paginate(5);
 

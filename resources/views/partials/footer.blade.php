@@ -3,7 +3,7 @@
         <div class="row align-items-center">
             <div class="col-md-6 text-center text-md-start">
                 <p class="mb-0 text-muted fw-bold">
-                    &copy; {{date('Y')}} <span class="text-primary">Student Management System</span>
+                    &copy; {{now()->format('M-Y')}} <span class="text-primary">Student Management System</span>
                 </p>
             </div>
             <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">

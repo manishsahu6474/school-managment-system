@@ -42,26 +42,59 @@
                 </div>
             </div>
         </div>
-        
+
         {{-- Table --}}
         <div class="card  card-3d ">
             <div class="card-body table-responsive">
-                <table class="table ">
-                    <thead class="text-center ">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
                         <tr>
-                            <th>S.No.</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th width="160">Action</th>
+                            <th class="text-center">S.No.</th>
+                            <th>Teacher Details</th>
+                            <th class="text-center">Subject</th>
+                            <th class="text-center">Qualification</th>
+                            <th class="text-end">Salary</th>
+                            <th class="text-center">Joined</th>
+                            <th>Phone</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($teachers as $k => $teacher)
-                            <tr class="text-center">
-                                <td>{{ $k + 1 }}</td>
-                                <td>{{ $teacher->name }}</td>
-                                <td>{{ $teacher->email }}</td>
+                            <tr>
+                                <td class="text-center">{{ $k + 1 }}</td>
                                 <td>
+                                    <div class="fw-bold">{{ $teacher->user->name }}</div>
+                                    <small class="text-muted text-capitalize">{{ $teacher->gender }}</small>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                        {{ $teacher->subject }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-light text-dark border">{{ $teacher->qualification }}</span>
+                                </td>
+                                <td class="text-end fw-bold text-success">
+                                    ₹ {{ number_format($teacher->salary, 2) }}
+                                </td>
+                                <td class="text-center">
+                                    <div class="small">{{ \Carbon\Carbon::parse($teacher->joining_date)->format('d M') }}
+                                    </div>
+                                    <div class="text-muted small">
+                                        {{ \Carbon\Carbon::parse($teacher->joining_date)->format('Y') }}</div>
+                                </td>
+                                </td>
+                                <td class="text-nowrap">{{ $teacher->phone }}</td>
+                                <td class="text-center">
+                                    @if ($teacher->status == 1)
+                                        <span class="badge bg-success">Active</span>
+                                    @else
+                                        <span class="badge bg-danger">Inactive</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
                                     <a href="{{ route('admin.teachers.edit', $teacher->id) }}"
                                         class="btn btn-sm btn-3d-warning shadow-sm">
                                         <i class="fas fa-edit"></i>
@@ -80,7 +113,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="text-center text-muted">
+                                <td colspan="11" class="text-center text-muted">
                                     No students found
                                 </td>
                             </tr>

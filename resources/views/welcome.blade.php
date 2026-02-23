@@ -1,16 +1,20 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Student Management System</title>
+    <title>{{config('app.name')}} Welcome</title>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/167/167707.png ">
+
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <link rel="stylesheet" href="{{ asset('css/welcome.css') }}">
 </head>
+
 <body>
 
     <div class="shape shape-1"></div>
@@ -21,7 +25,7 @@
             <a class="navbar-brand fw-bold fs-3" href="#">
                 <i class="fas fa-graduation-cap me-2"></i> SMS Portal
             </a>
-            
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -40,7 +44,7 @@
                                 @endif
                             @endauth
                         </div>
-                        
+
                     @endif
                 </div>
             </div>
@@ -50,18 +54,19 @@
     <section class="d-flex align-items-center justify-content-center" style="min-height: 100vh; padding-top: 80px;">
         <div class="container">
             <div class="row align-items-center">
-                
+
                 <div class="col-lg-6 mb-5 mb-lg-0">
                     <div class="glass-card p-5">
                         <span class="badge bg-light text-primary mb-3 px-3 py-2 rounded-pill">Version 2.0 Live</span>
                         <h1 class="display-4 fw-bold mb-3">
-                            Future of <br> 
-                            <span style="color: #ffecd2; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">Smart Education</span>
+                            Future of <br>
+                            <span style="color: #ffecd2; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">Smart
+                                Education</span>
                         </h1>
                         <p class="lead mb-4" style="color: rgba(255,255,255,0.9);">
                             Manage Student Data, Teacher Attendance, and Results with a stunning 3D interface.
                         </p>
-                        
+
                         <div class="d-flex gap-3 flex-wrap">
                             @auth
                                 <a href="{{ url('/dashboard') }}" class="btn btn-3d btn-lg">
@@ -80,9 +85,9 @@
                 </div>
 
                 <div class="col-lg-6 text-center">
-                <div class="glass-card p-5 d-inline-block">
-                    <i class="fas fa-university fa-10x text-white opacity-75  hero-img-animate"></i>
-                </div>
+                    <div class="glass-card p-5 d-inline-block">
+                        <i class="fas fa-university fa-10x text-white opacity-75  hero-img-animate"></i>
+                    </div>
                 </div>
 
             </div>
@@ -123,4 +128,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>

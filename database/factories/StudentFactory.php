@@ -31,10 +31,10 @@ class StudentFactory extends Factory
             'phone' => $this->faker->phoneNumber,
 
             // DOB (Date of Birth - Maan lijiye 14 se 18 saal purani date)
-            'dob' => $this->faker->date('Y-m-d', '-14 years'),
-
+            'dob' => $this->faker->dateTimeBetween('-18 years', '-14 years')->format('Y-m-d'),
             // Status (Default 1 yaani Active)
             'status' => 1,
+            'created_at' => now(),
         ];
     }
 }
