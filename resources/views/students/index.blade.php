@@ -1,6 +1,5 @@
-<x-app-layout>
 
-    <div class="container-fluid px-md-5">
+<x-app-layout>
         <div class="container-fluid px-md-5">
             <div
                 class="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4 mt-3 position-relative gap-3">
@@ -16,12 +15,11 @@
 
                 <div class="text-center text-md-end" style="min-width: 180px;">
                     <a href="{{ route('admin.students.create') }}"
-                        class="btn btn-success btn-3d-success shadow-sm w-100 fw-bold px-4">
+                        class="btn-3d-success shadow-sm w-100  ">
                         <i class="fas fa-plus-circle me-2"></i> Add Student
                     </a>
                 </div>
             </div>
-        </div>
         {{-- Search --}}
         <div class="row justify-content-center mb-5">
             <div class="col-md-10 col-lg-8">
@@ -37,7 +35,7 @@
                             </div>
                         </div>
                         <div class="col-md-5 d-flex gap-2">
-                            <button class="btn   btn-3d-primary w-100 fw-bold" type="submit">SEARCH</button>
+                            <button class="btn  btn-3d-primary w-100 fw-bold" type="submit">SEARCH</button>
                             <a href="{{ route('admin.students.index') }}"
                                 class="btn btn-secondary btn-3d-secondary w-100 fw-bold">RESET</a>
                         </div>
@@ -50,7 +48,8 @@
             <div class="card-body table-responsive">
                 <table class="table table-hover align-middle ">
                     <thead class="table-light ">
-                        <tr>
+                        <tr class="text-uppercase" style="font-size: .85rem; letter-spacing: 0.5px;">
+
                             <th class="text-center">S.No.</th>
                             <th>Student Name</th>
                             <th>Father Name</th>
@@ -79,7 +78,8 @@
                                 </td>
                                 <td>{{ $student->phone ?? 'N/A' }}</td>
                                 <td class="text-center">
-                                    <span class="badge rounded-pill bg-info text-dark">{{ $student->class }}<sup>th</sup></span>
+                                    <span
+                                        class="badge rounded-pill bg-info text-dark">{{ $student->class }}<sup>th</sup></span>
                                 </td>
                                 <td class="text-center">
                                     <form action="{{ route('admin.students.status', $student->id) }}" method="POST"
@@ -125,14 +125,16 @@
             </div>
         </div>
         {{-- Pagination --}}
-        <div class="d-flex justify-content-between align-items-center mt-3 px-3">
-            <div class="small text-muted">
-                Showing {{ $students->firstItem() }} to {{ $students->lastItem() }} of {{ $students->total() }}
-                students
-            </div>
-            <div class="pagination-3d">
-                {{ $students->appends(['search' => $search])->links() }}
-            </div>
-        </div>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 px-3">
+    
+    <div class="pagination-info small text-muted mb-2 mb-md-0">
+        Showing {{ $students->firstItem() }} to {{ $students->lastItem() }} of {{ $students->total() }} students
+    </div>
+
+    <div class="pagination-3d">
+        {{ $students->appends(['search' => $search])->links() }}
+    </div>
+
+</div>
     </div>
 </x-app-layout>

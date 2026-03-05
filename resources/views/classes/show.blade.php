@@ -1,3 +1,5 @@
+
+
 <x-app-layout>
     <div id="page-context" data-type="class-view" class="container-fluid px-md-5">
         <div class="container-fluid px-md-5">
@@ -89,7 +91,7 @@
             <div class="card-body table-responsive ">
                 <table class="table table-hover align-middle">
                     <thead class=" table-light ">
-                        <tr>
+                        <tr class="text-uppercase" style="font-size: .85rem; letter-spacing: 0.5px;">
                             <th>
                                 <input type="checkbox" id="master-checkbox" class="form-check-input border-primary">
                             </th>

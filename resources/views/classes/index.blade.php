@@ -1,3 +1,4 @@
+
 <x-app-layout>
     <div class="container-fluid py-4">
         <div class="row g-4">

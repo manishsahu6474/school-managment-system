@@ -17,7 +17,19 @@ class AdminController extends Controller
         $totalTeachers = User::Where('role', 'teacher')->count();
         $totalClasses  = 4;
         $totalSubjects = 0;
+        $stats = [
+            'student' => [
+                'total' => Student::count(),
+                'active' => Student::where('status', 'active')->count(),
+                'inactive' => Student::where('status', 'inactive')->count()
+            ],
+            'teacher' => [
+                'total' => Teacher::count(),
+                'active' => Teacher::where('status', 'active')->count(),
+                'inactive' => Teacher::where('status', 'inactive')->count()
+            ]
+        ];
 
-        return view('admin.dashboard', compact('totalClasses', 'totalStudents', 'totalSubjects', 'totalTeachers'));
+        return view('admin.dashboard', compact('totalClasses', 'totalStudents', 'totalSubjects', 'totalTeachers', 'stats'));
     }
 }

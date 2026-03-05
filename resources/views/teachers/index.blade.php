@@ -48,7 +48,8 @@
             <div class="card-body table-responsive">
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
-                        <tr>
+                        <tr class="text-uppercase" style="font-size: .85rem; letter-spacing: 0.5px;">
+
                             <th class="text-center">S.No.</th>
                             <th>Teacher Details</th>
                             <th class="text-center">Subject</th>
@@ -80,7 +81,8 @@
                                     ₹ {{ number_format($teacher->salary, 2) }}
                                 </td>
                                 <td class="text-center">
-                                    <div class="small">{{ \Carbon\Carbon::parse($teacher->joining_date)->format('d M') }}
+                                    <div class="small">
+                                        {{ \Carbon\Carbon::parse($teacher->joining_date)->format('d M') }}
                                     </div>
                                     <div class="text-muted small">
                                         {{ \Carbon\Carbon::parse($teacher->joining_date)->format('Y') }}</div>
@@ -88,11 +90,15 @@
                                 </td>
                                 <td class="text-nowrap">{{ $teacher->phone }}</td>
                                 <td class="text-center">
-                                    @if ($teacher->status == 1)
-                                        <span class="badge bg-success">Active</span>
-                                    @else
-                                        <span class="badge bg-danger">Inactive</span>
-                                    @endif
+                                    <form action="{{ route('admin.teachers.status', $teacher->id) }}" method="POST"
+                                        style="display:inline;">
+                                        @csrf
+                                        <button type="button" data-id="{{ $teacher->id }}"
+                                            onclick="confirmStatusChange(this)"
+                                            class="btn btn-sm {{ $teacher->status == 1 ? 'btn-success' : 'btn-secondary' }}">
+                                            {{ $teacher->status == 1 ? 'Active' : 'Inactive' }}
+                                        </button>
+                                    </form>
                                 </td>
                                 <td class="text-center">
                                     <a href="{{ route('admin.teachers.edit', $teacher->id) }}"

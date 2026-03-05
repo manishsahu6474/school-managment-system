@@ -12,7 +12,7 @@
             <a class="nav-link dropdown-toggle p-0 d-flex align-items-center shadow-none" href="#" id="profileDrop" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                      <img src="https://ui-avatars.com/api/?name=Admin&background=224abe&color=fff&bold=true" 
                      class="rounded-circle border border-2 border-white-50 shadow-sm" 
-                     width="38" height="38" alt="Admin">
+                     width="38" height="38" alt="Admin" >
             </a>
             <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-2 py-2 animate slideIn" aria-labelledby="profileDrop">
                 <li class="px-3 py-2 border-bottom mb-2">

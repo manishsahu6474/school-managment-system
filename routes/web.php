@@ -56,8 +56,9 @@ Route::middleware(['auth', 'verified'])
         Route::post('students/bulk-promote', [StudentController::class, 'bulkPromote'])->name('admin.students.bulkPromote');
         Route::resource('students', StudentController::class);
         // Admin ko Teacher par pura control de diya
-
+        
         Route::resource('teachers', TeacherController::class);
+        Route::post('teachers/status/{id}', [TeacherController::class, 'toggleStatus'])->name('teachers.status');
         Route::get('classes/{class_name}', [ClassesController::class, 'showStudents'])->name('classes.students');
         Route::resource('classes', ClassesController::class);
     });

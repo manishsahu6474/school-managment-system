@@ -22,7 +22,7 @@
     </div>
     <div class="col-md-6">
         <label class="form-label fw-bold text-muted ml-1">Fathers Name</label>
-        <input type="name" name="father_name" 
+        <input type="text" name="father_name" 
                class="form-control morphism-input @error('father_name') is-invalid @enderror" 
                placeholder="Fathers Name" 
                value="{{ old('father_name', $student->father_name ?? '') }}" 
@@ -65,7 +65,7 @@
     {{-- Phone Number (Student Table se) --}}
     <div class="col-md-12">
         <label class="form-label fw-bold text-muted ml-1">Phone Number</label>
-        <input type="text" name="phone" 
+        <input type="tel" name="phone" 
                class="form-control morphism-input @error('phone') is-invalid @enderror" 
                placeholder="10 digit number" 
                value="{{ old('phone', $student->phone ?? '') }}" 
