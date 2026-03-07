@@ -229,17 +229,17 @@ body {
     color: white !important;
     border-radius: 10px;
     transition: all 0.1s ease !important;
+    padding: 0.5rem 1rem;
 }
 
 .btn-3d-primary:hover {
     background: linear-gradient(to bottom, #3185ff, #0d6efd) !important;
-    transform: translateY(-2px);
-    /* Hover par halka upar uthega */
-    box-shadow: 0 4px 15px rgba(13, 110, 253, 0.4) !important;
+    transform: translateY(-1px);
+
 }
 
 .btn-3d-primary:active {
-    transform: translateY(2px) !important;
+    transform: translateY(3px) !important;
     /* Click karne par dabega */
     border-bottom: 1px solid #084298 !important;
 }
@@ -251,17 +251,18 @@ body {
     border-bottom: 4px solid #3d4246 !important;
     color: white !important;
     transition: all 0.1s ease !important;
-      border-radius: 10px;
+    border-radius: 10px;
+        padding: 0.5rem 1rem;
+
 }
 
 .btn-3d-secondary:hover {
     background: linear-gradient(to bottom, #868e96, #6c757d) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3) !important;
+    transform: translateY(-1px);
 }
 
 .btn-3d-secondary:active {
-    transform: translateY(2px) !important;
+    transform: translateY(3px) !important;
     border-bottom: 1px solid #3d4246 !important;
 }
 
@@ -269,10 +270,11 @@ body {
     background: linear-gradient(to bottom, #ffc107, #e0a800) !important;
     border: none !important;
     border-bottom: 4px solid #b38600 !important;
-    /* Depth effect */
+    color: white !important;
     transition: all 0.1s ease !important;
-    color: #212529 !important;
-    border-radius: 8px;
+    border-radius: 10px;
+        padding: 0.5rem 1rem;
+
 }
 
 .btn-3d-warning:hover {
@@ -290,8 +292,11 @@ body {
     background: linear-gradient(to bottom, #e30a0a, #db051a) !important;
     border: none !important;
     border-bottom: 4px solid #960415 !important;
+    color: #ffffff;
     transition: all 0.1s ease !important;
-    border-radius: 8px;
+    border-radius: 10px;
+        padding: 0.5rem 1rem;
+
 }
 
 .btn-3d-danger:hover {
@@ -323,7 +328,6 @@ body {
 .btn-3d-success:hover {
     background: linear-gradient(to bottom, #2ecc71, #28a745);
     transform: translateY(-1px);
-    color: white;
 }
 
 .btn-3d-success:active {
@@ -359,11 +363,12 @@ body {
 
 /* Table ko Professional 3D Card Look dene ke liye */
 .table-responsive {
-    border-radius: 12px;
+    border-radius: 10px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     /* 3D Shadow */
     background: #fff;
     padding: 10px;
+    cursor: default !important;
 }
 
 /* Table Header Dark & Bold */
@@ -441,13 +446,58 @@ canvas {
     max-height: 100% !important;
 }
 
+/* Approve Button Specific */
+.btn-approve {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.btn-approve:hover {
+    background: #2e7d32;
+    color: white;
+    transform: translateY(-2px);
+}
+
 .chart-container {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+
+/* --- 3. Professional Action Icons --- */
+.action-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+
+}
+
 @media (max-width: 768px) {
+    .status-toggle-btn {
+        min-width: 70px !important;
+        padding: 2px 8px !important;
+        font-size: 10px !important;
+        text-align: center;
+    }
+    .status-toggle-btn i
+     {
+        display: none !important;
+    }
+    .btn-sm {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        font-size: 11px !important;
+    }
+
+    .mobile-badge-adj {
+
+        margin-left: -6px;
+        
+    }
 
     .dashboard-wrapper .col-7,
     .dashboard-wrapper .col-5 {
@@ -463,40 +513,64 @@ canvas {
     .card {
         border-radius: 15px !important;
     }
+
     /* Table ke text ko mobile par chhota karein taaki fit ho sake */
     .table-responsive .table {
         font-size: 0.75rem !important;
     }
 
     /* Padding kam karein taaki width bache */
+    .table thead th {
+        font-size: 0.75rem;
+    }
+
     .table td,
     .table th {
         padding: 5px 2px !important;
+
     }
 
-    /* Action buttons ko aur chhota karein mobile ke liye */
-    .btn-sm {
-        padding: 0.2rem 0.4rem !important;
-        font-size: 0.7rem !important;
+    .table-responsive {
+        border: none !important;
     }
+
+    .action-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+        border-radius: 10px;
+    }
+
+    /* Mobile pe Action column ko thoda saans dene ke liye */
+    .gap-2 {
+        gap: 0.4rem !important;
+    }
+
     .pagination {
-        gap: 3px; /* Gap kam kar diya taaki buttons ek line mein aa sakein */
-        justify-content: center; /* Mobile par center mein rahega */
+        gap: 3px;
+        /* Gap kam kar diya taaki buttons ek line mein aa sakein */
+        justify-content: center;
+        /* Mobile par center mein rahega */
     }
 
     .page-item .page-link {
-        padding: 5px 10px !important; /* Size chota kiya */
-        font-size: 12px !important;    /* Text chota kiya */
-        min-width: 35px;               /* Button ki width uniform rakhi */
+        padding: 5px 10px !important;
+        /* Size chota kiya */
+        font-size: 12px !important;
+        /* Text chota kiya */
+        min-width: 35px;
+        /* Button ki width uniform rakhi */
         text-align: center;
     }
+
     .pagination-info {
-        font-size: 12px !important; 
-        text-align: center;         
-        margin-bottom: 10px;        
-               
+        font-size: 12px !important;
+        text-align: center;
+        margin-bottom: 10px;
+
     }
-     .sidebar {
+
+    .sidebar {
         left: -230px;
         transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -509,7 +583,8 @@ canvas {
     .main-content {
         margin-left: 0 !important;
     }
-     .navbar-brand-centered h2 {
+
+    .navbar-brand-centered h2 {
         font-size: 1rem !important;
         /* Mobile par text thoda chhota */
     }
@@ -539,4 +614,5 @@ canvas {
         /* Click effect adjust karne ke liye */
         transform: translateY(2px);
     }
+
 }

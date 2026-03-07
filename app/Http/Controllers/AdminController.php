@@ -20,13 +20,15 @@ class AdminController extends Controller
         $stats = [
             'student' => [
                 'total' => Student::count(),
-                'active' => Student::where('status', 'active')->count(),
-                'inactive' => Student::where('status', 'inactive')->count()
+                'pending' => Student::where('status', '0')->count(),
+                'active' => Student::where('status', '1')->count(),
+                'inactive' => Student::where('status', '2')->count()
             ],
             'teacher' => [
                 'total' => Teacher::count(),
-                'active' => Teacher::where('status', 'active')->count(),
-                'inactive' => Teacher::where('status', 'inactive')->count()
+                'pending' => Teacher::where('status', '0')->count(),
+                'active' => Teacher::where('status', '1')->count(),
+                'inactive' => Teacher::where('status', '2')->count()
             ]
         ];
 

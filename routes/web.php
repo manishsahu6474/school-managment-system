@@ -51,12 +51,14 @@ Route::middleware(['auth', 'verified'])
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
         // 2. RESOURCE ROUTE (Ye hai wo magic line)
+        Route::post('students/{id}/approve', [StudentController::class, 'approve'])->name('students.approve');
         // Admin ko Student par pura control de diya
         Route::post('students/status/{id}', [StudentController::class, 'toggleStatus'])->name('students.status');
-        Route::post('students/bulk-promote', [StudentController::class, 'bulkPromote'])->name('admin.students.bulkPromote');
+        // Student ko approve karne ke liye route
+        Route::post('students/bulk-promote', [StudentController::class, 'bulkPromote'])->name('students.bulkPromote');
         Route::resource('students', StudentController::class);
         // Admin ko Teacher par pura control de diya
-        
+
         Route::resource('teachers', TeacherController::class);
         Route::post('teachers/status/{id}', [TeacherController::class, 'toggleStatus'])->name('teachers.status');
         Route::get('classes/{class_name}', [ClassesController::class, 'showStudents'])->name('classes.students');

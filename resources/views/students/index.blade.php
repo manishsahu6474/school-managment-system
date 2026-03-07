@@ -1,25 +1,23 @@
-
 <x-app-layout>
-        <div class="container-fluid px-md-5">
-            <div
-                class="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4 mt-3 position-relative gap-3">
+    <div class="container-fluid px-md-5">
+        <div
+            class="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4 mt-3 position-relative gap-3">
 
-                <div class="d-none d-md-block" style="width: 180px;"></div>
+            <div class="d-none d-md-block" style="width: 180px;"></div>
 
-                <div class="text-center flex-grow-1">
-                    <h2 class="fw-bold text-dark text-uppercase  mb-0 display-6 main-heading">
-                        <i class="fas fa-users text-primary me-2"></i>
-                        Students List
-                    </h2>
-                </div>
-
-                <div class="text-center text-md-end" style="min-width: 180px;">
-                    <a href="{{ route('admin.students.create') }}"
-                        class="btn-3d-success shadow-sm w-100  ">
-                        <i class="fas fa-plus-circle me-2"></i> Add Student
-                    </a>
-                </div>
+            <div class="text-center flex-grow-1">
+                <h2 class="fw-bold text-dark text-uppercase  mb-0 display-6 main-heading">
+                    <i class="fas fa-users text-primary me-2"></i>
+                    Students List
+                </h2>
             </div>
+
+            <div class="text-center text-md-end" style="min-width: 180px;">
+                <a href="{{ route('admin.students.create') }}" class="btn-3d-success shadow-sm w-100  ">
+                    <i class="fas fa-plus-circle me-2"></i> Add Student
+                </a>
+            </div>
+        </div>
         {{-- Search --}}
         <div class="row justify-content-center mb-5">
             <div class="col-md-10 col-lg-8">
@@ -27,9 +25,6 @@
                     <form method="GET" action="{{ route('admin.students.index') }}" class="row g-3">
                         <div class="col-md-7">
                             <div class="morpihsm-input">
-                                <span class=" bg-white border-end-0 text-muted">
-                                    <i class="bi bi-search"></i>
-                                </span>
                                 <input type="text" name="search" class="form-control border-start-0"
                                     placeholder="Search ..." value="{{ $search ?? '' }}">
                             </div>
@@ -42,6 +37,36 @@
                     </form>
                 </div>
             </div>
+        </div>
+        {{-- Status Tabs --}}
+        <div class="d-flex flex-wrap align-items-center gap-2 gap-sm-4 mb-4">
+
+            <a href="{{ route('admin.students.index', ['status' => 'active', 'search' => $search]) }}"
+                class="btn btn-3d-primary btn-sm  flex-shrink-0">
+                <i class="fas fa-check-circle me-1"></i>
+                <span class="d-sm-inline" style="font-size: 13px;">Active</span>
+            </a>
+
+            <a href="{{ route('admin.students.index', ['status' => 'pending', 'search' => $search]) }}"
+                class="btn btn-3d-warning btn-sm  position-relative flex-shrink-0">
+                <i class="fas fa-clock me-1"></i>
+                <span class="d-sm-inline" style="font-size: 13px;">Pending ({{ $pendingCount ?? 0 }})</span>
+
+                @if (($pendingCount ?? 0) > 0)
+                    <span
+                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm mobile-badge-adj"
+                        style=" font-size: 7px; padding: 2px 4px;">
+                        NEW
+                    </span>
+                @endif
+            </a>
+
+            <a href="{{ route('admin.students.index', ['status' => 'inactive', 'search' => $search]) }}"
+                class="btn btn-3d-secondary btn-sm  flex-shrink-0">
+                <i class="fas fa-ban me-1"></i>
+                <span class="d-sm-inline" style="font-size: 13px;">Inactive</span>
+            </a>
+
         </div>
         {{-- Table --}}
         <div class="card  card-3d ">
@@ -81,34 +106,63 @@
                                     <span
                                         class="badge rounded-pill bg-info text-dark">{{ $student->class }}<sup>th</sup></span>
                                 </td>
-                                <td class="text-center">
-                                    <form action="{{ route('admin.students.status', $student->id) }}" method="POST"
-                                        style="display:inline;">
-                                        @csrf
-                                        <button type="button" data-id="{{ $student->id }}"
-                                            onclick="confirmStatusChange(this)"
-                                            class="btn btn-sm {{ $student->status == 1 ? 'btn-success' : 'btn-secondary' }}">
-                                            {{ $student->status == 1 ? 'Active' : 'Inactive' }}
-                                        </button>
-                                    </form>
+                                <td data-label="Status" class="text-center">
+                                    @if ($student->status == 2)
+                                        <form action="{{ route('admin.students.status', $student->id) }}"
+                                            method="POST">
+                                            @csrf
+                                            <button type="button" onclick="activateStudent(this)"
+                                                class="btn btn-sm rounded-pill px-3 status-toggle-btn btn-secondary shadow-sm"
+                                                style="cursor: pointer;">
+                                                Inactive
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span
+                                            class="btn btn-sm rounded-pill px-3 {{ $student->status == 1 ? 'btn-success' : 'btn-warning' }}"
+                                            style="cursor: default; opacity: 0.9;">
+                                            {{ $student->status == 1 ? 'Active' : 'Pending' }}
+                                        </span>
+                                    @endif
                                 </td>
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
+
+                                        {{-- 1. Approve Button (Icon Only for Balance) --}}
+                                        @if ($student->status == 0)
+                                            <form action="{{ route('admin.students.approve', $student->id) }}"
+                                                method="POST" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="action-btn btn-approve shadow-sm"
+                                                    title="Approve Admission">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+
+                                        {{-- 2. Edit Button --}}
                                         <a href="{{ route('admin.students.edit', $student->id) }}"
-                                            class="btn btn-sm btn-3d-warning shadow-sm">
-                                            <i class="fas fa-edit"></i>
+                                            class="action-btn btn-3d-warning shadow-sm " title="Edit Student">
+                                            <i class="fas fa-edit "></i>
                                         </a>
 
-                                        {{-- Delete form logic fix --}}
-                                        <form action="{{ route('admin.students.destroy', $student->id) }}"
-                                            method="POST" id="delete-form-{{ $student->id }}" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="button" class="btn btn-sm btn-3d-danger"
-                                                onclick="deleteStudent({{ $student->id }})">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
+                                        {{-- 3. Delete Button --}}
+                                        @if ($student->status == 1 || $student->status == 0)
+                                            <form action="{{ route('admin.students.destroy', $student->id) }}"
+                                                method="POST" id="delete-form-{{ $student->id }}" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="button" class="action-btn btn-3d-danger shadow-sm"
+                                                    onclick="deleteStudent({{ $student->id }}, {{ $student->status }})"
+                                                    title="{{ $student->status == 1 ? 'Make Inactive' : 'Delete Student' }}">
+                                                    @if ($student->status == 1)
+                                                        <i class="fas fa-minus"></i>
+                                                    @elseif ($student->status == 0)
+                                                        <i class="fas fa-trash"></i>
+                                                    @endif
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
@@ -126,15 +180,16 @@
         </div>
         {{-- Pagination --}}
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-3 px-3">
-    
-    <div class="pagination-info small text-muted mb-2 mb-md-0">
-        Showing {{ $students->firstItem() }} to {{ $students->lastItem() }} of {{ $students->total() }} students
-    </div>
 
-    <div class="pagination-3d">
-        {{ $students->appends(['search' => $search])->links() }}
-    </div>
+            <div class="pagination-info small text-muted mb-2 mb-md-0">
+                Showing {{ $students->firstItem() }} to {{ $students->lastItem() }} of {{ $students->total() }}
+                students
+            </div>
 
-</div>
+            <div class="pagination-3d">
+                {{ $students->appends(['search' => $search])->links() }}
+            </div>
+
+        </div>
     </div>
 </x-app-layout>

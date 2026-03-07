@@ -11,19 +11,42 @@ use Illuminate\Support\Facades\Hash;
 
 class StudentController extends Controller
 {
-    public function toggleStatus($id)
+    public function toggleStatus(Request $request, $id)
     {
-        $student = Student::findOrFail($id);
+        if (!$request->ajax()) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid Request'], 400);
+        }
 
-        // Status toggle logic
-        $newStatus = ($student->status == 1) ? 0 : 1;
-        $student->update(['status' => $newStatus]);
+        try {
+            DB::beginTransaction();
 
-        return response()->json([
-            'status' => 'success',
-            'newStatus' => $newStatus,
-            'message' => 'Student status updated successfully!'
-        ]);
+            $student = Student::findOrFail($id);
+
+            // Check: Sirf Inactive (2) student ko hi Active (1) kar sakte hain
+            if ($student->status != 2) {
+                return response()->json([
+                    'status' => 'info',
+                    'message' => 'Student pehle se hi Active ya Pending hai.'
+                ]);
+            }
+
+            // Status Update
+            $student->status = 1; // 1 = Active
+            $student->save();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Student successfully activate kar diya gaya hai!'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Kuch galat hua: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -34,27 +57,49 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
+        $status = $request->get('status');
 
-        $students = Student::with('user')
-            ->whereHas('user', function ($q) {
-                // Sirf wahi records dikhao jinka role 'student' ho
-                $q->where('role', 'student');
-                // $q->where('status', '1');
-            })
-            ->when($search, function ($query) use ($search) {
-                $query->where(function ($subQuery) use ($search) {
-                    $subQuery->whereHas('user', function ($q) use ($search) {
-                        $q->where('name', 'like', "%$search%")
-                            ->orWhere('email', 'like', "%$search%");
-                    })
-                        ->orWhere('class', 'like', "%$search%")
-                        ->orWhere('roll_no', 'like', "%$search%");
-                });
-            })
-            ->latest()
-            ->paginate(5);
+        $query = Student::with('user')->whereHas('user', function ($q) {
+            $q->where('role', 'student');
+        });
 
-        return view('students.index', compact('students', 'search'));
+        // Filtering Logic
+        if ($status === 'pending') {
+            $query->where('status', 0); // 0 = Pending
+        } elseif ($status === 'inactive') {
+            $query->where('status', 2); // 2 = Inactive
+        } else {
+            $query->where('status', 1); // 1 = Active (Default)
+        }
+
+        // Search Logic (Pahle jaisa hi)
+        $query->when($search, function ($q) use ($search) {
+            $q->where(function ($subQuery) use ($search) {
+                $subQuery->whereHas('user', function ($u) use ($search) {
+                    $u->where('name', 'like', "%$search%")
+                        ->orWhere('class', 'like', "%$search%");
+                })
+                    ->orWhere('dob', 'like', "%$search%")
+                    ->orWhere('roll_no', 'like', "%$search%");
+            });
+        });
+
+        $students = $query->latest()->paginate(5);
+
+        // Counts update karein (Taaki tabs pe sahi number dikhe)
+        $pendingCount = Student::where('status', 0)->count();
+        $activeCount = Student::where('status', 1)->count();
+        $totalStudents = Student::count();
+
+        return view('students.index', compact('students', 'search', 'pendingCount', 'activeCount', 'totalStudents'));
+    }
+    // Admission Approve karne ka naya function
+    public function approve($id)
+    {
+        $student = Student::findOrFail($id);
+        $student->update(['status' => '1']); // Pending (0) se Active (1) kar diya
+
+        return redirect()->back()->with('success', 'Student Admission Approved Successfully!');
     }
 
     /**
@@ -188,31 +233,51 @@ class StudentController extends Controller
 
         $student = Student::findOrFail($id);
 
-        if ($student->status == 0) {
+
+        if ($student->status == 1) {
+            $student->status = 2;
+            $student->save();
             return response()->json([
-                'status' => 'info',
-                'message' => 'Yeh student pehle se hi Inactive hai!'
+                'status' => 'success',
+                'message' => 'Student Successfully Inactivated!'
             ]);
         }
 
-        $student->update(['status' => '0']);
-
+        if ($student->status == 0) {
+            try {
+                DB::beginTransaction();
+                if ($student->user) {
+                    $student->user->delete();
+                }
+                $student->delete();
+                DB::commit();
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Pending request rejected and successfully Deleted!'
+                ]);
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Something went wrong: ' . $e->getMessage()
+                ], 500);
+            }
+        }
         return response()->json([
-            'status' => 'success',
-            'message' => 'Student status updated successfully!',
-            'newStatus' => 0
-        ]);
+            'status' => 'error',
+            'message' => 'Invalid Action Performed!'
+        ], 403);
     }
     public function bulkPromote(Request $request)
     {
         $ids = $request->ids;
         // Agar 12th pass kar chuke hain toh Inactive kar do
         Student::whereIn('id', $ids)
-            ->where('class' ,'>=', 12)
+            ->where('class', '>=', 12)
             ->update(['status' => 0]);
 
         Student::whereIn('id', $ids)
-            ->where('class','<', 12)
+            ->where('class', '<', 12)
             ->increment('class');
         return response()->json(['status' => 'success', 'message' => 'students, promoted in next class']);
     }

@@ -52,6 +52,40 @@ document.addEventListener('DOMContentLoaded', function () {
 /* ==========================================
    2. SHINY 3D ALERTS 
    ========================================== */
+$(document).ready(function () {
+    const alertTypes = [
+        { key: 'delete_success_msg', title: 'Deleted!', icon: 'success', color: 'text-danger' },
+        { key: 'activated_success_msg', title: 'Activated!', icon: 'success', color: 'text-success' },
+        { key: 'update_success_msg', title: 'Updated!', icon: 'success', color: 'text-primary' },
+        { key: 'error_msg', title: 'Oops!', icon: 'error', color: 'text-danger' }
+    ];
+
+    alertTypes.forEach(alert => {
+        const msg = localStorage.getItem(alert.key);
+        if (msg) {
+            Swal.fire({
+                title: alert.title,
+                text: msg,
+                icon: alert.icon,
+                background: 'rgba(255, 255, 255, 0.9)',
+                backdrop: `rgba(0, 122, 255, 0.1) blur(4px)`,
+                focusConfirm: false,
+                buttonsStyling: false,
+                timer: 2000,
+                timerProgressBar: true,
+                showClass: { popup: 'animate__animated animate__fadeInDown' },
+                hideClass: { popup: 'animate__animated animate__fadeOutUp' },
+                customClass: {
+                    popup: 'card-morphism border-0 shadow-lg',
+                    title: `fw-bold ${alert.color}`,
+                    confirmButton: 'btn-3d-success px-4 py-2'
+                },
+            });
+
+            localStorage.removeItem(alert.key);
+        }
+    });
+});
 function showSuccessAlert(message) {
     Swal.fire({
         title: 'Success!',
@@ -95,22 +129,29 @@ function showinfoAlert(message) {
 /* ==========================================
    3. DELETE / INACTIVE FUNCTIONALITY
    ========================================== */
-function deleteStudent(id) {
-    // jQuery use kar rahe hain taaki elements asani se mil jayein
+function deleteStudent(id, status) {
     const $form = $('#delete-form-' + id);
     const url = $form.attr('action');
 
+    // Status ke hisaab se text set karein
+    let titleText = (status == 1) ? "Inactive karein?" : "Delete karein?";
+    let subText = (status == 1)
+        ? "Student Active se hat kar Inactive list mein chala jayega."
+        : "Pending request permanently delete ho jayegi!";
+    let btnText = (status == 1) ? "Yes, Make Inactive" : "Yes, Delete it!";
+
     Swal.fire({
-        title: 'Are you sure?',
-        text: "Student ko Inactive kar diya jayega!",
+        title: titleText,
+        text: subText,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Yes, Inactive it!',
+        confirmButtonText: btnText,
+        cancelButtonText: 'Cancel',
         background: 'rgba(255, 255, 255, 0.95)',
         backdrop: `rgba(0,0,0,0.4) blur(5px)`,
         customClass: {
             popup: 'card-morphism border-0 shadow-lg',
-            confirmButton: 'btn-3d-danger  px-4 py-2',
+            confirmButton: 'btn-3d-danger px-4 py-2',
             cancelButton: 'btn-3d-secondary px-4 py-2'
         }
     }).then((result) => {
@@ -124,19 +165,14 @@ function deleteStudent(id) {
                 },
                 success: function (response) {
                     if (response.status === 'success') {
-                        showSuccessAlert(response.message);
                         let $row = $form.closest('tr');
-                        let $statusBtn = $row.find('button[onclick="confirmStatusChange(this)"]');
-
-                        $statusBtn.text('Inactive');
-                        $statusBtn.removeClass('btn-success').addClass('btn-secondary');
-
-                    }
-                    else if (response.status === 'info') {
-                        showinfoAlert(response.message);
+                        $row.fadeOut(300, function () {
+                            localStorage.setItem('delete_success_msg', response.message);
+                            location.reload();
+                        });
                     }
                 },
-                error: function (xhr) {
+                error: function () {
                     Swal.fire('Error!', 'Action perform nahi ho paya.', 'error');
                 }
             });
@@ -194,17 +230,18 @@ function deleteTeacher(id) {
 /* ==========================================
    4. STATUS TOGGLE FUNCTIONALITY
    ========================================== */
-function confirmStatusChange(button) {
-    const $btn = $(button); // Button ko jQuery object mein convert kiya
+function activateStudent(button) {
+    const $btn = $(button);
     const $form = $btn.closest('form');
     const url = $form.attr('action');
 
     Swal.fire({
-        title: 'Status badlein?',
-        text: "Kya aap Inki  status change karna chahte hain?",
+        title: 'Approve Student?',
+        text: "Kya aap is student ko Active list mein move karna chahte hain?",
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'Haan, badal do!',
+        confirmButtonText: 'Yes, Activate!',
+        cancelButtonText: 'Cancel',
         background: 'rgba(255, 255, 255, 0.95)',
         backdrop: `rgba(0,0,0,0.4) blur(5px)`,
         customClass: {
@@ -218,28 +255,36 @@ function confirmStatusChange(button) {
                 url: url,
                 type: "POST",
                 data: {
-                    _token: $('meta[name="csrf-token"]').attr('content')
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    status: 1
                 },
                 success: function (response) {
                     if (response.status === 'success') {
-                        if ($btn.text().trim() === 'Active') {
-                            $btn.text('Inactive');
-                            $btn.removeClass('btn-success').addClass('btn-secondary');
-                        } else {
-                            $btn.text('Active');
-                            $btn.removeClass('btn-secondary').addClass('btn-success');
-                        }
-                        showSuccessAlert(response.message);
+                        // Reload se pehle message save karein (animation se pehle safety ke liye)
+                        localStorage.setItem('activated_success_msg', response.message);
+
+                        let $row = $form.closest('tr');
+                        $row.css('background-color', '#d1e7dd'); // Halka green highlight (Pro touch)
+
+                        $row.fadeOut(300, function () {
+                            location.reload();
+                        });
+                    } else {
+                        // Agar logic error ho (e.g. status change allowed nahi)
+                        $btn.prop('disabled', false).html('Inactive');
+                        Swal.fire('Info', response.message, 'info');
                     }
                 },
                 error: function (xhr) {
-                    Swal.fire('Error!', 'Status update nahi hua.', 'error');
+                    // XHR error handling (Server error)
+                    $btn.prop('disabled', false).html('Inactive');
+                    const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : 'Something went wrong.';
+                    Swal.fire('Error!', errorMsg, 'error');
                 }
             });
         }
     });
 }
-
 /* ==========================================
    5. LOGOUT FUNCTIONALITY
    ========================================== */
@@ -319,14 +364,10 @@ function bulkPromote() {
 /* ==========================================
    7. 3d stylish Bar & Pie Chart 
    ========================================== */
-
 document.addEventListener('DOMContentLoaded', function () {
     const statsElement = document.getElementById('stats-data');
+    if (!statsElement) return;
 
-    // Agar element nahi mila, toh yahin se wapas ho jao (Stop execution)
-    if (!statsElement) {
-        return;
-    }
     const data = JSON.parse(statsElement.value);
 
     const getGradient = (ctx, color1, color2) => {
@@ -339,24 +380,34 @@ document.addEventListener('DOMContentLoaded', function () {
     const renderFullChart = (ctxId, counts, isPie = false) => {
         const canvas = document.getElementById(ctxId);
         let chartStatus = Chart.getChart(ctxId);
-        if (chartStatus !== undefined) {
-            chartStatus.destroy();
-        }
+        if (chartStatus !== undefined) chartStatus.destroy();
+        
         const ctx = canvas.getContext('2d');
 
+        // Naye Gradients (Pending add kiya gaya hai)
         const gradients = [
             getGradient(ctx, '#007AFF', '#00C6FF'), // Total - Blue
             getGradient(ctx, '#34C759', '#32E0C4'), // Active - Green
-            getGradient(ctx, '#FF3B30', '#FF9500')  // Inactive - Orange
+            getGradient(ctx, '#FF3B30', '#FF9500'), // Inactive - Orange
+            getGradient(ctx, '#5856D6', '#AF52DE')  // Pending - Purple/Indigo (Naya)
         ];
 
         new Chart(ctx, {
             type: isPie ? 'doughnut' : 'bar',
             data: {
-                labels: isPie ? ['Active', 'Inactive'] : ['Total', 'Active', 'Inactive'],
+                // Labels mein Pending add kiya
+                labels: isPie 
+                    ? ['Active', 'Inactive', 'Pending'] 
+                    : ['Total', 'Active', 'Inactive', 'Pending'],
                 datasets: [{
-                    data: isPie ? [counts.active, counts.inactive] : [counts.total, counts.active, counts.inactive],
-                    backgroundColor: isPie ? [gradients[1], gradients[2]] : gradients,
+                    // Data mein counts.pending add kiya
+                    data: isPie 
+                        ? [counts.active, counts.inactive, counts.pending] 
+                        : [counts.total, counts.active, counts.inactive, counts.pending],
+                    // Bar chart mein gradients[0,1,2,3] aur Pie mein [1,2,3] use honge
+                    backgroundColor: isPie 
+                        ? [gradients[1], gradients[2], gradients[3]] 
+                        : gradients,
                     borderRadius: isPie ? 0 : 10,
                     borderWidth: 0,
                     cutout: '70%',
@@ -366,17 +417,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 responsive: true,
                 maintainAspectRatio: false,
                 resizeDelay: 200,
-                layout: {
-                    padding: 0
-                }, // Phone responsive ke liye zaroori hai
                 animation: {
                     duration: 2000,
                     easing: 'easeOutQuart',
-                    delay: (context) => context.dataIndex * 150 // Ek-ek karke bars aayengi
+                    delay: (context) => context.dataIndex * 150
                 },
                 plugins: {
                     legend: {
-                        display: isPie, position: 'bottom',
+                        display: isPie, 
+                        position: 'bottom',
                         labels: { boxWidth: 8, font: { size: 10 }, padding: 10 }
                     },
                     tooltip: { enabled: true }
@@ -393,25 +442,16 @@ document.addEventListener('DOMContentLoaded', function () {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const id = entry.target.id;
-
-                // Jo chart screen par aaya, sirf use render karo
                 if (id === 'studentBar') renderFullChart('studentBar', data.student);
                 if (id === 'studentPie') renderFullChart('studentPie', data.student, true);
                 if (id === 'teacherBar') renderFullChart('teacherBar', data.teacher);
                 if (id === 'teacherPie') renderFullChart('teacherPie', data.teacher, true);
-
-                // Ek baar render hone ke baad observer hata dein (sirf ek baar animate hoga)
-                // observer.unobserve(entry.target);
             }
         });
-    }, { threshold: 0.1 }); // Jab 10% chart dikhne lage tab trigger hoga
+    }, { threshold: 0.1 });
 
-    // Saare canvas elements ko observe karna shuru karein
-    document.querySelectorAll('canvas').forEach(canvas => {
-        observer.observe(canvas);
-    });
+    document.querySelectorAll('canvas').forEach(canvas => observer.observe(canvas));
 });
-
 /* ==========================================
    8. Back Button Proble Solution 
    ========================================== */

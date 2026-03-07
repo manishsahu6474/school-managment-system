@@ -1,217 +1,126 @@
-/* Import Google Font */
+/* --- Global & SEO Base --- */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
 
 body {
     font-family: 'Poppins', sans-serif;
-    /* 3D Background Gradient */
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     color: #fff;
-    overflow-x: hidden; /* Mobile pe side scroll rokne ke liye */
+    overflow-x: hidden;
     position: relative;
     margin: 0;
-    padding: 0;
-    
 }
 
-/* --- 3D Background Floating Shapes --- */
-.shape {
-    position: absolute;
-    filter: blur(50px);
-    z-index: -1;
-    animation: float 6s ease-in-out infinite;
-    opacity: 0.6;
-}
-.shape-1 {
-    top: -10%;
-    left: -10%;
-    width: 300px;
-    height: 300px;
-    background: #ff00cc;
-    border-radius: 50%;
-}
-.shape-2 {
-    bottom: 10%;
-    right: -5%;
-    width: 250px;
-    height: 250px;
-    background: #00d4ff;
-    border-radius: 50%;
-    animation-delay: 2s;
-}
+/* --- Floating Shapes --- */
+.shape { position: absolute; filter: blur(50px); z-index: -1; animation: float 6s ease-in-out infinite; opacity: 0.6; }
+.shape-1 { top: -10%; left: -10%; width: 300px; height: 350px; background: #ff00cc; border-radius: 50%; }
+.shape-2 { bottom: 10%; right: -5%; width: 250px; height: 250px; background: #00d4ff; border-radius: 50%; animation-delay: 2s; }
 
-@keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-    100% { transform: translateY(0px); }
-}
+@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
 
-/* --- Glassmorphism Card (3D Look) --- */
-/* 1. Pure Card par 3D Perspective effect */
-.glass-card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    perspective: 1000px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    max-height: 90vh; 
-    overflow-y: auto; /* Agar screen bahut chhoti ho toh scroll bar aa jaye */
-    scrollbar-width: none;
-    backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-}
-.glass-card::-webkit-scrollbar {
-    display: none; /* Chrome/Safari ke liye scrollbar hide */
-}
-.mb-3 {
-    margin-bottom: 0.8rem !important;
-}
-
-.input-group-text, .form-control {
-    padding-top: 0.5rem;
-            padding-bottom: 0.5rem; /* Fields ki height thodi kam hogi */
-}
-
-/* Logo icon ko thoda chhota karne ke liye (Optional) */
-.fa-3x {
-    font-size: 2.2rem !important;
-}
-.glass-card:hover {
-    transform: translateY(-5px) rotateX(2deg); /* Halka sa upar aur tilt */
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-}
-
-/* 2. Input fields aur Dropdown ka Hover */
-.form-glass {
-    background: rgba(255, 255, 255, 0.1) !important;
-    color: white !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    transition: all 0.1s ease !important;
-}
-
-.form-glass:focus, .form-glass:hover {
-    background: rgba(255, 255, 255, 0.2) !important;
-    transform: scale(1.02); /* Halka sa bada hoga */
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.5) !important;
-}
-
-/* 3. Dropdown Options ko badiya dikhane ke liye */
-select.form-glass option {
-    background-color: #2b3a55; /* Dark background options ke liye */
-    color: white;
-    padding: 10px;
-}
-
-/* 4. 3D Button Effect */
-.btn-3d {
-    background: linear-gradient(145deg, #6e8efb, #a777e3);
-    border: none;
-    color: white;
-    transition: all 0.1s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    position: relative;
-    top: 0;
-}
-
-.btn-3d:hover {
-    top: -3px; /* Button upar uthega */
-    box-shadow: 0 8px 25px rgba(110, 142, 251, 0.4);
-    transform: translateY(-2px);
-}
-
-.btn-3d:active {
-    top: 2px; /* Dabane par niche jayega */
-}
-
-/* Icons ko chamkane ke liye */
-.input-group-text {
-    transition: all 0.3s ease;
-}
-
-.input-group:hover .input-group-text {
-    background: rgba(255, 255, 255, 0.2) !important;
-    color: #ffc107 !important; /* Icon gold color ka ho jayega hover pe */
-}
-/* --- Navbar Glass Style --- */
+/* --- Navbar Glass --- */
 .navbar-glass {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
 }
 
-/* --- 3D Buttons --- */
+/* --- Glass Cards --- */
+.glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.glass-card:hover {
+    transform: translateY(-5px) rotateX(2deg);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+}
+
+/* --- YOUR ORIGINAL 3D BUTTONS (Restored) --- */
 .btn-3d {
     background: linear-gradient(145deg, #ffffff, #e6e6e6);
-    color: #764ba2;
+    color: #764ba2 !important;
     font-weight: bold;
     border: none;
     border-radius: 50px;
     padding: 12px 35px;
     box-shadow: 5px 5px 15px rgba(0,0,0,0.2);
     transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
-
 .btn-3d:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-    color: #5b32b4;
+    color: #5b32b4 !important;
 }
-
 .btn-outline-glass {
     border: 2px solid rgba(255,255,255,0.6);
-    color: white;
+    color: white !important;
     border-radius: 50px;
     padding: 10px 30px;
     font-weight: 600;
-    background: transparent;
     transition: all 0.3s ease;
+    text-decoration: none;
 }
+.btn-outline-glass:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); }
 
-.btn-outline-glass:hover {
-    background: rgba(255,255,255,0.2);
-    color: white;
-    transform: scale(1.05);
-}
+/* --- Stats & Footer --- */
+.stat-number { font-size: 2.5rem; font-weight: 700; color: #ffecd2; }
+footer { background: rgba(0,0,0,0.2); backdrop-filter: blur(10px); border-top: 1px solid rgba(255,255,255,0.1); }
 
-/* --- Hero Image Animation --- */
-.hero-img-animate {
-    animation: float-img 4s ease-in-out infinite;
-    max-width: 100%;
-    height: auto;
-}
+/* --- Animations --- */
+.hero-img-animate { animation: float-img 4s ease-in-out infinite; }
+@keyframes float-img { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
 
-@keyframes float-img {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-15px); }
-    100% { transform: translateY(0px); }
-}
-
-/* --- Mobile Responsiveness Adjustments --- */
 @media (max-width: 768px) {
-    h1.display-4 {
-        font-size: 2.5rem; /* Mobile pe heading choti */
+    h1.display-4 { font-size: 2.2rem; }
+    .glass-card { padding: 25px !important; margin-bottom: 20px; }
+    .btn-3d, .btn-outline-glass {
+        padding: 6px 16px !important; /* Aur bhi compact padding */
+        font-size: 13px !important;    /* Chota text professional lagta hai */
+        border-radius: 40px !important;
+        letter-spacing: 0.5px;
     }
-    .shape {
-        width: 150px;
-        height: 150px;
-    }
-    .glass-card {
-        padding: 20px !important; /* Mobile pe kam padding */
-    }
-}
-/* Responsive Fixes */
-@media (max-width: 576px) {
-    .glass-card {
-        padding: 20px !important; /* Mobile pe padding kam */
-    }
-    .display-4 {
-        font-size: 2rem; /* Font chota */
-    }
-}
 
-/* Input Group Fix for Glass Effect */
-.input-group-text {
-    background: rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(10px);
+    /* 2. Menu (Navbar Toggler) Button ko chota karna */
+    .navbar-toggler {
+        padding: 4px 8px !important;
+        font-size: 0.9rem !important;
+        border: none !important; /* Default border hatayi */
+    }
+
+    /* 3. --- OUTLINE FIX (Sabse Important) --- */
+   
+    button:focus, 
+    .btn:focus, 
+    .navbar-toggler:focus,
+    a:focus {
+        outline: none !important;
+        box-shadow: none !important; 
+    }
+
+    /* Outline ki jagah ek halka sa 'Press' effect (Optional but Recommended) */
+    .btn:active {
+        transform: scale(0.95) !important;
+        opacity: 0.9;
+    }
+
+    /* Navbar brand (Logo) ko bhi thoda chota kar dete hain mobile pe */
+    .navbar-brand {
+        font-size: 1.3rem !important;
+    }
+    .navbar-glass .container {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+    }
 }
