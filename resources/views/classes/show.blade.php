@@ -1,5 +1,3 @@
-
-
 <x-app-layout>
     <div id="page-context" data-type="class-view" class="container-fluid px-md-5">
         <div class="container-fluid px-md-5">
@@ -11,7 +9,7 @@
                 <div class="text-center flex-grow-1">
                     <h2 class="fw-bold text-dark text-upper mb-0 display-6 main-heading">
                         <i class="fas fa-school text-primary me-2"></i>
-                        {{ $class_name }}<sup>th</sup> Class Students
+                        {{ $classes->class_name }}<sup>th</sup> Class Students
                     </h2>
 
                 </div>
@@ -35,19 +33,19 @@
         <div class="row justify-content-center mb-5">
             <div class="col-md-10 col-lg-8">
                 <div class="card card-3d border-0 p-4">
-                    <form method="GET" action="{{ route('admin.classes.students', $class_name) }}" class="row g-3">
+                    <form method="GET" action="{{ route('admin.classes.show', $classes->id) }}" class="row g-3">
                         <div class="col-md-7">
                             <div class="morpihsm-input">
                                 <span class="bg-white border-end-0 text-muted">
                                     <i class="bi bi-search"></i>
                                 </span>
                                 <input type="text" name="search" class="form-control border-start-0"
-                                    placeholder="Search..." value="{{ $search ?? '' }}">
+                                    placeholder="Search by name & Roll no..." value="{{ $search ?? '' }}">
                             </div>
                         </div>
                         <div class="col-md-5 d-flex gap-2">
                             <button class="btn   btn-3d-primary w-100 fw-bold" type="submit">SEARCH</button>
-                            <a href="{{ route('admin.classes.students', $class_name) }}"
+                            <a href="{{ route('admin.classes.show', $classes->id) }}"
                                 class="btn btn-secondary btn-3d-secondary w-100 fw-bold">RESET</a>
                         </div>
                     </form>
@@ -127,7 +125,7 @@
                                 </td>
                                 <td class="text-center">{{ $student->phone ?? 'N/A' }}</td>
                                 <td class="text-center">
-                                    <span class="badge rounded-pill bg-info text-dark">{{ $student->class }}<sup>th</sup></span>
+                                    <span class="badge rounded-pill bg-info text-dark">{{ $classes->class_name }}<sup>th</sup></span>
                                 </td>
                                 <td>
                                     <form action="{{ route('admin.students.status', $student->id) }}" method="POST"

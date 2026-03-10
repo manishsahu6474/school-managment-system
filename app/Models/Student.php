@@ -1,31 +1,35 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
 
 class Student extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'roll_no', 'class', 'father_name', 'phone', 'dob', 'status'];
+    protected $fillable = ['user_id', 'roll_no', 'class_id', 'father_name', 'phone', 'dob', 'status'];
 
-public function user()
-{
-    return $this->belongsTo(User::class);
-}
-public function setClassAttribute($value)
-{
-    $this->attributes['class'] = preg_replace('/[^0-9]/','',$value);
-}
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
-public function setFatherNameAttribute($value)
-{
-    $this->attributes['father_name'] = ucwords(strtolower($value));
-} 
+    public function setFatherNameAttribute($value)
+    {
+        $this->attributes['father_name'] = ucwords(strtolower($value));
+    }
 
-protected $casts = [
+    protected $casts = [
         'dob' => 'date',
     ];
+    public function Classes()
+    {
+        return $this->belongsTo(Classes::class, 'class_id');
+    }
+    public function setDobAttribute($value)
+    {
+        $this->attributes['dob'] = date('Y-m-d', strtotime($value));
+    }
 }

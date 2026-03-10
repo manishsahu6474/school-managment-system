@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\Student;
+
 
 class User extends Authenticatable
 {
@@ -21,8 +21,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'password',
+        'email_verified_at',
         'role',
+        'password',
+        'remember_token',
+
     ];
 
     /**
@@ -58,6 +61,6 @@ class User extends Authenticatable
     }
     public function teacher()
     {
-        return $this->hasOne(teacher::class);
+        return $this->hasOne(Teacher::class);
     }
 }

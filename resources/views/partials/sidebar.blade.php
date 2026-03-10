@@ -14,13 +14,13 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('admin.students.index') }}"
+            <a href="{{ route('admin.students.index',['status' => 'active']) }}"
                class="nav-link text-white {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
              <i class="fa fa-users me-2"></i> Students
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{route('admin.teachers.index')}}" class="nav-link text-white {{ request()->routeIs('admin.teachers.*') ? 'active' : '' }}">
+            <a href="{{route('admin.teachers.index',['status' => 'active'])}}" class="nav-link text-white {{ request()->routeIs('admin.teachers.*') ? 'active' : '' }}">
                 <i class="fas fa-chalkboard-teacher me-2"></i> Teachers
             </a>
         </li>

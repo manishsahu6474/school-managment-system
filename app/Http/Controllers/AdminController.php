@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Student;
-use App\Models\teacher;
+use App\Models\Teacher;
 use App\Models\User;
+use App\Models\Classes;
+use App\Models\Subject;
+
 use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
@@ -15,8 +18,8 @@ class AdminController extends Controller
     {
         $totalStudents = Student::count();
         $totalTeachers = User::Where('role', 'teacher')->count();
-        $totalClasses  = 4;
-        $totalSubjects = 0;
+        $totalClasses  = Classes::count();
+        $totalSubjects = Subject::count();
         $stats = [
             'student' => [
                 'total' => Student::count(),

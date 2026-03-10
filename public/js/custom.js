@@ -1,465 +1,423 @@
-/* ==========================================
-   1. SIDEBAR & UI LOGIC
-   ========================================== */
-document.addEventListener('DOMContentLoaded', function () {
+/**
+ * Global Alert Handler (For Blade Sessions)
+ */
+const showAlert = (title, text, icon, colorClass = 'text-primary') => {
+    Swal.fire({
+        title: title,
+        text: text,
+        icon: icon,
+        background: 'rgba(255, 255, 255, 0.9)',
+        backdrop: `rgba(0, 122, 255, 0.1) blur(4px)`,
+        timer: 3000,
+        timerProgressBar: true,
+        showClass: { popup: 'animate__animated animate__fadeInDown' },
+        hideClass: { popup: 'animate__animated animate__fadeOutUp' },
+        customClass: {
+            popup: 'card-morphism border-0 shadow-lg',
+            title: `fw-bold ${colorClass}`,
+            cancelButton: 'btn-3d-secondary'
+        },
+    });
+};
+/**
+ * GLOBAL CONSTANTS & HELPERS
+ */
+const csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+// Common Ajax Error Handler
+const handleAjaxError = (xhr, status, $btn, originalHtml) => {
+    if ($btn) $btn.prop('disabled', false).html(originalHtml);
+    let msg = 'Connection lost. Please try again.';
+    if (status === 'timeout') msg = 'Server slow! Request timed out.';
+    else if (xhr.status === 419) msg = 'Session expired. Please refresh.';
+    else if (xhr.responseJSON?.message) msg = xhr.responseJSON.message;
+    Swal.fire('Error!', msg, 'error');
+};
+
+/**
+ * CORE ENGINE: Sabhi Actions (Approve/Delete/Promote) isi se chalenge
+ */
+function executeAjaxAction(url, data, config, $btn = null, originalHtml = '', $row = null) {
+    $.ajax({
+        url: url,
+        type: "POST",
+        timeout: 10000,
+        data: { ...data, _token: csrfToken },
+        beforeSend: () => { if ($btn) $btn.prop('disabled', true).html('<span class="btn-spinner"></span>'); },
+        success: (res) => {
+            if (res.status === 'success') {
+                if (config.msgKey) localStorage.setItem(config.msgKey, res.message);
+                if ($row) {
+                    $row.fadeOut(400, () => location.reload());
+                } else {
+                    location.reload();
+                }
+            } else {
+                if ($btn) $btn.prop('disabled', false).html(originalHtml);
+                Swal.fire('Info', res.message, 'info');
+            }
+        },
+        error: (xhr, status) => handleAjaxError(xhr, status, $btn, originalHtml)
+    });
+}
+
+/**
+ * 1. SIDEBAR LOGIC
+ */
+document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.querySelector('.sidebar');
     const toggleBtn = document.getElementById('menu-toggle');
     let hideTimer;
 
-    if (toggleBtn && sidebar) {
+    if (!sidebar || !toggleBtn) return;
 
-        // Function: Sidebar ko band karne ke liye
-        function hideSidebar() {
-            if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
-                sidebar.classList.remove('active');
-            }
+    const resetTimer = () => {
+        clearTimeout(hideTimer);
+        if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
+            hideTimer = setTimeout(() => sidebar.classList.remove('active'), 7000);
         }
+    };
 
-        // Function: Timer ko reset karne ke liye
-        function resetTimer() {
-            clearTimeout(hideTimer);
-            // Agar mobile hai aur sidebar active hai, toh naya timer shuru karo
-            if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
-                hideTimer = setTimeout(hideSidebar, 7000); // 7 Seconds ka wait
-            }
+    toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sidebar.classList.toggle('active');
+        resetTimer();
+    });
+
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+            sidebar.classList.remove('active');
         }
+    });
 
-        // 1. Toggle Button Click
-        toggleBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            sidebar.classList.toggle('active');
-            resetTimer(); // Timer shuru 
-        });
-
-        // 2. Bahar Click karne par turant hide
-        document.addEventListener('click', function (event) {
-            if (window.innerWidth <= 768 && !sidebar.contains(event.target) && !toggleBtn.contains(event.target)) {
-                hideSidebar();
-            }
-        });
-
-        // 3. Scroll par turant hide 
-        window.addEventListener('scroll', function () {
-            hideSidebar();
-        }, { passive: true });
-
-        // 4. Activity check
-        sidebar.addEventListener('mousemove', resetTimer);
-        sidebar.addEventListener('touchstart', resetTimer);
-    }
+    window.addEventListener('scroll', () => sidebar.classList.remove('active'), { passive: true });
+    sidebar.addEventListener('touchstart', resetTimer, { passive: true });
 });
 
-/* ==========================================
-   2. SHINY 3D ALERTS 
-   ========================================== */
-$(document).ready(function () {
-    const alertTypes = [
-        { key: 'delete_success_msg', title: 'Deleted!', icon: 'success', color: 'text-danger' },
-        { key: 'activated_success_msg', title: 'Activated!', icon: 'success', color: 'text-success' },
-        { key: 'update_success_msg', title: 'Updated!', icon: 'success', color: 'text-primary' },
-        { key: 'error_msg', title: 'Oops!', icon: 'error', color: 'text-danger' }
-    ];
+/**
+ * 2. AUTO-ALERTS (LocalStorage)
+ */
+$(document).ready(() => {
+    const alerts = {
+        delete_success_msg: 'text-danger',
+        activated_success_msg: 'text-success',
+        update_success_msg: 'text-primary',
+        error_msg: 'text-danger'
+    };
 
-    alertTypes.forEach(alert => {
-        const msg = localStorage.getItem(alert.key);
+    Object.keys(alerts).forEach(key => {
+        const msg = localStorage.getItem(key);
         if (msg) {
             Swal.fire({
-                title: alert.title,
-                text: msg,
-                icon: alert.icon,
-                background: 'rgba(255, 255, 255, 0.9)',
-                backdrop: `rgba(0, 122, 255, 0.1) blur(4px)`,
-                focusConfirm: false,
-                buttonsStyling: false,
-                timer: 2000,
-                timerProgressBar: true,
-                showClass: { popup: 'animate__animated animate__fadeInDown' },
-                hideClass: { popup: 'animate__animated animate__fadeOutUp' },
-                customClass: {
-                    popup: 'card-morphism border-0 shadow-lg',
-                    title: `fw-bold ${alert.color}`,
-                    confirmButton: 'btn-3d-success px-4 py-2'
-                },
+                text: msg, icon: key.includes('error') ? 'error' : 'success',
+                timer: 2000, timerProgressBar: true,
+                customClass: { popup: 'card-morphism', title: `fw-bold ${alerts[key]}` }
             });
-
-            localStorage.removeItem(alert.key);
+            localStorage.removeItem(key);
         }
     });
 });
-function showSuccessAlert(message) {
-    Swal.fire({
-        title: 'Success!',
-        text: message,
-        icon: 'success',
-        background: 'rgba(255, 255, 255, 0.9)',
-        backdrop: `rgba(0, 122, 255, 0.1) blur(4px)`,
-        focusConfirm: false,
-        buttonsStyling: false,
-        showClass: { popup: 'animate__animated animate__fadeInDown' },
-        hideClass: { popup: 'animate__animated animate__fadeOutUp' },
-        customClass: {
-            popup: 'card-morphism border-0 shadow-lg',
-            title: 'fw-bold text-success',
-            confirmButton: 'btn-3d-success px-4 py-2'
-        },
-    });
 
-}
+/**
+ * 3. WRAPPER FUNCTIONS (Blade se call karne ke liye)
+ */
 
-function showinfoAlert(message) {
-    Swal.fire({
-        title: 'Info!',
-        text: message,
-        icon: 'info',
-        background: 'rgba(255, 255, 255, 0.9)',
-        backdrop: `rgba(0, 122, 255, 0.1) blur(4px)`,
-        //showConfirmButton: true,
-        focusConfirm: false,
-        buttonsStyling: false,
-        showClass: { popup: 'animate__animated animate__fadeInDown' },
-        hideClass: { popup: 'animate__animated animate__fadeOutUp' },
-        customClass: {
-            popup: 'card-morphism border-0 shadow-lg',
-            title: 'fw-bold text-info',
-            confirmButton: 'btn-3d-primary px-4 py-2'
-        },
-    });
-}
-
-/* ==========================================
-   3. DELETE / INACTIVE FUNCTIONALITY
-   ========================================== */
-function deleteStudent(id, status) {
-    const $form = $('#delete-form-' + id);
-    const url = $form.attr('action');
-
-    // Status ke hisaab se text set karein
-    let titleText = (status == 1) ? "Inactive karein?" : "Delete karein?";
-    let subText = (status == 1)
-        ? "Student Active se hat kar Inactive list mein chala jayega."
-        : "Pending request permanently delete ho jayegi!";
-    let btnText = (status == 1) ? "Yes, Make Inactive" : "Yes, Delete it!";
-
-    Swal.fire({
-        title: titleText,
-        text: subText,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: btnText,
-        cancelButtonText: 'Cancel',
-        background: 'rgba(255, 255, 255, 0.95)',
-        backdrop: `rgba(0,0,0,0.4) blur(5px)`,
-        customClass: {
-            popup: 'card-morphism border-0 shadow-lg',
-            confirmButton: 'btn-3d-danger px-4 py-2',
-            cancelButton: 'btn-3d-secondary px-4 py-2'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                    _method: 'DELETE'
-                },
-                success: function (response) {
-                    if (response.status === 'success') {
-                        let $row = $form.closest('tr');
-                        $row.fadeOut(300, function () {
-                            localStorage.setItem('delete_success_msg', response.message);
-                            location.reload();
-                        });
-                    }
-                },
-                error: function () {
-                    Swal.fire('Error!', 'Action perform nahi ho paya.', 'error');
-                }
-            });
-        }
-    });
-}
-function deleteTeacher(id) {
-    // jQuery use kar rahe hain taaki elements asani se mil jayein
-    const $form = $('#delete-form-' + id);
-    const url = $form.attr('action');
-
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "Teacher delete ho jyega!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, Delete it!',
-        background: 'rgba(255, 255, 255, 0.95)',
-        backdrop: `rgba(0,0,0,0.4) blur(5px)`,
-        customClass: {
-            popup: 'card-morphism border-0 shadow-lg',
-            confirmButton: 'btn-3d-danger  px-4 py-2',
-            cancelButton: 'btn-3d-secondary px-4 py-2'
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                    _method: 'DELETE'
-                },
-                success: function (response) {
-                    if (response.status === 'success') {
-                        showSuccessAlert(response.message);
-                        let $row = $form.closest('tr');
-                        let $statusBtn = $row.find('button[onclick="confirmStatusChange(this)"]');
-                        $statusBtn.text('Inactive');
-                        $statusBtn.removeClass('btn-success').addClass('btn-secondary');
-
-                    }
-                    else if (response.status === 'info') {
-                        showinfoAlert(response.message);
-                    }
-                },
-                error: function (xhr) {
-                    Swal.fire('Error!', 'Action perform nahi ho paya.', 'error');
-                }
-            });
-        }
-    });
-}
-
-/* ==========================================
-   4. STATUS TOGGLE FUNCTIONALITY
-   ========================================== */
-function activateStudent(button) {
+// Approve & Re-Activate (Donon ke liye ek logic)
+function approveStudent(button) {
     const $btn = $(button);
     const $form = $btn.closest('form');
-    const url = $form.attr('action');
+    const isApprove = $btn.hasClass('btn-approve');
 
     Swal.fire({
-        title: 'Approve Student?',
+        title: isApprove ? 'Approve Admission?' : 'Re-Activate Student?',
         text: "Kya aap is student ko Active list mein move karna chahte hain?",
         icon: 'question',
         showCancelButton: true,
         confirmButtonText: 'Yes, Activate!',
-        cancelButtonText: 'Cancel',
-        background: 'rgba(255, 255, 255, 0.95)',
-        backdrop: `rgba(0,0,0,0.4) blur(5px)`,
-        customClass: {
-            popup: 'card-morphism border-0 shadow-lg',
-            confirmButton: 'btn-3d-success px-4 py-2',
-            cancelButton: 'btn-3d-secondary px-4 py-2'
-        }
+        customClass: { popup: 'card-morphism', confirmButton: 'btn-3d-success', cancelButton: 'btn-3d-secondary' }
     }).then((result) => {
         if (result.isConfirmed) {
-            $.ajax({
-                url: url,
-                type: "POST",
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                    status: 1
-                },
-                success: function (response) {
-                    if (response.status === 'success') {
-                        // Reload se pehle message save karein (animation se pehle safety ke liye)
-                        localStorage.setItem('activated_success_msg', response.message);
-
-                        let $row = $form.closest('tr');
-                        $row.css('background-color', '#d1e7dd'); // Halka green highlight (Pro touch)
-
-                        $row.fadeOut(300, function () {
-                            location.reload();
-                        });
-                    } else {
-                        // Agar logic error ho (e.g. status change allowed nahi)
-                        $btn.prop('disabled', false).html('Inactive');
-                        Swal.fire('Info', response.message, 'info');
-                    }
-                },
-                error: function (xhr) {
-                    // XHR error handling (Server error)
-                    $btn.prop('disabled', false).html('Inactive');
-                    const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : 'Something went wrong.';
-                    Swal.fire('Error!', errorMsg, 'error');
-                }
-            });
+            executeAjaxAction($form.attr('action'), { status: 1 }, { msgKey: 'activated_success_msg' }, $btn, $btn.html(), $form.closest('tr'));
         }
     });
 }
-/* ==========================================
-   5. LOGOUT FUNCTIONALITY
-   ========================================== */
-function logoutConfirm() {
+const activateStudent = approveStudent;
+
+// Delete Student
+function deleteStudent(id, status, btn = null) {
+    const $form = $('#delete-form-' + id);
+    const isInactiveAction = (status == 1);
+
     Swal.fire({
-        title: 'Logout Karein?',
-        text: "Kya aap sach mein session band karna chahte hain?",
+        title: isInactiveAction ? 'Inactive karein?' : 'Delete karein?',
+        text: isInactiveAction ? 'Student Inactive list mein chala jayega.' : 'Permanently delete ho jayega!',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Haan, Logout!',
-        customClass: { popup: 'card-morphism border-0 shadow-lg' }
+        confirmButtonText: 'Yes, Proceed',
+        customClass: { popup: 'card-morphism', confirmButton: 'btn-3d-danger', cancelButton: 'btn-3d-secondary' }
     }).then((result) => {
         if (result.isConfirmed) {
-            document.getElementById('logout-form').submit();
+            executeAjaxAction($form.attr('action'), { _method: 'DELETE' }, { msgKey: 'delete_success_msg' }, $(btn), $(btn).html(), $form.closest('tr'));
         }
     });
 }
-/* ==========================================
-   6. Select All Logic and Bulk Promte
-   ========================================== */
-$(document).ready(function () {
 
+/**
+ * 4. BULK ACTIONS ENGINE (Generic)
+ */
+const GLOBAL_CHECKBOX = '.record-checkbox';
+
+$(document).ready(() => {
     $('#master-checkbox').on('click', function () {
-        $('.student-checkbox').prop('checked', this.checked);
-        togglePromoteBtn();
+        $(GLOBAL_CHECKBOX).prop('checked', this.checked);
+        toggleBulkWrapper();
     });
 
-    $('.student-checkbox').on('change', function () {
-        togglePromoteBtn();
+    $(document).on('change', GLOBAL_CHECKBOX, function () {
+        const total = $(GLOBAL_CHECKBOX).length;
+        const checked = $(GLOBAL_CHECKBOX + ':checked').length;
+        $('#master-checkbox').prop('checked', (checked === total && total > 0));
+        toggleBulkWrapper();
     });
 
-    function togglePromoteBtn() {
-        if ($('.student-checkbox:checked').length > 0) {
-            $('#bulk-promote-btn').fadeIn();
+    function toggleBulkWrapper() {
+        const checkedCount = $(GLOBAL_CHECKBOX + ':checked').length;
+        const $wrapper = $('#bulk-actions-wrapper');
+        if (checkedCount > 0) {
+            if ($wrapper.is(':hidden')) {
+                $wrapper.stop(true, true).slideDown(400).fadeIn(400).addClass('show-active');
+            }
         } else {
-            $('#bulk-promote-btn').fadeOut();
+            $wrapper.stop(true, true).slideUp(300).fadeOut(200).removeClass('show-active');
+            $('#master-checkbox').prop('checked', false);
         }
     }
 });
-function bulkPromote() {
-    let selectedIds = [];
-    $('.student-checkbox:checked').each(function () {
-        selectedIds.push($(this).val());
-    });
 
-    if (selectedIds.length === 0) {
-        Swal.fire('Opps!', 'First select students.', 'info');
-        return;
+function executeBulkAction(config) {
+    let ids = $(GLOBAL_CHECKBOX + ':checked').map(function () { return $(this).val(); }).get();
+
+    if (!ids.length) {
+        return Swal.fire('Oops!', `Pehle ${config.entity || 'records'} select karein.`, 'info');
     }
 
     Swal.fire({
-        title: 'Promote Students?',
-        text: selectedIds.length + " students to be promote next class.",
-        icon: 'question',
+        title: config.title,
+        text: `${ids.length} ${config.entity} selected. ${config.text}`,
+        icon: config.icon || 'question',
         showCancelButton: true,
-        confirmButtonText: 'Promote Now',
-        confirmButtonColor: '#256de1',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: "/admin/students/bulk-promote",
-                type: "POST",
-                data: {
-                    ids: selectedIds,
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function (response) {
-                    Swal.fire('Success!', response.message, 'success');
-                    location.reload();
-                }
-            });
+        confirmButtonText: config.confirmText,
+        customClass: { popup: 'card-morphism', confirmButton: config.btnClass, cancelButton: 'btn-3d-secondary' }
+    }).then((res) => {
+        if (res.isConfirmed) {
+            executeAjaxAction(config.url, { ids: ids, _method: 'POST' }, { msgKey: config.msgKey });
         }
     });
 }
-/* ==========================================
-   7. 3d stylish Bar & Pie Chart 
-   ========================================== */
-document.addEventListener('DOMContentLoaded', function () {
-    const statsElement = document.getElementById('stats-data');
-    if (!statsElement) return;
+// 1. Bulk Promote
+const bulkPromote = () => executeBulkAction({
+    entity: 'students',
+    title: 'Promote Students?',
+    text: 'Selected students next class mein promote ho jayenge.',
+    confirmText: 'Promote Now',
+    btnClass: 'btn-3d-primary',
+    url: "/admin/students/bulk-promote",
+    msgKey: 'update_success_msg'
+});
 
-    const data = JSON.parse(statsElement.value);
+// 2. Bulk Approve (Pending -> Active)
+const bulkApprove = () => executeBulkAction({
+    entity: 'students',
+    title: 'Approve Selected?',
+    text: 'In sabhi students ka admission approve ho jayega.',
+    confirmText: 'Yes, Approve All',
+    btnClass: 'btn-3d-success',
+    url: "/admin/students/bulk-approve",
+    msgKey: 'activated_success_msg'
+});
 
-    const getGradient = (ctx, color1, color2) => {
-        const gradient = ctx.createLinearGradient(0, 0, 0, 200);
-        gradient.addColorStop(0, color1);
-        gradient.addColorStop(1, color2);
+// 3. Bulk Delete/Inactive
+function bulkStudentDelete(isPermanent = false) {
+    executeBulkAction({
+        entity: 'students',
+        title: isPermanent ? 'Delete Selected?' : 'Make Inactive?',
+        text: isPermanent ? 'Ye records hamesha ke liye delete ho jayenge!' : 'Ye students inactive list mein chale jayenge.',
+        icon: 'warning',
+        confirmText: isPermanent ? 'Yes, Delete' : 'Yes, Inactivate',
+        btnClass: 'btn-3d-danger',
+        method: 'POST',
+        url: isPermanent ? "/admin/students/bulk-delete" : "/admin/students/bulk-inactivate",
+        msgKey: 'delete_success_msg'
+    });
+}
+// 4. Bulk Re-Activate (Inactive -> Active)
+const bulkActivate = () => executeBulkAction({
+    entity: 'students',
+    title: 'Re-Activate Selected?',
+    text: 'Selected students ko dobara Active list mein move kiya jayega.',
+    icon: 'info',
+    confirmText: 'Yes, Activate All',
+    btnClass: 'btn-3d-primary',
+    url: "/admin/students/bulk-activate", 
+    msgKey: 'activated_success_msg'
+});
+const bulkTeacherApprove = () => executeBulkAction({
+    entity: 'teachers',
+    title: 'Approve Selected Teachers?',
+    text: 'In sabhi teachers ka profile active ho jayega.',
+    confirmText: 'Yes, Approve',
+    btnClass: 'btn-3d-success',
+    url: "/admin/teachers/bulk-approve",
+    msgKey: 'activated_success_msg'
+});
+const bulkTeacherActivate = () => executeBulkAction({
+    entity: 'teachers',
+    title: 'Re-activated Selected Teachers?',
+    text: 'In sabhi teachers ka profile active ho jayega.',
+    confirmText: 'Yes, Active',
+    btnClass: 'btn-3d-primary',
+    url: "/admin/teachers/bulk-activate",
+    msgKey: 'activated_success_msg'
+});
+
+function bulkTeacherDelete(isPermanent = false) {
+    executeBulkAction({
+        entity: 'teachers',
+        title: isPermanent ? 'Delete Selected?' : 'Make Inactive?',
+        text: isPermanent ? 'Ye records hamesha ke liye delete ho jayenge!' : 'Ye teacher inactive list mein chale jayenge.',
+        icon: 'warning',
+        confirmText: isPermanent ? 'Yes, Delete' : 'Yes, Inactivate',
+        btnClass: 'btn-3d-danger',
+        method: 'POST',
+        url: isPermanent ? "/admin/teachers/bulk-delete" : "/admin/teachers/bulk-inactivate",
+        msgKey: 'delete_success_msg'
+    });
+}
+function approveteacher(button) {
+    const $btn = $(button);
+    const $form = $btn.closest('form');
+    const isApprove = $btn.hasClass('btn-approve');
+
+    Swal.fire({
+        title: isApprove ? 'Approve Joining?' : 'Re-Activate Teacher?',
+        text: "Kya aap is Teacher ko Active list mein move karna chahte hain?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Approve!',
+        customClass: { popup: 'card-morphism', confirmButton: 'btn-3d-success', cancelButton: 'btn-3d-secondary' }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            executeAjaxAction($form.attr('action'), { status: 1 }, { msgKey: 'activated_success_msg' }, $btn, $btn.html(), $form.closest('tr'));
+        }
+    });
+}
+const activateteacher = approveteacher;
+
+// Delete Student
+function deleteTeacher(id, status, btn = null) {
+    const $form = $('#delete-form-' + id);
+    const isInactiveAction = (status == 1);
+
+    Swal.fire({
+        title: isInactiveAction ? 'Inactive karein?' : 'Delete karein?',
+        text: isInactiveAction ? 'Teacher Inactive list mein chala jayega.' : 'Permanently delete ho jayega!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Proceed',
+        customClass: { popup: 'card-morphism', confirmButton: 'btn-3d-danger', cancelButton: 'btn-3d-secondary' }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            executeAjaxAction($form.attr('action'), { _method: 'DELETE' }, { msgKey: 'delete_success_msg' }, $(btn), $(btn).html(), $form.closest('tr'));
+        }
+    });
+}
+// Chart Logic (Intersection Observer)
+document.addEventListener('DOMContentLoaded', () => {
+    const statsEl = document.getElementById('stats-data');
+    if (!statsEl) return;
+    const data = JSON.parse(statsEl.value);
+
+    // Stylish Gradient Helper
+    const getGradient = (ctx, colorStart, colorEnd) => {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, colorStart);
+        gradient.addColorStop(1, colorEnd);
         return gradient;
     };
 
-    const renderFullChart = (ctxId, counts, isPie = false) => {
-        const canvas = document.getElementById(ctxId);
-        let chartStatus = Chart.getChart(ctxId);
-        if (chartStatus !== undefined) chartStatus.destroy();
-        
+    const render = (id, counts, isPie) => {
+        const canvas = document.getElementById(id);
         const ctx = canvas.getContext('2d');
 
-        // Naye Gradients (Pending add kiya gaya hai)
-        const gradients = [
-            getGradient(ctx, '#007AFF', '#00C6FF'), // Total - Blue
-            getGradient(ctx, '#34C759', '#32E0C4'), // Active - Green
-            getGradient(ctx, '#FF3B30', '#FF9500'), // Inactive - Orange
-            getGradient(ctx, '#5856D6', '#AF52DE')  // Pending - Purple/Indigo (Naya)
+        // Stylish Colors (Gradients)
+        const colors = [
+            getGradient(ctx, 'rgba(0, 122, 255, 1)', 'rgba(0, 122, 255, 0.6)'), // Blue
+            getGradient(ctx, 'rgba(52, 199, 89, 1)', 'rgba(52, 199, 89, 0.6)'),  // Green
+            getGradient(ctx, 'rgba(255, 59, 48, 1)', 'rgba(255, 59, 48, 0.6)'),  // Red
+            getGradient(ctx, 'rgba(88, 86, 214, 1)', 'rgba(88, 86, 214, 0.6)')   // Purple
         ];
+
+        Chart.getChart(id)?.destroy();
 
         new Chart(ctx, {
             type: isPie ? 'doughnut' : 'bar',
             data: {
-                // Labels mein Pending add kiya
-                labels: isPie 
-                    ? ['Active', 'Inactive', 'Pending'] 
-                    : ['Total', 'Active', 'Inactive', 'Pending'],
+                labels: isPie ? ['Active', 'Inactive', 'Pending'] : ['Total', 'Active', 'Inactive', 'Pending'],
                 datasets: [{
-                    // Data mein counts.pending add kiya
-                    data: isPie 
-                        ? [counts.active, counts.inactive, counts.pending] 
-                        : [counts.total, counts.active, counts.inactive, counts.pending],
-                    // Bar chart mein gradients[0,1,2,3] aur Pie mein [1,2,3] use honge
-                    backgroundColor: isPie 
-                        ? [gradients[1], gradients[2], gradients[3]] 
-                        : gradients,
-                    borderRadius: isPie ? 0 : 10,
-                    borderWidth: 0,
-                    cutout: '70%',
+                    data: isPie ? [counts.active, counts.inactive, counts.pending] : [counts.total, counts.active, counts.inactive, counts.pending],
+                    backgroundColor: colors,
+                    borderColor: 'rgba(255, 255, 255, 0.8)',
+                    borderWidth: 2,
+                    borderRadius: isPie ? 0 : 12, // Rounded corners for bars
+                    cutout: isPie ? '70%' : null, // Hollow doughnut look
+                    hoverOffset: 5 // Stylish zoom effect on hover
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                resizeDelay: 200,
-                animation: {
-                    duration: 2000,
-                    easing: 'easeOutQuart',
-                    delay: (context) => context.dataIndex * 150
-                },
                 plugins: {
                     legend: {
-                        display: isPie, 
+                        display: isPie, // Pie mein legend dikhao, bar mein zaroorat nahi
                         position: 'bottom',
-                        labels: { boxWidth: 8, font: { size: 10 }, padding: 10 }
+                        labels: { usePointStyle: true, font: { weight: 'bold' } }
                     },
-                    tooltip: { enabled: true }
                 },
                 scales: isPie ? {} : {
-                    y: { beginAtZero: true, grid: { display: false }, ticks: { display: false }, border: { display: false } },
-                    x: { grid: { display: false }, border: { display: false } }
+                    y: { display: false, beginAtZero: true, grid: { display: false } }, // Clean look
+                    x: { grid: { display: false } }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutQuart'
                 }
             }
         });
     };
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const id = entry.target.id;
-                if (id === 'studentBar') renderFullChart('studentBar', data.student);
-                if (id === 'studentPie') renderFullChart('studentPie', data.student, true);
-                if (id === 'teacherBar') renderFullChart('teacherBar', data.teacher);
-                if (id === 'teacherPie') renderFullChart('teacherPie', data.teacher, true);
+    // Intersection Observer (Same as before - for performance)
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+            if (e.isIntersecting) {
+                const id = e.target.id;
+                render(id, data[id.toLowerCase().includes('student') ? 'student' : 'teacher'], id.includes('Pie'));
             }
         });
     }, { threshold: 0.1 });
 
-    document.querySelectorAll('canvas').forEach(canvas => observer.observe(canvas));
+    document.querySelectorAll('canvas').forEach(c => obs.observe(c));
 });
-/* ==========================================
-   8. Back Button Proble Solution 
-   ========================================== */
+// Utilities
+const logoutConfirm = () => {
+    Swal.fire({ 
+        title: 'Logout?', 
+        icon: 'warning', 
+        showCancelButton: true 
+    }).then(r => r.isConfirmed && document.getElementById('logout-form').submit());
+}; 
 
-
-window.addEventListener('pageshow', function (event) {
-    // Agar user back button se aaya hai (persisted) ya history navigation use ki hai
-    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted || (typeof window.performance != "undefined" && window.performance.navigation.type === 2)) {
         window.location.reload();
     }
 });

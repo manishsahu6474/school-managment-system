@@ -23,19 +23,36 @@
             class="form-control morphism-input @error('joining_date') is-invalid @enderror"
             value="{{ old('joining_date', isset($teacher) ? substr($teacher->joining_date, 0, 10) : '') }}" required>
     </div>
-
     <div class="col-md-4">
-        <label class="form-label fw-bold text-muted ml-1">Subject</label>
-        <select name="subject" class="form-select morphism-input @error('subject') is-invalid @enderror">
-            <option value="">Select Subject</option>
-            @foreach (['Maths', 'Science', 'English', 'Hindi', 'Physics', 'Chemistry'] as $sub)
-                <option value="{{ $sub }}"
-                    {{ old('subject', $teacher->subject ?? '') == $sub ? 'selected' : '' }}>{{ $sub }}
+        <label class="form-label fw-bold text-muted ml-1">Class</label>
+        <select name="class_id" class="form-select morphism-input @error('class_id') is-invalid @enderror">
+            <option value="">Select class</option>
+            @foreach ($classes as $class)
+                <option value="{{ $class->id }}"
+                    {{ old('class_id') == $class->id || (isset($teacher) && $teacher->subjects()->wherePivot('class_id', $class->id)->exists()) ? 'selected' : '' }}>
+                    {{ $class->class_name }}
                 </option>
             @endforeach
         </select>
+        @error('class_id')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
     </div>
-
+    <div class="col-md-4">
+        <label class="form-label fw-bold text-muted ml-1">Subject</label>
+        <select name="subject_id" class="form-select morphism-input @error('subject_id') is-invalid @enderror">
+            <option value="">Select Subject</option>
+            @foreach ($subjects as $subject)
+                <option value="{{ $subject->id }}"
+                    {{ old('subject_id') == $subject->id || (isset($teacher) && $teacher->subjects->contains($subject->id)) ? 'selected' : '' }}>
+                    {{ $subject->subject_name }}
+                </option>
+            @endforeach
+        </select>
+        @error('subject_id')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
     <div class="col-md-4">
         <label class="form-label fw-bold text-muted ml-1">Qualification</label>
         <select name="qualification" class="form-select morphism-input @error('qualification') is-invalid @enderror">
@@ -54,13 +71,6 @@
             class="form-control morphism-input @error('experience') is-invalid @enderror" placeholder="e.g. 5"
             value="{{ old('experience', $teacher->experience ?? '') }}" min="0">
     </div>
-
-    <div class="col-md-4">
-        <label class="form-label fw-bold text-muted ml-1">Monthly Salary (₹)</label>
-        <input type="number" name="salary" class="form-control morphism-input @error('salary') is-invalid @enderror"
-            placeholder="Enter salary" value="{{ old('salary', $teacher->salary ?? '') }}">
-    </div>
-
     <div class="col-md-4">
         <label class="form-label fw-bold text-muted ml-1">Gender</label>
         <select name="gender" class="form-select morphism-input">
@@ -72,38 +82,35 @@
             </option>
         </select>
     </div>
-    <div class="row g-4">
-        <div class="col-md-6">
-            <label class="form-label fw-bold text-muted ml-1">Phone Number</label>
-            <div class="input-group">
-                <span class="input-group-text morphism-input border-end-0 text-muted">+91</span>
-                <input type="text" name="phone"
-                    class="form-control morphism-input @error('phone') is-invalid @enderror"
-                    placeholder="10-digit mobile number" value="{{ old('phone', $teacher->phone ?? '') }}" required
-                    pattern="[0-9]{10}">
-            </div>
-            @error('phone')
-                <span class="text-danger small">{{ $message }}</span>
-            @enderror
+    <div class="col-md-6">
+        <label class="form-label fw-bold text-muted ml-1">Phone Number</label>
+        <div class="input-group">
+            <span class="input-group-text morphism-input border-end-0 text-muted">+91</span>
+            <input type="text" name="phone"
+                class="form-control morphism-input @error('phone') is-invalid @enderror"
+                placeholder="10-digit mobile number" value="{{ old('phone', $teacher->phone ?? '') }}" required
+                pattern="[0-9]{10}">
         </div>
-
-        <div class="col-md-6">
-            <label class="form-label fw-bold text-muted ml-1">Monthly Salary (₹)</label>
-            <input type="number" name="salary"
-                class="form-control morphism-input @error('salary') is-invalid @enderror" placeholder="Enter salary"
-                value="{{ old('salary', $teacher->salary ?? '') }}">
-        </div>
-
-        <div class="col-md-12">
-            <label class="form-label fw-bold text-muted ml-1">Residential Address</label>
-            <textarea name="address" rows="3" class="form-control morphism-input @error('address') is-invalid @enderror"
-                placeholder="Enter full residential address">{{ old('address', $teacher->address ?? '') }}</textarea>
-            @error('address')
-                <span class="text-danger small">{{ $message }}</span>
-            @enderror
-        </div>
-
+        @error('phone')
+            <span class="text-danger small">{{ $message }}</span>
+        @enderror
     </div>
+
+    <div class="col-md-6">
+        <label class="form-label fw-bold text-muted ml-1">Monthly Salary (₹)</label>
+        <input type="number" name="salary" class="form-control morphism-input @error('salary') is-invalid @enderror"
+            placeholder="Enter salary" value="{{ old('salary', $teacher->salary ?? '') }}">
+    </div>
+
+    <div class="col-md-12">
+        <label class="form-label fw-bold text-muted ml-1">Residential Address</label>
+        <textarea name="address" rows="3" class="form-control morphism-input @error('address') is-invalid @enderror"
+            placeholder="Enter full residential address">{{ old('address', $teacher->address ?? '') }}</textarea>
+        @error('address')
+            <span class="text-danger small">{{ $message }}</span>
+        @enderror
+    </div>
+
     <div class="col-md-12">
         <label class="form-label fw-bold text-muted ml-1">Password
             {{ isset($teacher) ? '(Leave blank to keep current)' : '' }}</label>

@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TeacherController;
@@ -17,11 +17,9 @@ use App\Http\Controllers\ClassesController;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 Route::get('/', function () {
     return view('welcome');
-});
-
+})->middleware('prevent-back');
 
 Route::get('/dashboard', function () {
 
@@ -40,9 +38,9 @@ Route::get('/dashboard', function () {
         // -> Student Dashboard dikhao
         return view('students.dashboard');
     }
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'prevent-back'])->name('dashboard');
 
-Route::middleware(['auth', 'verified'])
+Route::middleware(['auth', 'verified', 'prevent-back'])
     ->prefix('admin')       // URL: /admin/students
     ->name('admin.')        // Route Name: admin.students.index
     ->group(function () {
@@ -50,17 +48,31 @@ Route::middleware(['auth', 'verified'])
         // 1. Admin Dashboard
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
-        // 2. RESOURCE ROUTE (Ye hai wo magic line)
-        Route::post('students/{id}/approve', [StudentController::class, 'approve'])->name('students.approve');
-        // Admin ko Student par pura control de diya
-        Route::post('students/status/{id}', [StudentController::class, 'toggleStatus'])->name('students.status');
-        // Student ko approve karne ke liye route
-        Route::post('students/bulk-promote', [StudentController::class, 'bulkPromote'])->name('students.bulkPromote');
+        Route::prefix('students')->name('students.')->group(function () {
+
+            Route::post('/bulk-approve', [StudentController::class, 'bulkApprove'])->name('bulkApprove');
+            Route::post('/bulk-activate', [StudentController::class, 'bulkActivate'])->name('bulkActivate');
+            Route::post('/bulk-inactivate', [StudentController::class, 'bulkInactivate'])->name('bulkInactivate');
+            Route::post('/bulk-promote', [StudentController::class, 'bulkPromote'])->name('bulkPromote');
+            Route::post('/bulk-delete', [StudentController::class, 'bulkDelete'])->name('bulkDelete');
+
+            // --- Individual Actions ---
+            Route::post('/{id}/approve', [StudentController::class, 'approve'])->name('approve');
+            Route::post('/status/{id}', [StudentController::class, 'toggleStatus'])->name('status');
+        });
+        //Route::post('students/bulk-promote', [StudentController::class, 'bulkPromote'])->name('students.bulkPromote');
         Route::resource('students', StudentController::class);
         // Admin ko Teacher par pura control de diya
+        Route::prefix('teachers')->name('teachers.')->group(function () {
+            Route::post('/bulk-activate', [TeacherController::class, 'bulkActivate'])->name('bulkActivate');
+            Route::post('/bulk-approve', [TeacherController::class, 'bulkApprove'])->name('bulkApprove');
+            Route::post('/bulk-inactivate', [TeacherController::class, 'bulkInactivate'])->name('bulkInactivate');
+            Route::post('/bulk-delete', [TeacherController::class, 'bulkDelete'])->name('bulkDelete');
 
+            Route::post('/{id}/approve', [TeacherController::class, 'approve'])->name('approve');
+            Route::post('/status/{id}', [TeacherController::class, 'toggleStatus'])->name('status');
+        });
         Route::resource('teachers', TeacherController::class);
-        Route::post('teachers/status/{id}', [TeacherController::class, 'toggleStatus'])->name('teachers.status');
         Route::get('classes/{class_name}', [ClassesController::class, 'showStudents'])->name('classes.students');
         Route::resource('classes', ClassesController::class);
     });

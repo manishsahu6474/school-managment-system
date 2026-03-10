@@ -2,21 +2,21 @@
 <x-app-layout>
     <div class="container-fluid py-4">
         <div class="row g-4">
-            @foreach ($classdata as $classname => $total)
-                <div class="col-xl-3 col-md-6">
-                    <a href="{{route('admin.classes.students',['class_name'=>$classname]) }}"
-                         class="{{ $total == 0 ? 'link-disabled' : '' }}">
+            @foreach ($classdata as $class)
+                <div class="col-xl-6 col-md-6">
+                    <a href="{{route('admin.classes.students',['class_name'=>$class->id]) }}"
+                         class="{{ $class->students_count == 0 ? 'link-disabled' : '' }}">
                         <div class="card card-3d border-0 shadow-sm h-100"
                             style="background: linear-gradient(145deg, #ffffff, #f0f0f0);">
                             <div class="card-body text-center p-4">
                                 <div class="icon-box mb-3 mx-auto shadow-sm"
                                     style="background: #e7f1ff; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                    <i class="fas fa-users fa-2x text-primary"></i>
+                                    <i class="fas fa-school fa-2x text-primary"></i>
                                 </div>
                                 <h6 class="text-uppercase fw-bold text-muted mb-1">Class
-                                    {{ $classname }}<sup>th</sup></h6>
+                                    {{ $class->class_name }}<sup>th</sup></h6>
                                 <h6 class="text-uppercase fw-bold text-muted mb-1">Total Students</h6>
-                                <h2 class="fw-bold text-dark mb-0">{{ $total }}</h2>
+                                <h2 class="fw-bold text-dark mb-0">{{ $class->students_count }}</h2>
                             </div>
                         </div>
                     </a>

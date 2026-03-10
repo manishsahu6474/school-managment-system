@@ -16,12 +16,12 @@ class CreateStudentsTable extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('class_id')->nullable()->constrained('classes')->onDelete('set null');
             $table->string('father_name')->nullable();
             $table->string('roll_no')->nullable()->unique();
-            $table->integer('class')->nullable();
-            $table->string('phone')->nullable();
+            $table->string('phone', 15)->nullable();
             $table->date('dob')->nullable();
-            $table->boolean('status')->default(1);
+            $table->tinyInteger('status')->default(1)->comment('0: Pending, 1: Active, 2: Inactive');
             $table->timestamps();
         });
     }
