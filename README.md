@@ -39,30 +39,31 @@ Follow these steps to set up the project locally on your machine:
    git clone [https://github.com/manishsahu6474/school-managment-system.git](https://github.com/manishsahu6474/school-managment-system.git)
    cd school-managment-system
 
-2.Install Dependencies:
-Bash
+2.**Install Dependencies:**
+```bash
 composer install
 npm install && npm run dev
-Environment Configuration:
-
-3.Copy .env.example to .env:
-Bash
+```
+3.Environment Configuration:
+Copy .env.example to .env:
+```bash
 cp .env.example .env
+```
 Configure your database settings (DB_DATABASE, DB_USERNAME, DB_PASSWORD) inside the .env file.
 
 4.Generate App Key & Migrate:
-Bash
+```Bash
 php artisan key:generate
 php artisan migrate
-
+```
 5.Create Storage Link: (Crucial for profile images)
-Bash
+```Bash
 php artisan storage:link
-
+```
 6.Run the Application:
-Bash
+```Bash
 php artisan serve
-
+```
 💻 Tech Stack
 Framework: Laravel 8 (PHP)
 Frontend: Bootstrap 5, FontAwesome, Custom Glassmorphism CSS
