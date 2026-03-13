@@ -213,7 +213,7 @@ body {
     margin-top: auto; /* Ye button ko bottom me dhakelta hai */
     border-top: 1px solid var(--glass-border); /* Upar ek patli line */
     padding-top: 20px; /* Line aur button ke beech gap */
-    margin-bottom: 10px; /* Bottom edge se thoda upar */
+    margin-bottom: 30px; /* Bottom edge se thoda upar */
 }
     /* Jab JS se 'active' class lagegi tab Sidebar aayega */
     .sidebar.active {

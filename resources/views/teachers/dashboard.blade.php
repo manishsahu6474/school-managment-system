@@ -18,6 +18,7 @@
     <div class="dashboard-layout">
         
         <aside class="sidebar glass" id="sidebar">
+            <i class="fa-solid fa-xmark close-sidebar" onclick="toggleSidebar()"></i>
             <div class="brand">
                 <i class="fa-solid fa-chalkboard-user" style="color: var(--accent-color);"></i>
                 <span>Staff Room</span>

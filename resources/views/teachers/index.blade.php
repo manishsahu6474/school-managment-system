@@ -114,6 +114,7 @@
                             <th class="text-center">S.No.</th>
                             <th>Teacher Details</th>
                             <th class="text-center">Subject</th>
+                            <th class="text-center">Class</th>
                             <th class="text-center">Qualification</th>
                             <th class="text-end">Salary</th>
                             <th class="text-center">Joined</th>
@@ -138,9 +139,25 @@
                                     <small class="text-muted text-capitalize">{{ $teacher->gender }}</small>
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
-                                        {{ $teacher->subject->subject_name ?? 'N/A'}}
-                                    </span>
+                                    @forelse($teacher->subjects as $subject)
+                                        <span
+                                            class="badge bg-primary-subtle text-primary border border-primary-subtle mb-1">
+                                            {{ $subject->subject_name }}
+                                        </span>
+                                    @empty
+                                        <span class="text-muted small">Not Assigned</span>
+                                    @endforelse
+                                </td>
+                                <td class="text-center">
+                                    @forelse ($teacher->subjects as $subject)
+                                        <span
+                                            class="badge bg-primary-subtle text-primary border border-primary-subtle mb-1">
+                                            @php $cls = \App\Models\Classes::find($subject->pivot->class_id); @endphp
+                                            {{ $cls->class_name ?? 'N/A' }}<sup>th</sup>
+                                        </span><br>
+                                    @empty
+                                        <span class="text-muted small">Not Assigned</span>
+                                    @endforelse
                                 </td>
                                 <td class="text-center">
                                     <span class="badge bg-light text-dark border">{{ $teacher->qualification }}</span>
@@ -178,8 +195,6 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
-
-                                        {{-- 1. Approve Button (Icon Only for Balance) --}}
                                         @if ($teacher->status == 0)
                                             <form action="{{ route('admin.teachers.approve', $teacher->id) }}"
                                                 method="POST" class="d-inline">
@@ -191,7 +206,6 @@
                                                 </button>
                                             </form>
                                         @endif
-
                                         {{-- 2. Edit Button --}}
                                         <a href="{{ route('admin.teachers.edit', $teacher->id) }}"
                                             class="action-btn btn-3d-warning shadow-sm " title="Edit teacher">
@@ -221,9 +235,36 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="11" class="text-center text-muted">
-                                    No teachers found
-                                </td>
+                                @if (isset($search) && $search != '')
+                                    {{-- Search Results Case --}}
+                                    <td colspan="10" class="text-center text-muted py-5">
+                                        <i class="fas fa-search mb-3 fa-3x opacity-50"></i><br>
+                                        <h5 class="fw-bold text-dark">No Results Found</h5>
+                                        <p>We couldn't find any matches for "<strong>{{ $search }}</strong>"</p>
+                                    </td>
+                                @elseif (request('status') == 'pending')
+                                    {{-- Pending Students Case --}}
+                                    <td colspan="10" class="text-center text-muted py-5">
+                                        <i class="fas fa-user-clock mb-3 fa-3x opacity-50 text-info"></i><br>
+                                        <h5 class="fw-bold text-dark">All Caught Up!</h5>
+                                        <p>There are no <strong>Pending</strong> teacher registrations at the moment.
+                                        </p>
+                                    </td>
+                                @elseif (request('status') == 'inactive')
+                                    {{-- Inactive Students Case --}}
+                                    <td colspan="10" class="text-center text-muted py-5">
+                                        <i class="fas fa-user-shield mb-3 fa-3x opacity-50 text-secondary"></i><br>
+                                        <h5 class="fw-bold text-dark">Archive is Empty</h5>
+                                        <p>No teacher records have been marked as <strong>Inactive</strong> yet.</p>
+                                    </td>
+                                @else
+                                    {{-- Default/Active Tab Empty Case --}}
+                                    <td colspan="10" class="text-center text-muted py-5">
+                                        <i class="fas fa-users-slash mb-3 fa-3x opacity-50 text-warning"></i><br>
+                                        <h5 class="fw-bold text-dark">No Teachers Found</h5>
+                                        <p>The active teachers list is currently empty.</p>
+                                    </td>
+                                @endif
                             </tr>
                         @endforelse
                     </tbody>

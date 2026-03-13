@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\ClassesController;
+use App\Http\Controllers\SubjectController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -41,12 +42,14 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified', 'prevent-back'])->name('dashboard');
 
 Route::middleware(['auth', 'verified', 'prevent-back'])
-    ->prefix('admin')       // URL: /admin/students
-    ->name('admin.')        // Route Name: admin.students.index
+    ->prefix('admin')    
+    ->name('admin.')        
     ->group(function () {
 
         // 1. Admin Dashboard
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('profile', [AdminController::class, 'showprofile'])->name('profile');
+        Route::post('update-profile', [AdminController::class, 'update'])->name('update-profile');
 
         Route::prefix('students')->name('students.')->group(function () {
 
@@ -75,5 +78,6 @@ Route::middleware(['auth', 'verified', 'prevent-back'])
         Route::resource('teachers', TeacherController::class);
         Route::get('classes/{class_name}', [ClassesController::class, 'showStudents'])->name('classes.students');
         Route::resource('classes', ClassesController::class);
+        Route::resource('subjects', SubjectController::class);
     });
 require __DIR__ . '/auth.php';

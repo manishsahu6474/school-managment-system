@@ -74,8 +74,7 @@
     <div class="col-md-4">
         <label class="form-label fw-bold text-muted ml-1">Gender</label>
         <select name="gender" class="form-select morphism-input">
-            <option value="" disabled {{ old('gender', $teacher->gender ?? '') == '' ? 'selected' : '' }}>Select
-                Gender</option>
+            <option value="">Select Gender</option>
             <option value="male" {{ old('gender', $teacher->gender ?? '') == 'male' ? 'selected' : '' }}>Male
             </option>
             <option value="female" {{ old('gender', $teacher->gender ?? '') == 'female' ? 'selected' : '' }}>Female

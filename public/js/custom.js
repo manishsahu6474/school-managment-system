@@ -37,12 +37,12 @@ const handleAjaxError = (xhr, status, $btn, originalHtml) => {
 /**
  * CORE ENGINE: Sabhi Actions (Approve/Delete/Promote) isi se chalenge
  */
-function executeAjaxAction(url, data, config, $btn = null, originalHtml = '', $row = null) {
+function executeAjaxAction(url, data, config, $btn = null, originalHtml = '', $row = null, method = 'POST') {
     $.ajax({
         url: url,
         type: "POST",
         timeout: 10000,
-        data: { ...data, _token: csrfToken },
+        data: { ...data, _token: csrfToken, _method: method },
         beforeSend: () => { if ($btn) $btn.prop('disabled', true).html('<span class="btn-spinner"></span>'); },
         success: (res) => {
             if (res.status === 'success') {
@@ -157,7 +157,23 @@ function deleteStudent(id, status, btn = null) {
         customClass: { popup: 'card-morphism', confirmButton: 'btn-3d-danger', cancelButton: 'btn-3d-secondary' }
     }).then((result) => {
         if (result.isConfirmed) {
-            executeAjaxAction($form.attr('action'), { _method: 'DELETE' }, { msgKey: 'delete_success_msg' }, $(btn), $(btn).html(), $form.closest('tr'));
+            executeAjaxAction($form.attr('action'), {}, { msgKey: 'delete_success_msg' }, $(btn), $(btn).html(), $form.closest('tr'), 'DELETE');
+        }
+    });
+}
+//subject delete function
+function deletesubject(id, btn = null) {
+    const $form = $('#delete-form-' + id);
+    Swal.fire({
+        title: 'Delete karein?',
+        text:  'Subject Permanently delete ho jayega!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Proceed',
+        customClass: { popup: 'card-morphism', confirmButton: 'btn-3d-danger', cancelButton: 'btn-3d-secondary' }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            executeAjaxAction($form.attr('action'), {}, { msgKey: 'delete_success_msg' }, $(btn), $(btn).html(), $form.closest('tr'), 'DELETE');
         }
     });
 }
@@ -245,7 +261,7 @@ function bulkStudentDelete(isPermanent = false) {
         icon: 'warning',
         confirmText: isPermanent ? 'Yes, Delete' : 'Yes, Inactivate',
         btnClass: 'btn-3d-danger',
-        method: 'POST',
+        method: isPermanent ?'DELETE':'POST',
         url: isPermanent ? "/admin/students/bulk-delete" : "/admin/students/bulk-inactivate",
         msgKey: 'delete_success_msg'
     });
@@ -288,7 +304,7 @@ function bulkTeacherDelete(isPermanent = false) {
         icon: 'warning',
         confirmText: isPermanent ? 'Yes, Delete' : 'Yes, Inactivate',
         btnClass: 'btn-3d-danger',
-        method: 'POST',
+        method: isPermanent ? 'DELETE' : 'POST',
         url: isPermanent ? "/admin/teachers/bulk-delete" : "/admin/teachers/bulk-inactivate",
         msgKey: 'delete_success_msg'
     });
@@ -313,7 +329,7 @@ function approveteacher(button) {
 }
 const activateteacher = approveteacher;
 
-// Delete Student
+// Delete Teacher
 function deleteTeacher(id, status, btn = null) {
     const $form = $('#delete-form-' + id);
     const isInactiveAction = (status == 1);
@@ -327,7 +343,7 @@ function deleteTeacher(id, status, btn = null) {
         customClass: { popup: 'card-morphism', confirmButton: 'btn-3d-danger', cancelButton: 'btn-3d-secondary' }
     }).then((result) => {
         if (result.isConfirmed) {
-            executeAjaxAction($form.attr('action'), { _method: 'DELETE' }, { msgKey: 'delete_success_msg' }, $(btn), $(btn).html(), $form.closest('tr'));
+            executeAjaxAction($form.attr('action'), {}, { msgKey: 'delete_success_msg' }, $(btn), $(btn).html(), $form.closest('tr'), 'DELETE');
         }
     });
 }
@@ -406,6 +422,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { threshold: 0.1 });
 
     document.querySelectorAll('canvas').forEach(c => obs.observe(c));
+});
+//subject add karene ka function
+$(document).on('submit', '#addSubjectForm', function(e) {
+    e.preventDefault(); 
+    const $form = $(this);
+    const $btn = $form.find('button[type="submit"]');
+    const url = $form.attr('action');
+    const formData = {};
+    $form.serializeArray().forEach(item => {
+        formData[item.name] = item.value;
+    });
+    executeAjaxAction(
+        url, 
+        formData, 
+        { msgKey: 'update_success_msg' }, 
+        $btn, 
+        $btn.html()
+    );
 });
 // Utilities
 const logoutConfirm = () => {

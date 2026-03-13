@@ -30,7 +30,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="#" class="nav-link text-white {{ request()->routeIs('admin.subject.*') ? 'active' : '' }}">
+            <a href="{{route('admin.subjects.index')}}" class="nav-link text-white {{ request()->routeIs('admin.subject.*') ? 'active' : '' }}">
                 <i class="fas fa-book-reader me-2"></i> Subjects
             </a>
         </li>

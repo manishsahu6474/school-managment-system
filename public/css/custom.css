@@ -16,14 +16,7 @@ body {
     }
 }
 
-/* Branding - center  */
-.navbar-brand-centered {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    white-space: nowrap;
-}
+
 
 #menu-toggle {
     display: none !important;
@@ -503,20 +496,36 @@ canvas {
 @keyframes spin-loader {
     to { transform: rotate(360deg); }
 }
+select.morphism-input {
+    width: 100% !important; -width: 100%;
+    padding: 10px;
+    cursor: pointer;
+    text-overflow: ellipsis; 
+}
 
 @media (max-width: 768px) {
+    select.morphism-input {
+        font-size: 14px !important;
+        height: 45px !important; 
+    }
+    select {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-position: right 10px center;
+    }
     .form-control::placeholder {
-        font-size: 11px; 
+        font-size: 12px; 
         text-overflow: ellipsis;
     }
     
     .morpihsm-input input {
-        padding-left: 10px !important; 
+        padding-left: 12px !important; 
     }
     .status-toggle-btn {
         min-width: 70px !important;
         padding: 2px 8px !important;
-        font-size: 10px !important;
+        font-size: 11px !important;
         text-align: center;
     }
     .status-toggle-btn i
@@ -552,12 +561,12 @@ canvas {
 
     /* Table ke text ko mobile par chhota karein taaki fit ho sake */
     .table-responsive .table {
-        font-size: 0.75rem !important;
+        font-size: 14px !important;
     }
 
     /* Padding kam karein taaki width bache */
     .table thead th {
-        font-size: 0.75rem;
+        font-size: 14px;
     }
 
     .table td,
@@ -620,12 +629,7 @@ canvas {
         margin-left: 0 !important;
     }
 
-    .navbar-brand-centered h2 {
-        font-size: 1rem !important;
-        /* Mobile par text thoda chhota */
-    }
-
-    /* Toggle button ko priority dene ke liye */
+        /* Toggle button ko priority dene ke liye */
     #menu-toggle {
         display: flex !important;
         /* Sirf mobile par dikhega */

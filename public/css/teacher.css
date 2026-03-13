@@ -61,7 +61,15 @@ body {
     border-right: 1px solid var(--glass-border);
     transition: all 0.3s ease;
 }
-
+.close-sidebar {
+    display: none; 
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-gray);
+}
 .brand {
     font-size: 1.5rem; font-weight: bold;
     display: flex; align-items: center; gap: 10px;
@@ -135,12 +143,30 @@ tr:hover { background: rgba(255,255,255,0.03); }
 
 /* === 5. RESPONSIVE MEDIA QUERIES === */
 @media (max-width: 768px) {
-    .sidebar {
-        position: fixed; left: -100%; top: 0; height: 100%;
-        background: #0f172a; z-index: 100; width: 250px;
+  .sidebar {
+        position: fixed; 
+        left: -100%; 
+        height: 100vh;
+        z-index: 999;
+        width: 280px;
+        transition: left 0.3s ease-in-out;
+        backdrop-filter: blur(20px);
+        display: flex; 
     }
-    .sidebar.active { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
-    .menu-toggle { display: block; }
-    .dashboard-layout { flex-direction: column; }
-    .main-content { padding: 20px; }
+
+    .sidebar.active { 
+        left: 0; 
+        box-shadow: 10px 0 30px rgba(0,0,0,0.5); 
+    }
+
+    .close-sidebar { 
+        display: block; 
+    }
+
+    .menu-toggle { 
+        display: block; 
+    }
+    .logout-btn{
+        margin-bottom: 30px;
+    }
 }
