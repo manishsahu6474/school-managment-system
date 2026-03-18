@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\teacher;
-use App\Models\Student;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
@@ -51,8 +49,7 @@ class RegisteredUserController extends Controller
         ]);
         $user->student()->create([
             'class' => $request->class,
-            'status' => 1, // Default active
-            // roll_no aur father_name abhi khali rahega (Admin baad mein bharega)
+            'status' => 0, 
         ]);
 
         return $user;

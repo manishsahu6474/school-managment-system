@@ -24,19 +24,12 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
 
-    // 1. User ka Role check karo
     $role = Auth::user()->role;
-
-    // 2. Traffic Police Logic (Sabke liye kaam karega: Login & Register)
     if ($role === 'admin') {
-        // Agar Admin hai -> Admin Dashboard par bhejo
         return redirect()->route('admin.dashboard');
     } elseif ($role === 'teacher') {
-        // Agar Teacher hai -> Teacher Dashboard dikhao
         return view('teachers.dashboard');
     } else {
-        // Agar Student hai (Registration ke baad yehi chalega)
-        // -> Student Dashboard dikhao
         return view('students.dashboard');
     }
 })->middleware(['auth', 'verified', 'prevent-back'])->name('dashboard');
@@ -46,7 +39,6 @@ Route::middleware(['auth', 'verified', 'prevent-back'])
     ->name('admin.')        
     ->group(function () {
 
-        // 1. Admin Dashboard
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
         Route::get('profile', [AdminController::class, 'showprofile'])->name('profile');
         Route::post('update-profile', [AdminController::class, 'update'])->name('update-profile');
@@ -63,9 +55,8 @@ Route::middleware(['auth', 'verified', 'prevent-back'])
             Route::post('/{id}/approve', [StudentController::class, 'approve'])->name('approve');
             Route::post('/status/{id}', [StudentController::class, 'toggleStatus'])->name('status');
         });
-        //Route::post('students/bulk-promote', [StudentController::class, 'bulkPromote'])->name('students.bulkPromote');
         Route::resource('students', StudentController::class);
-        // Admin ko Teacher par pura control de diya
+
         Route::prefix('teachers')->name('teachers.')->group(function () {
             Route::post('/bulk-activate', [TeacherController::class, 'bulkActivate'])->name('bulkActivate');
             Route::post('/bulk-approve', [TeacherController::class, 'bulkApprove'])->name('bulkApprove');
@@ -75,9 +66,12 @@ Route::middleware(['auth', 'verified', 'prevent-back'])
             Route::post('/{id}/approve', [TeacherController::class, 'approve'])->name('approve');
             Route::post('/status/{id}', [TeacherController::class, 'toggleStatus'])->name('status');
         });
+
         Route::resource('teachers', TeacherController::class);
+
         Route::get('classes/{class_name}', [ClassesController::class, 'showStudents'])->name('classes.students');
         Route::resource('classes', ClassesController::class);
+
         Route::resource('subjects', SubjectController::class);
     });
 require __DIR__ . '/auth.php';

@@ -23,7 +23,6 @@ class StudentController extends Controller
 
             $student = Student::findOrFail($id);
 
-            // Check: Sirf Inactive (2) student ko hi Active (1) kar sakte hain
             if ($student->status != 2) {
                 return response()->json([
                     'status' => 'info',
@@ -31,7 +30,6 @@ class StudentController extends Controller
                 ]);
             }
 
-            // Status Update
             $student->status = 1; // 1 = Active
             $student->save();
 
@@ -59,11 +57,7 @@ class StudentController extends Controller
     {
         $search = $request->search;
         $status = $request->get('status');
-
-        // Students ke sath User aur Class dono load karein (Eager Loading)
         $query = Student::with(['user', 'Classes']);
-
-        // Status Filter
         if ($status === 'pending') {
             $query->where('status', 0);
         } elseif ($status === 'inactive') {
@@ -72,7 +66,6 @@ class StudentController extends Controller
             $query->where('status', 1);
         }
 
-        // Search Logic
         if ($search) {
             $query->where(function ($sub) use ($search) {
                 $sub->whereHas('user', function ($u) use ($search) {
@@ -168,10 +161,8 @@ class StudentController extends Controller
      */
     public function edit($id)
     {
-        // Student ka data ID ke basis par find karein
         $student = Student::with('user')->findOrFail($id);
         $classes = Classes::all();
-        // Data ko edit view file ke sath bhejein
         return view('students.edit', compact('student', 'classes'));
     }
 
@@ -187,7 +178,6 @@ class StudentController extends Controller
         $student = Student::findOrFail($id);
         $user = $student->user;
 
-        // Validation
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
@@ -200,13 +190,11 @@ class StudentController extends Controller
         try {
 
             DB::beginTransaction();
-            // Step A: User Table Update (Name, Email)
             $user->update([
                 'name' => $request->name,
                 'email' => $request->email,
             ]);
 
-            // Step B: Student Table Update (Academic Info)
             $student->update([
                 'roll_no' => $request->roll_no,
                 'class_id' => $request->class_id,
@@ -235,11 +223,9 @@ class StudentController extends Controller
     {
         $student = Student::findOrFail($id);
 
-        // DB Transaction ko poore logic par lagana behtar hai agar multiple tables involve hain
         DB::beginTransaction();
 
         try {
-            // CASE 1: Agar student Active (1) hai -> Inactivate (2) karein
             if ($student->status == 1) {
                 $student->update(['status' => 2]);
                 DB::commit();
@@ -249,7 +235,6 @@ class StudentController extends Controller
                 ]);
             }
 
-            // CASE 2: Agar student Pending (0) hai -> User aur Student dono Delete karein
             if ($student->status == 0) {
                 if ($student->user) {
                     $student->user->delete();
@@ -263,26 +248,19 @@ class StudentController extends Controller
                 ]);
             }
 
-            // Agar status pehle se 2 (Inactive) hai toh yahan aayega
             return response()->json([
                 'status' => 'error',
                 'message' => 'Student is already Inactive or Invalid Status!'
             ], 403);
         } catch (\Exception $e) {
-            DB::rollBack(); // Kisi bhi galti par database ko purani halat mein le jayein
+            DB::rollBack(); 
             return response()->json([
                 'status' => 'error',
                 'message' => 'Something went wrong: ' . $e->getMessage()
             ], 500);
         }
     }
-    // 1. Individual Approve (Engine use karke)
-    public function approve($id)
-    {
-        return $this->performBulkStatusUpdate([$id], 1, 'Student Admission Approved Successfully!');
-    }
-
-    // 2. Bulk Promote (With Transaction)
+   
     public function bulkPromote(Request $request)
     {
         if (empty($request->ids)) return response()->json(['status' => 'error', 'message' => 'Select students!'], 400);
@@ -320,26 +298,28 @@ class StudentController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Database error: Action perform nahi ho paya.'], 500);
         }
     }
+     public function approve($id)
+    {
+        Student::findorfail($id);
+        return $this->performBulkStatusUpdate([$id], 1, 'Student Admission Approved Successfully!');
+    }
 
-    // 1. Bulk Approve (Pending -> Active)
+
     public function bulkApprove(Request $request)
     {
         return $this->performBulkStatusUpdate($request->ids, 1, 'Selected students approve ho gaye hain!');
     }
 
-    // 2. Bulk Activate (Inactive -> Active)
     public function bulkActivate(Request $request)
     {
         return $this->performBulkStatusUpdate($request->ids, 1, 'Selected students re-activate ho gaye hain!');
     }
 
-    // 3. Bulk Inactivate (Active -> Inactive)
     public function bulkInactivate(Request $request)
     {
         return $this->performBulkStatusUpdate($request->ids, 2, 'Selected students inactive list mein move ho gaye!');
     }
 
-    // 4. Bulk Delete (Permanent Delete)
     public function bulkDelete(Request $request)
     {
         if (empty($request->ids)) {

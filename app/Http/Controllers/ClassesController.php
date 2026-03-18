@@ -20,11 +20,11 @@ class ClassesController extends Controller
 
     public function showStudents(Request $request, $id)
     {
+        $classes = Classes::findOrFail($id);
         $search = $request->search;
 
-        // Sirf is specific class ($id) ke students load karein
         $query = Student::with(['user', 'Classes'])
-            ->where('class_id', $id) // Yeh line zaroori hai
+            ->where('class_id', $id) 
             ->where('status', 1);
 
         if ($search) {
@@ -36,7 +36,6 @@ class ClassesController extends Controller
             });
         }
 
-        $classes = Classes::findOrFail($id);
         $students = $query->latest()->paginate(10);
 
         return view('classes.show', compact('students', 'search', 'classes'));

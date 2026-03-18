@@ -14,7 +14,6 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        //admin add karene ke liye
         User::create(
             [
                 'name' => 'Admin',

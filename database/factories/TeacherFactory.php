@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\User;
 
 class TeacherFactory extends Factory
 {
@@ -15,7 +16,7 @@ class TeacherFactory extends Factory
     {
         return [
             //
-            'user_id' => \App\Models\User::factory()->create(['role' => 'teacher'])->id,
+            'user_id' => User::factory()->create(['role' => 'teacher'])->id,
             'phone' => $this->faker->phoneNumber,
             'gender' => $this->faker->randomElement(['male', 'female']),
             'address' => $this->faker->address,
