@@ -23,8 +23,8 @@
             </div>
             <div class="col-md-8">
                 <div class="card card-morphism p-4 border-0 shadow-lg">
-                    <h5 class="fw-bold text-dark mb-4"><i class="fas fa-user-edit me-2 text-primary"></i> Edit Profile
-                        Details</h5>
+                    <h6 class="fw-bold text-dark mb-4"><i class="fas fa-user-edit me-2 text-primary"></i> Edit Profile
+                        Details</h6>
 
                     <form id="profileUpdateForm" action="{{ route('admin.update-profile') }}" method="POST"
                         enctype="multipart/form-data">

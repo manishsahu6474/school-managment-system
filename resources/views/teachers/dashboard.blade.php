@@ -1,13 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>Teacher Portal | SMS</title>
-    
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/teacher.css') }}">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="{{ asset('js/custom.js') }}"></script>
 </head>
+
 <body>
 
     <div class="blob-container">
@@ -16,14 +25,14 @@
     </div>
 
     <div class="dashboard-layout">
-        
+
         <aside class="sidebar glass" id="sidebar">
             <i class="fa-solid fa-xmark close-sidebar" onclick="toggleSidebar()"></i>
             <div class="brand">
                 <i class="fa-solid fa-chalkboard-user" style="color: var(--accent-color);"></i>
                 <span>Staff Room</span>
             </div>
-            
+
             <nav>
                 <a href="#" class="nav-item active"><i class="fa-solid fa-layer-group"></i> Dashboard</a>
                 <a href="#" class="nav-item"><i class="fa-solid fa-users"></i> My Students</a>
@@ -41,7 +50,7 @@
         </aside>
 
         <main class="main-content">
-            
+
             <header class="header glass" style="padding: 15px 25px; border-radius: 12px;">
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <i class="fa-solid fa-bars menu-toggle" onclick="toggleSidebar()"></i>
@@ -50,13 +59,15 @@
                         <small style="color: var(--text-gray);">Senior Mathematics Teacher</small>
                     </div>
                 </div>
-                
+
                 <div style="display: flex; align-items: center; gap: 20px;">
                     <div style="position: relative;">
                         <i class="fa-regular fa-bell" style="font-size: 1.2rem; cursor: pointer;"></i>
-                        <span style="position: absolute; top: -5px; right: -5px; background: var(--danger-color); width: 8px; height: 8px; border-radius: 50%;"></span>
+                        <span
+                            style="position: absolute; top: -5px; right: -5px; background: var(--danger-color); width: 8px; height: 8px; border-radius: 50%;"></span>
                     </div>
-                    <div style="width: 40px; height: 40px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                    <div
+                        style="width: 40px; height: 40px; background: var(--primary-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
                         {{ substr(Auth::user()->name, 0, 1) }}
                     </div>
                 </div>
@@ -102,15 +113,23 @@
                             <td><strong>10th - A</strong></td>
                             <td>Mathematics</td>
                             <td>09:00 AM</td>
-                            <td><span style="background: rgba(20, 184, 166, 0.2); color: #2dd4bf; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem;">Completed</span></td>
-                            <td><button style="background: none; border: 1px solid var(--text-gray); color: white; padding: 5px 10px; border-radius: 6px; cursor: pointer;">View</button></td>
+                            <td><span
+                                    style="background: rgba(20, 184, 166, 0.2); color: #2dd4bf; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem;">Completed</span>
+                            </td>
+                            <td><button
+                                    style="background: none; border: 1px solid var(--text-gray); color: white; padding: 5px 10px; border-radius: 6px; cursor: pointer;">View</button>
+                            </td>
                         </tr>
                         <tr>
                             <td><strong>9th - B</strong></td>
                             <td>Physics</td>
                             <td>11:30 AM</td>
-                            <td><span style="background: rgba(249, 115, 22, 0.2); color: #fb923c; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem;">Next</span></td>
-                            <td><button style="background: var(--primary-color); border: none; color: white; padding: 5px 10px; border-radius: 6px; cursor: pointer;">Start</button></td>
+                            <td><span
+                                    style="background: rgba(249, 115, 22, 0.2); color: #fb923c; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem;">Next</span>
+                            </td>
+                            <td><button
+                                    style="background: var(--primary-color); border: none; color: white; padding: 5px 10px; border-radius: 6px; cursor: pointer;">Start</button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -123,7 +142,14 @@
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('active');
         }
+        $(document).ready(() => {
+            // Session check 
+            @if (session('access_denied'))
+                showAlert('Security Alert!', "{{ session('access_denied') }}", 'error', 'text-danger');
+            @endif
+        });
     </script>
 
 </body>
+
 </html>

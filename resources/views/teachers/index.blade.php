@@ -1,12 +1,9 @@
 <x-app-layout>
     <div class="container-fluid px-md-5">
-        <div class="container-fluid px-md-5">
-            <div
-                class="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4 mt-3 position-relative gap-3">
-                <div class="d-none d-md-block" style="width: 180px;"></div>
+            <div class="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4 mt-3 position-relative gap-3">
+               <div class="d-none d-md-block" style="width: 180px;"></div> 
                 <div class="text-center flex-grow-1">
-                    <h2 class="fw-bold text-dark text-uppercase
-                     mb-0 display-6 main-heading">
+                    <h2 class="fs-5 fs-md-4 m-0 text-dark fw-bold text-uppercase " style="white-space: nowrap;">
                         <i class="fas fa-chalkboard-teacher  text-primary me-2"></i>
                         Teachers List
                     </h2>
@@ -18,7 +15,6 @@
                     </a>
                 </div>
             </div>
-        </div>
         {{-- Search --}}
         <div class="row justify-content-center mb-5">
             <div class="col-md-10 col-lg-8">
@@ -32,16 +28,16 @@
                             </div>
                         </div>
                         <div class="col-md-5 d-flex gap-2">
-                            <button class="btn  btn-3d-primary w-100 fw-bold" type="submit">SEARCH</button>
+                            <button class="btn  btn-3d-primary w-100 fw-bold btn-sm" type="submit">SEARCH</button>
                             <a href="{{ route('admin.teachers.index', ['status' => request('status')]) }}"
-                                class="btn btn-secondary btn-3d-secondary w-100 fw-bold">RESET</a>
+                                class="btn btn-secondary btn-3d-secondary w-100 fw-bold btn-sm">RESET</a>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
         {{-- Status Tabs --}}
-        <div class="d-flex flex-wrap align-items-center gap-2 gap-sm-4 mb-4">
+        <div class="d-flex  align-items-center gap-2 gap-sm-4 mb-4">
 
             <a href="{{ route('admin.teachers.index', ['status' => 'active', 'search' => $search]) }}"
                 class="btn btn-3d-primary btn-sm  flex-shrink-0">
@@ -237,14 +233,14 @@
                             <tr>
                                 @if (isset($search) && $search != '')
                                     {{-- Search Results Case --}}
-                                    <td colspan="10" class="text-center text-muted py-5">
+                                    <td colspan="11" class="text-center text-muted py-5">
                                         <i class="fas fa-search mb-3 fa-3x opacity-50"></i><br>
                                         <h5 class="fw-bold text-dark">No Results Found</h5>
                                         <p>We couldn't find any matches for "<strong>{{ $search }}</strong>"</p>
                                     </td>
                                 @elseif (request('status') == 'pending')
                                     {{-- Pending Students Case --}}
-                                    <td colspan="10" class="text-center text-muted py-5">
+                                    <td colspan="11" class="text-center text-muted py-5">
                                         <i class="fas fa-user-clock mb-3 fa-3x opacity-50 text-info"></i><br>
                                         <h5 class="fw-bold text-dark">All Caught Up!</h5>
                                         <p>There are no <strong>Pending</strong> teacher registrations at the moment.
@@ -252,14 +248,14 @@
                                     </td>
                                 @elseif (request('status') == 'inactive')
                                     {{-- Inactive Students Case --}}
-                                    <td colspan="10" class="text-center text-muted py-5">
+                                    <td colspan="11" class="text-center text-muted py-5">
                                         <i class="fas fa-user-shield mb-3 fa-3x opacity-50 text-secondary"></i><br>
                                         <h5 class="fw-bold text-dark">Archive is Empty</h5>
                                         <p>No teacher records have been marked as <strong>Inactive</strong> yet.</p>
                                     </td>
                                 @else
                                     {{-- Default/Active Tab Empty Case --}}
-                                    <td colspan="10" class="text-center text-muted py-5">
+                                    <td colspan="11" class="text-center text-muted py-5">
                                         <i class="fas fa-users-slash mb-3 fa-3x opacity-50 text-warning"></i><br>
                                         <h5 class="fw-bold text-dark">No Teachers Found</h5>
                                         <p>The active teachers list is currently empty.</p>

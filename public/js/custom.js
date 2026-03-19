@@ -1,5 +1,5 @@
 /**
- * Global Alert Handler (For Blade Sessions)
+ * Global Alert Handler 
  */
 const showAlert = (title, text, icon, colorClass = 'text-primary') => {
     Swal.fire({
@@ -27,6 +27,10 @@ const csrfToken = $('meta[name="csrf-token"]').attr('content');
 // Common Ajax Error Handler
 const handleAjaxError = (xhr, status, $btn, originalHtml) => {
     if ($btn) $btn.prop('disabled', false).html(originalHtml);
+    if (xhr.status === 403) {
+        const res = xhr.responseJSON;
+        return showAlert('Access Denied!', res.message, 'error', 'text-danger');
+    }
     let msg = 'Connection lost. Please try again.';
     if (status === 'timeout') msg = 'Server slow! Request timed out.';
     else if (xhr.status === 419) msg = 'Session expired. Please refresh.';
@@ -35,7 +39,7 @@ const handleAjaxError = (xhr, status, $btn, originalHtml) => {
 };
 
 /**
- * CORE ENGINE: Sabhi Actions (Approve/Delete/Promote) isi se chalenge
+ * CORE ENGINE
  */
 function executeAjaxAction(url, data, config, $btn = null, originalHtml = '', $row = null, method = 'POST') {
     $.ajax({
@@ -73,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const resetTimer = () => {
         clearTimeout(hideTimer);
-        if (window.innerWidth <= 768 && sidebar.classList.contains('active')) {
+        if (window.innerWidth <= 1199 && sidebar.classList.contains('active')) {
             hideTimer = setTimeout(() => sidebar.classList.remove('active'), 7000);
         }
     };
@@ -95,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * 2. AUTO-ALERTS (LocalStorage)
+ * 2. AUTO-ALERTS
  */
 $(document).ready(() => {
     const alerts = {
@@ -119,10 +123,9 @@ $(document).ready(() => {
 });
 
 /**
- * 3. WRAPPER FUNCTIONS (Blade se call karne ke liye)
+ * 3. WRAPPER FUNCTIONS 
  */
 
-// Approve & Re-Activate (Donon ke liye ek logic)
 function approveStudent(button) {
     const $btn = $(button);
     const $form = $btn.closest('form');
@@ -143,7 +146,6 @@ function approveStudent(button) {
 }
 const activateStudent = approveStudent;
 
-// Delete Student
 function deleteStudent(id, status, btn = null) {
     const $form = $('#delete-form-' + id);
     const isInactiveAction = (status == 1);
@@ -161,12 +163,12 @@ function deleteStudent(id, status, btn = null) {
         }
     });
 }
-//subject delete function
+
 function deletesubject(id, btn = null) {
     const $form = $('#delete-form-' + id);
     Swal.fire({
         title: 'Delete karein?',
-        text:  'Subject Permanently delete ho jayega!',
+        text: 'Subject Permanently delete ho jayega!',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Yes, Proceed',
@@ -179,7 +181,7 @@ function deletesubject(id, btn = null) {
 }
 
 /**
- * 4. BULK ACTIONS ENGINE (Generic)
+ * 4. BULK ACTIONS ENGINE 
  */
 const GLOBAL_CHECKBOX = '.record-checkbox';
 
@@ -230,7 +232,7 @@ function executeBulkAction(config) {
         }
     });
 }
-// 1. Bulk Promote
+
 const bulkPromote = () => executeBulkAction({
     entity: 'students',
     title: 'Promote Students?',
@@ -241,7 +243,6 @@ const bulkPromote = () => executeBulkAction({
     msgKey: 'update_success_msg'
 });
 
-// 2. Bulk Approve (Pending -> Active)
 const bulkApprove = () => executeBulkAction({
     entity: 'students',
     title: 'Approve Selected?',
@@ -252,7 +253,6 @@ const bulkApprove = () => executeBulkAction({
     msgKey: 'activated_success_msg'
 });
 
-// 3. Bulk Delete/Inactive
 function bulkStudentDelete(isPermanent = false) {
     executeBulkAction({
         entity: 'students',
@@ -261,12 +261,12 @@ function bulkStudentDelete(isPermanent = false) {
         icon: 'warning',
         confirmText: isPermanent ? 'Yes, Delete' : 'Yes, Inactivate',
         btnClass: 'btn-3d-danger',
-        method: isPermanent ?'DELETE':'POST',
+        method: isPermanent ? 'DELETE' : 'POST',
         url: isPermanent ? "/admin/students/bulk-delete" : "/admin/students/bulk-inactivate",
         msgKey: 'delete_success_msg'
     });
 }
-// 4. Bulk Re-Activate (Inactive -> Active)
+
 const bulkActivate = () => executeBulkAction({
     entity: 'students',
     title: 'Re-Activate Selected?',
@@ -274,9 +274,10 @@ const bulkActivate = () => executeBulkAction({
     icon: 'info',
     confirmText: 'Yes, Activate All',
     btnClass: 'btn-3d-primary',
-    url: "/admin/students/bulk-activate", 
+    url: "/admin/students/bulk-activate",
     msgKey: 'activated_success_msg'
 });
+
 const bulkTeacherApprove = () => executeBulkAction({
     entity: 'teachers',
     title: 'Approve Selected Teachers?',
@@ -286,6 +287,7 @@ const bulkTeacherApprove = () => executeBulkAction({
     url: "/admin/teachers/bulk-approve",
     msgKey: 'activated_success_msg'
 });
+
 const bulkTeacherActivate = () => executeBulkAction({
     entity: 'teachers',
     title: 'Re-activated Selected Teachers?',
@@ -309,6 +311,7 @@ function bulkTeacherDelete(isPermanent = false) {
         msgKey: 'delete_success_msg'
     });
 }
+
 function approveteacher(button) {
     const $btn = $(button);
     const $form = $btn.closest('form');
@@ -319,7 +322,7 @@ function approveteacher(button) {
         text: "Kya aap is Teacher ko Active list mein move karna chahte hain?",
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'Yes, Approve!',
+        confirmButtonText: 'Yes,Approve',
         customClass: { popup: 'card-morphism', confirmButton: 'btn-3d-success', cancelButton: 'btn-3d-secondary' }
     }).then((result) => {
         if (result.isConfirmed) {
@@ -329,7 +332,6 @@ function approveteacher(button) {
 }
 const activateteacher = approveteacher;
 
-// Delete Teacher
 function deleteTeacher(id, status, btn = null) {
     const $form = $('#delete-form-' + id);
     const isInactiveAction = (status == 1);
@@ -347,13 +349,12 @@ function deleteTeacher(id, status, btn = null) {
         }
     });
 }
-// Chart Logic (Intersection Observer)
+
 document.addEventListener('DOMContentLoaded', () => {
     const statsEl = document.getElementById('stats-data');
     if (!statsEl) return;
     const data = JSON.parse(statsEl.value);
 
-    // Stylish Gradient Helper
     const getGradient = (ctx, colorStart, colorEnd) => {
         const gradient = ctx.createLinearGradient(0, 0, 0, 400);
         gradient.addColorStop(0, colorStart);
@@ -365,12 +366,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const canvas = document.getElementById(id);
         const ctx = canvas.getContext('2d');
 
-        // Stylish Colors (Gradients)
         const colors = [
-            getGradient(ctx, 'rgba(0, 122, 255, 1)', 'rgba(0, 122, 255, 0.6)'), // Blue
-            getGradient(ctx, 'rgba(52, 199, 89, 1)', 'rgba(52, 199, 89, 0.6)'),  // Green
-            getGradient(ctx, 'rgba(255, 59, 48, 1)', 'rgba(255, 59, 48, 0.6)'),  // Red
-            getGradient(ctx, 'rgba(88, 86, 214, 1)', 'rgba(88, 86, 214, 0.6)')   // Purple
+            getGradient(ctx, 'rgba(0, 122, 255, 1)', 'rgba(0, 122, 255, 0.6)'),
+            getGradient(ctx, 'rgba(52, 199, 89, 1)', 'rgba(52, 199, 89, 0.6)'), 
+            getGradient(ctx, 'rgba(255, 59, 48, 1)', 'rgba(255, 59, 48, 0.6)'), 
+            getGradient(ctx, 'rgba(88, 86, 214, 1)', 'rgba(88, 86, 214, 0.6)')   
         ];
 
         Chart.getChart(id)?.destroy();
@@ -384,9 +384,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     backgroundColor: colors,
                     borderColor: 'rgba(255, 255, 255, 0.8)',
                     borderWidth: 2,
-                    borderRadius: isPie ? 0 : 12, // Rounded corners for bars
-                    cutout: isPie ? '70%' : null, // Hollow doughnut look
-                    hoverOffset: 5 // Stylish zoom effect on hover
+                    borderRadius: isPie ? 0 : 12, 
+                    cutout: isPie ? '70%' : null,
+                    hoverOffset: 5
                 }]
             },
             options: {
@@ -394,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: isPie, // Pie mein legend dikhao, bar mein zaroorat nahi
+                        display: isPie, 
                         position: 'bottom',
                         labels: { usePointStyle: true, font: { weight: 'bold' } }
                     },
@@ -411,7 +411,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Intersection Observer (Same as before - for performance)
     const obs = new IntersectionObserver((entries) => {
         entries.forEach(e => {
             if (e.isIntersecting) {
@@ -423,9 +422,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('canvas').forEach(c => obs.observe(c));
 });
-//subject add karene ka function
-$(document).on('submit', '#addSubjectForm', function(e) {
-    e.preventDefault(); 
+
+$(document).on('submit', '#addSubjectForm', function (e) {
+    e.preventDefault();
     const $form = $(this);
     const $btn = $form.find('button[type="submit"]');
     const url = $form.attr('action');
@@ -434,23 +433,30 @@ $(document).on('submit', '#addSubjectForm', function(e) {
         formData[item.name] = item.value;
     });
     executeAjaxAction(
-        url, 
-        formData, 
-        { msgKey: 'update_success_msg' }, 
-        $btn, 
+        url,
+        formData,
+        { msgKey: 'update_success_msg' },
+        $btn,
         $btn.html()
     );
 });
-// Utilities
-const logoutConfirm = () => {
-    Swal.fire({ 
-        title: 'Logout?', 
-        icon: 'warning', 
-        showCancelButton: true 
-    }).then(r => r.isConfirmed && document.getElementById('logout-form').submit());
-}; 
 
-window.addEventListener('pageshow', function(event) {
+const logoutConfirm = () => {
+    Swal.fire({
+        title: 'You Want To Logout ?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Logout!',
+        customClass: {
+            popup: 'card-morphism border-0 shadow-lg',
+            title: 'fw-bold text-danger',
+            confirmButton: 'btn-3d-danger mx-2',
+            cancelButton: 'btn-3d-secondary mx-2'
+        }
+    }).then(r => r.isConfirmed && document.getElementById('logout-form').submit());
+};
+
+window.addEventListener('pageshow', function (event) {
     if (event.persisted || (typeof window.performance != "undefined" && window.performance.navigation.type === 2)) {
         window.location.reload();
     }

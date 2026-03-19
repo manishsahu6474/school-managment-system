@@ -1,34 +1,17 @@
-/* Body Background */
 body {
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
     font-family: 'Poppins', sans-serif !important;
-    /* Apna purana font name yahan likhein */
-    font-size: 16px !important;
-    /* Jo size aapko pehle sahi lagta tha */
-    line-height: 1.5;
 
-    h1,
-    h2,
-    h3,
-    h4 {
-        font-weight: bold !important;
-    }
 }
-
-
 
 #menu-toggle {
     display: none !important;
-    /* Default hidden */
 }
 
-/* Dropdown Animation & 3D Shadow */
-/* Dropdown container ko glassy aur shiny banane ke liye */
 .dropdown-menu {
     background: rgba(255, 255, 255, 0.9) !important;
     backdrop-filter: blur(12px) !important;
-    /* Apple style blur */
     border: 1px solid rgba(0, 210, 255, 0.3) !important;
     box-shadow: 0 10px 30px rgba(0, 210, 255, 0.15) !important;
     border-radius: 12px !important;
@@ -37,7 +20,6 @@ body {
 
 }
 
-/* Dropdown item professional shiny look */
 .dropdown-item {
     position: relative;
     overflow: hidden;
@@ -47,19 +29,13 @@ body {
 
 .dropdown-item:hover {
     background: rgba(0, 122, 255, 0.05) !important;
-    /* Bahut halka blue tint */
     color: #0731ff !important;
-    /* Apple Classic Blue */
-
-    /* Soft White & Blue Glow */
     box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.8),
         0 0 15px rgb(234, 236, 238) !important;
-
     transform: scale(1.02);
     padding-left: 1 0px !important;
 }
 
-/* Shiny Animation (White Light Sweep) */
 .dropdown-item::after {
     content: '';
     position: absolute;
@@ -77,10 +53,8 @@ body {
 
 .dropdown-item:hover::after {
     left: 150%;
-    /* Mouse le jane par ek chamak pass hogi */
 }
 
-/* 1. Sidebar Base (Desktop) */
 .sidebar {
     width: 230px;
     min-height: 100vh;
@@ -91,16 +65,11 @@ body {
     z-index: 1050;
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-/* 2. Nav Links & 3D Hover Effect */
-/* Sidebar icons ko specific glow dene ke liye */
 .sidebar-menu .nav-link i {
     width: 25px;
-    /* Alignment sahi rahegi */
     text-align: center;
     transition: all 0.3s ease;
 }
-
 
 .sidebar-menu .nav-link {
     position: relative;
@@ -114,12 +83,8 @@ body {
     text-decoration: none;
 }
 
-/* Glow & Lift on Hover */
-/* Sidebar icons ke liye Shiny Apple Glow */
 .sidebar-menu .nav-link:hover i {
     color: #ffffff !important;
-    /* Icon white rahega */
-    /* Tehrri (Triple) Layer Glow Effect */
     text-shadow: 0 0 10px #00d2ff,
         0 0 20px #00d2ff,
         0 0 30px #00d2ff !important;
@@ -127,26 +92,22 @@ body {
     transition: all 0.3s ease-in-out;
 }
 
-/* Active State (Blue Box) */
 .sidebar-menu .nav-link.active {
     background: #0d6efd !important;
     color: white !important;
     box-shadow: 0 4px 15px rgba(13, 110, 253, 0.4);
 }
 
-/* 3. Main Content Wrapper */
 .main-content {
     margin-left: 230px;
     transition: margin-left 0.3s ease;
 }
 
-/* 3D Card Effect */
 .card-3d {
     border-radius: 15px !important;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
     cursor: pointer;
     backdrop-filter: blur(10px);
-    /* Glass effect */
     border: 1px solid rgba(255, 255, 255, 0.5) !important;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1) !important;
     background: linear-gradient(145deg, #ffffff, #f0f0f0);
@@ -155,7 +116,6 @@ body {
 .card-3d:hover {
     transform: translateY(-10px);
     background: rgba(255, 255, 255, 0.95) !important;
-    /* Soft Shiny Blue Glow */
     border: 1.5px solid rgba(0, 122, 255, 0.2) !important;
     box-shadow: 0 10px 25px rgba(0, 122, 255, 0.1) !important;
 }
@@ -185,18 +145,14 @@ body {
     justify-content: center;
     transition: all 0.3s ease;
     border: 2px solid rgba(255, 255, 255, 0.8);
-    /* Shiny border edge */
 }
 
 .icon-circle-shiny:hover {
     transform: scale(1.1) rotate(5deg);
-    /* Chota sa animation */
     background: #00d2ff;
-    /* Hover par shiny blue */
     color: white;
 }
 
-/* Input Fields 3D Shadow */
 .form-control-3d {
     border-radius: 8px;
     border: 1px solid #ddd;
@@ -212,13 +168,11 @@ body {
     border-color: #4e73df;
 }
 
-/* 3D Button Style */
-/* Search Button 3D Style (Blue) */
 .btn-3d-primary {
+    display: inline-block;
     background: linear-gradient(to bottom, #0d6efd, #0b5ed7) !important;
     border: none !important;
     border-bottom: 4px solid #084298 !important;
-    /* Bottom depth shadow */
     color: white !important;
     border-radius: 10px;
     transition: all 0.1s ease !important;
@@ -233,19 +187,21 @@ body {
 
 .btn-3d-primary:active {
     transform: translateY(3px) !important;
-    /* Click karne par dabega */
     border-bottom: 1px solid #084298 !important;
 }
 
-/* Reset Button 3D Style (Grey) */
 .btn-3d-secondary {
+    display: inline-block;
     background: linear-gradient(to bottom, #6c757d, #5a6268) !important;
     border: none !important;
     border-bottom: 4px solid #3d4246 !important;
     color: white !important;
     transition: all 0.1s ease !important;
     border-radius: 10px;
-        padding: 0.5rem 1rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    outline: none !important;
+
 
 }
 
@@ -266,7 +222,7 @@ body {
     color: white !important;
     transition: all 0.1s ease !important;
     border-radius: 10px;
-        padding: 0.5rem 1rem;
+    padding: 0.5rem 1rem;
 
 }
 
@@ -277,7 +233,6 @@ body {
 
 .btn-3d-warning:active {
     transform: translateY(3px) !important;
-    /* Button dabne wala effect */
     border-bottom: 1px solid #b38600 !important;
 }
 
@@ -288,7 +243,7 @@ body {
     color: #ffffff;
     transition: all 0.1s ease !important;
     border-radius: 10px;
-        padding: 0.5rem 1rem;
+    padding: 0.5rem 1rem;
 
 }
 
@@ -299,7 +254,6 @@ body {
 
 .btn-3d-danger:active {
     transform: translateY(3px) !important;
-    /* Button niche dabega */
     border-bottom: 1px solid #841622 !important;
 }
 
@@ -311,7 +265,7 @@ body {
     color: white;
     font-weight: bold;
     transition: all 0.1s;
-    padding: 12px 24px;
+    padding: 0.5rem 1rem;
     border-radius: 10px;
     cursor: pointer;
     outline: none !important;
@@ -328,12 +282,11 @@ body {
     border-bottom: 1px solid #1e7e34;
 }
 
-/* Bulk Action Wrapper Animation */
 #bulk-actions-wrapper {
-    display: none; /* JS isse handle karega */
+    display: none;
     opacity: 0;
     transform: translateY(-10px);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bounce effect */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 #bulk-actions-wrapper.show-active {
@@ -341,7 +294,7 @@ body {
     opacity: 1;
     transform: translateY(0);
 }
-/* Pagination 3D Styling */
+
 .pagination {
     gap: 5px;
 }
@@ -367,24 +320,20 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Table ko Professional 3D Card Look dene ke liye */
 .table-responsive {
     border-radius: 10px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    /* 3D Shadow */
     background: #fff;
     padding: 10px;
     cursor: default !important;
 }
 
-/* Table Header Dark & Bold */
 .table thead {
     background: #212529;
     color: #fff;
     border-radius: 10px 10px 0 0;
 }
 
-/* Table Row Hover effect */
 .table tbody tr {
     transition: transform 0.2s ease;
 }
@@ -392,30 +341,25 @@ body {
 .table tbody tr:hover {
     background-color: #817d7def !important;
     transform: scale(1.01);
-    /* Halka sa pop-up effect */
     z-index: 1;
 }
 
-/* 3D Morphism Card Style */
 .card-morphism {
     background: rgba(255, 255, 255, 0.9) !important;
     backdrop-filter: blur(15px);
-    /* Glassy blur effect */
     border-radius: 20px !important;
-    /* Soft 3D Shadow */
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1),
         0 5px 15px rgba(0, 0, 0, 0.05) !important;
     overflow: hidden;
 }
 
-/* Header with 3D Depth */
 .morphism-header {
     background: linear-gradient(135deg, #1277f3, #0fdef1) !important;
     border-bottom: 4px solid rgba(0, 0, 0, 0.15) !important;
     padding: 20px !important;
+
 }
 
-/* Shiny Input Fields */
 .morphism-input {
     background: rgba(255, 255, 255, 0.7) !important;
     border: 1px solid #ddd !important;
@@ -428,7 +372,6 @@ body {
     background: #fff !important;
     border-color: #00d2ff !important;
     box-shadow: 0 0 15px rgba(0, 210, 255, 0.2) !important;
-    /* Shiny Blue Glow */
     transform: translateY(-2px);
 }
 
@@ -452,7 +395,6 @@ canvas {
     max-height: 100% !important;
 }
 
-/* Approve Button Specific */
 .btn-approve {
     background: #e8f5e9;
     color: #2e7d32;
@@ -470,8 +412,6 @@ canvas {
     justify-content: center;
 }
 
-
-/* --- 3. Professional Action Icons --- */
 .action-btn {
     width: 32px;
     height: 32px;
@@ -479,9 +419,10 @@ canvas {
     align-items: center;
     justify-content: center;
     border-radius: 10px;
+    border: rgb(109, 240, 16);
 
 }
-/* Custom Stylish Spinner */
+
 .btn-spinner {
     width: 18px;
     height: 18px;
@@ -494,44 +435,51 @@ canvas {
 }
 
 @keyframes spin-loader {
-    to { transform: rotate(360deg); }
-}
-select.morphism-input {
-    width: 100% !important; -width: 100%;
-    padding: 10px;
-    cursor: pointer;
-    text-overflow: ellipsis; 
+    to {
+        transform: rotate(360deg);
+    }
 }
 
-@media (max-width: 768px) {
+select.morphism-input {
+    width: 100% !important;
+    max-width: 100%;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+}
+
+@media (max-width: 1199px) {
+
+
     select.morphism-input {
-        font-size: 14px !important;
-        height: 45px !important; 
+        font-size: 16px !important;
+        width: 100%;
+
     }
-    select {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        background-position: right 10px center;
-    }
+
+
     .form-control::placeholder {
-        font-size: 12px; 
+        font-size: 12px;
         text-overflow: ellipsis;
     }
-    
+
     .morpihsm-input input {
-        padding-left: 12px !important; 
+        padding-left: 12px !important;
     }
+
     .status-toggle-btn {
         min-width: 70px !important;
         padding: 2px 8px !important;
         font-size: 11px !important;
         text-align: center;
     }
-    .status-toggle-btn i
-     {
+
+    .status-toggle-btn i {
         display: none !important;
     }
+
     .btn-sm {
         padding-left: 0.5rem !important;
         padding-right: 0.5rem !important;
@@ -541,7 +489,7 @@ select.morphism-input {
     .mobile-badge-adj {
 
         margin-left: -6px;
-        
+
     }
 
     .dashboard-wrapper .col-7,
@@ -559,12 +507,10 @@ select.morphism-input {
         border-radius: 15px !important;
     }
 
-    /* Table ke text ko mobile par chhota karein taaki fit ho sake */
     .table-responsive .table {
         font-size: 14px !important;
     }
 
-    /* Padding kam karein taaki width bache */
     .table thead th {
         font-size: 14px;
     }
@@ -584,27 +530,22 @@ select.morphism-input {
         height: 30px;
         font-size: 12px;
         border-radius: 10px;
+        border: none;
     }
 
-    /* Mobile pe Action column ko thoda saans dene ke liye */
     .gap-2 {
         gap: 0.4rem !important;
     }
 
     .pagination {
         gap: 3px;
-        /* Gap kam kar diya taaki buttons ek line mein aa sakein */
         justify-content: center;
-        /* Mobile par center mein rahega */
     }
 
     .page-item .page-link {
         padding: 5px 10px !important;
-        /* Size chota kiya */
         font-size: 12px !important;
-        /* Text chota kiya */
         min-width: 35px;
-        /* Button ki width uniform rakhi */
         text-align: center;
     }
 
@@ -629,10 +570,8 @@ select.morphism-input {
         margin-left: 0 !important;
     }
 
-        /* Toggle button ko priority dene ke liye */
     #menu-toggle {
         display: flex !important;
-        /* Sirf mobile par dikhega */
         cursor: pointer;
     }
 
@@ -643,15 +582,56 @@ select.morphism-input {
 
     .btn-3d-success {
         padding: 5px 10px;
-        /* Size chota kar diya */
-        font-size: 16px;
-        /* Text chota kar diya */
-        border-bottom: 2px solid #1e7e34;
+        font-size: 14px;
+        border-bottom: 3px solid #023d10;
     }
 
     .btn-3d-success:active {
         border-bottom: 0px solid transparent;
-        /* Click effect adjust karne ke liye */
+        transform: translateY(2px);
+    }
+
+    .btn-3d-secondary {
+        padding: 5px 10px;
+        font-size: 14px;
+        border-bottom: 2px solid #151916;
+    }
+
+    .btn-3d-secondary:active {
+        border-bottom: 0px solid transparent;
+        transform: translateY(2px);
+    }
+
+    .btn-3d-danger {
+        padding: 5px 10px;
+        font-size: 14px;
+        border-bottom: 2px solid #191615;
+    }
+
+    .btn-3d-danger:active {
+        border-bottom: 0px solid transparent;
+        transform: translateY(2px);
+    }
+
+    .btn-3d-primary {
+        padding: 5px 10px;
+        font-size: 14px;
+        border-bottom: 2px solid #191615;
+    }
+
+    .btn-3d-primary:active {
+        border-bottom: 0px solid transparent;
+        transform: translateY(2px);
+    }
+
+    .btn-3d-warning {
+        padding: 5px 10px;
+        font-size: 14px;
+        border-bottom: 2px solid #191615;
+    }
+
+    .btn-3d-warning:active {
+        border-bottom: 0px solid transparent;
         transform: translateY(2px);
     }
 

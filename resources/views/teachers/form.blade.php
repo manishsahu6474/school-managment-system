@@ -30,7 +30,7 @@
             @foreach ($classes as $class)
                 <option value="{{ $class->id }}"
                     {{ old('class_id') == $class->id || (isset($teacher) && $teacher->subjects()->wherePivot('class_id', $class->id)->exists()) ? 'selected' : '' }}>
-                    {{ $class->class_name }}
+                    {{ $class->class_name }}th
                 </option>
             @endforeach
         </select>

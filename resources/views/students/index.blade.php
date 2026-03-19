@@ -2,18 +2,17 @@
     <div class="container-fluid px-md-5">
         <div
             class="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4 mt-3 position-relative gap-3">
-
             <div class="d-none d-md-block" style="width: 180px;"></div>
-
             <div class="text-center flex-grow-1">
-                <h2 class="fw-bold text-dark text-uppercase  mb-0 display-6 main-heading">
+                <h2 class="fs-5 fs-md-4  fw-bold text-dark text-uppercase  mb-0 ">
                     <i class="fas fa-users text-primary me-2"></i>
                     Students List
                 </h2>
             </div>
 
             <div class="text-center text-md-end" style="min-width: 180px;">
-                <a href="{{ route('admin.students.create') }}" class="btn-3d-success shadow-sm w-100  ">
+                <a href="{{ route('admin.students.create') }}" 
+                    class=" btn btn-success btn-3d-success shadow-sm w-100 fw-bold px-4" >
                     <i class="fas fa-plus-circle me-2"></i> Add Student
                 </a>
             </div>
@@ -26,22 +25,22 @@
                         <input type="hidden" name="status" value="{{ request('status') }}">
                         <div class="col-md-7">
                             <div class="morpihsm-input">
-                                <input type="text" name="search" class="form-control border-start-0"
-                                    placeholder="Search by Name, Roll No, or Class (e.g. 9)..."
+                                <input type="text" name="search" class="form-control text-truncate border-start-0 "
+                                    placeholder="Search Name, Roll No & Class(e.g.9th)..."
                                     value="{{ $search ?? '' }}">
                             </div>
                         </div>
                         <div class="col-md-5 d-flex gap-2">
-                            <button class="btn  btn-3d-primary w-100 fw-bold" type="submit">SEARCH</button>
+                            <button class="btn  btn-3d-primary w-100 fw-bold btn-sm" type="submit">SEARCH</button>
                             <a href="{{ route('admin.students.index', ['status' => request('status')]) }}"
-                                class="btn btn-secondary btn-3d-secondary w-100 fw-bold">RESET</a>
+                                class="btn btn-secondary btn-3d-secondary w-100 fw-bold btn-sm">RESET</a>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
         {{-- Status Tabs --}}
-        <div class="d-flex flex-wrap align-items-center gap-2 gap-sm-4 mb-4">
+        <div class="d-flex  align-items-center gap-2 gap-sm-4 mb-4">
 
             <a href="{{ route('admin.students.index', ['status' => 'active', 'search' => $search]) }}"
                 class="btn btn-3d-primary btn-sm  flex-shrink-0">
@@ -82,12 +81,12 @@
                     </span>
                     <div class="d-flex gap-2">
                         @if (request('status') == 'pending')
-                        <button onclick="bulkApprove()" class="btn-3d-success btn-sm py-1">
-                            <i class="fas fa-check-double me-1"></i> Approve Selected
-                        </button>
-                        <button onclick="bulkStudentDelete(true)" class="btn-3d-danger btn-sm py-1">
-                            <i class="fas fa-trash-alt me-1"></i> Delete Selected
-                        </button>
+                            <button onclick="bulkApprove()" class="btn-3d-success btn-sm py-1">
+                                <i class="fas fa-check-double me-1"></i> Approve Selected
+                            </button>
+                            <button onclick="bulkStudentDelete(true)" class="btn-3d-danger btn-sm py-1">
+                                <i class="fas fa-trash-alt me-1"></i> Delete Selected
+                            </button>
                         @elseif(request('status') == 'inactive')
                             <button onclick="bulkActivate()" class="btn-3d-primary btn-sm py-1">
                                 <i class="fas fa-user-plus me-1"></i> Re-Activate Selected

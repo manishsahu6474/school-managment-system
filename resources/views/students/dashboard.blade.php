@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Student Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Student Dashboard</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/student.css') }}">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="{{ asset('js/custom.js') }}"></script>
 </head>
+
 <body>
 
     <div class="blob-container">
@@ -15,16 +26,16 @@
     </div>
 
     <div class="dashboard-container">
-        
+
         <aside class="sidebar glass" id="sidebar">
-            
+
             <i class="fa-solid fa-xmark close-sidebar" onclick="toggleSidebar()"></i>
 
             <div class="logo-area">
                 <i class="fa-solid fa-school-flag fa-2x" style="color: #60a5fa;"></i>
                 <h2 style="margin-top: 10px;">SMS 2026</h2>
             </div>
-            
+
             <nav class="nav-links">
                 <a href="#" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
                 <a href="#"><i class="fa-solid fa-book-open-reader"></i> My Subjects</a>
@@ -43,18 +54,20 @@
         </aside>
 
         <main class="main-content">
-            
+
             <header class="header glass">
-                
+
                 <i class="fa-solid fa-bars menu-toggle" onclick="toggleSidebar()"></i>
 
-                <div style="flex: 1;"> <h1>Hello, {{ Auth::user()->name }}! 👋</h1>
+                <div style="flex: 1;">
+                    <h1>Hello, {{ Auth::user()->name }}! 👋</h1>
                     <p style="color: var(--text-gray); font-size: 0.9rem;">Class 10th-A | Roll No: 24</p>
                 </div>
-                
+
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <i class="fa-solid fa-bell fa-lg" style="cursor: pointer;"></i>
-                    <div style="width: 40px; height: 40px; background: linear-gradient(45deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                    <div
+                        style="width: 40px; height: 40px; background: linear-gradient(45deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">
                         {{ substr(Auth::user()->name, 0, 1) }}
                     </div>
                 </div>
@@ -69,11 +82,12 @@
                         <div style="height: 100%; width: 85%; background: #4ade80; border-radius: 5px;"></div>
                     </div>
                 </div>
-                </div>
+            </div>
 
             <div class="glass table-container">
-                <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-clock" style="color: #60a5fa; margin-right: 10px;"></i> Today's Schedule</h3>
-                
+                <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-clock"
+                        style="color: #60a5fa; margin-right: 10px;"></i> Today's Schedule</h3>
+
                 <table class="styled-table">
                     <thead>
                         <tr>
@@ -88,7 +102,9 @@
                             <td style="color: #60a5fa;">09:00 AM</td>
                             <td>Mathematics</td>
                             <td>Mr. Sharma</td>
-                            <td><span style="background: rgba(34, 197, 94, 0.2); color: #4ade80; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem;">Done</span></td>
+                            <td><span
+                                    style="background: rgba(34, 197, 94, 0.2); color: #4ade80; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem;">Done</span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -102,7 +118,14 @@
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('active'); // Class add/remove karega
         }
+        $(document).ready(() => {
+            // Session check 
+            @if (session('access_denied'))
+                showAlert('Security Alert!', "{{ session('access_denied') }}", 'error', 'text-danger');
+            @endif
+        });
     </script>
 
 </body>
+
 </html>

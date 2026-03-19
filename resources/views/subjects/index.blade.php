@@ -5,7 +5,7 @@
                 class="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4 mt-3 position-relative gap-3">
                 <div class="d-none d-md-block" style="width: 180px;"></div>
                 <div class="text-center flex-grow-1">
-                    <h2 class="fw-bold text-dark text-upper mb-0 display-6 main-heading">
+                    <h2 class="fs-5 fs-md-4 fw-bold text-dark text-uppercase mb-0 ">
                         <i class="fas fa-book text-primary me-2"></i>
                         Subjects
                     </h2>

@@ -4,7 +4,7 @@
             <i class="fas fa-bars"></i>
         </div>
         <div class="position-absolute start-50 translate-middle-x ">
-            <h2 class="fs-6 fs-sm-5 fs-lg-4 m-0 text-white fw-bold text-uppercase " style="white-space: nowrap;">
+            <h2 class="fs-6 fs-sm-5 fs-lg-3 m-0 text-white fw-bold text-uppercase " style="white-space: nowrap;">
                 Student Management
             </h2>
         </div>

@@ -7,7 +7,7 @@
                 <div class="d-none d-md-block" style="width: 180px;"></div>
 
                 <div class="text-center flex-grow-1">
-                    <h2 class="fw-bold text-dark text-upper mb-0 display-6 main-heading">
+                    <h2 class="fs-5 fs-md-4   fw-bold text-dark text-uppercase  mb-0 ">
                         <i class="fas fa-school text-primary me-2"></i>
                         {{ $classes->class_name }}<sup>th</sup> Class Students
                     </h2>
@@ -37,15 +37,15 @@
                             </div>
                         </div>
                         <div class="col-md-5 d-flex gap-2">
-                            <button class="btn   btn-3d-primary w-100 fw-bold" type="submit">SEARCH</button>
+                            <button class="btn   btn-3d-primary w-100 fw-bold btn-sm" type="submit">SEARCH</button>
                             <a href="{{ route('admin.classes.show', $classes->id) }}"
-                                class="btn btn-secondary btn-3d-secondary w-100 fw-bold">RESET</a>
+                                class="btn btn-secondary btn-3d-secondary w-100 fw-bold btn-sm">RESET</a>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        
+
         <div id="bulk-actions-wrapper" class="mb-3 animate__animated animate__fadeIn" style="display: none;">
             <div class="card card-3d border-0 p-2 shadow-sm" style="background: rgba(255, 255, 255, 0.8);">
                 <div class="d-flex align-items-center justify-content-between px-3">

@@ -16,11 +16,8 @@ class TeacherController extends Controller
     public function toggleStatus($id)
     {
         $teacher = Teacher::findOrFail($id);
-
-        // Status toggle logic
         $newStatus = ($teacher->status == 1) ? 0 : 1;
         $teacher->update(['status' => $newStatus]);
-
         return response()->json([
             'status' => 'success',
             'newStatus' => $newStatus,
@@ -290,25 +287,21 @@ class TeacherController extends Controller
     {
         return $this->performBulkStatusUpdate([$id], 1, 'Teacher Joining Approved Successfully!');
     }
-    // 1. Bulk Approve (Pending -> Active)
     public function bulkApprove(Request $request)
     {
         return $this->performBulkStatusUpdate($request->ids, 1, 'Selected Teachers approve ho gaye hain!');
     }
 
-    // 2. Bulk Activate (Inactive -> Active)
     public function bulkActivate(Request $request)
     {
         return $this->performBulkStatusUpdate($request->ids, 1, 'Selected Teachers re-activate ho gaye hain!');
     }
 
-    // 3. Bulk Inactivate (Active -> Inactive)
     public function bulkInactivate(Request $request)
     {
         return $this->performBulkStatusUpdate($request->ids, 2, 'Selected Teachers inactive list mein move ho gaye!');
     }
 
-    // 4. Bulk Delete (Permanent Delete)
     public function bulkDelete(Request $request)
     {
         if (empty($request->ids)) {
@@ -317,7 +310,6 @@ class TeacherController extends Controller
 
         DB::beginTransaction();
         try {
-            // Records ko hamesha ke liye delete karna
             $userIds = Teacher::whereIn('id', $request->ids)->pluck('user_id')->toArray();
             if (!empty($userIds)) {
                 User::whereIn('id', $userIds)->delete();

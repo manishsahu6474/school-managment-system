@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{config('app.name')}}WELCOME </title>
+    <title>{{ config('app.name') }}WELCOME </title>
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/167/167707.png">
-    
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/welcome.css') }}">
 </head>
+
 <body>
 
     <div class="shape shape-1"></div>
@@ -43,10 +45,13 @@
                 <div class="col-lg-6 mb-5">
                     <div class="glass-card p-5">
                         <span class="badge bg-light text-primary mb-3 px-3 py-2 rounded-pill"> Live</span>
-                        <h1 class="display-4 fw-bold mb-3">Future of <br><span style="color: #ffecd2;">Smart Education</span></h1>
-                        <p class="lead mb-4">Manage Student Data, Teacher Attendance, and Results with a stunning 3D interface. SEO friendly and Mobile responsive.</p>
+                        <h1 class="display-4 fw-bold mb-3">Future of <br><span style="color: #ffecd2;">Smart
+                                Education</span></h1>
+                        <p class="lead mb-4">Manage Student Data, Teacher Attendance, and Results with a stunning 3D
+                            interface. SEO friendly and Mobile responsive.</p>
                         <div class="d-flex gap-3 flex-wrap">
-                            <a href="{{ Auth::check() ? url('/dashboard') : route('register') }}" class="btn btn-3d btn-lg">Get Started</a>
+                            <a href="{{ Auth::check() ? url('/dashboard') : route('register') }}"
+                                class="btn btn-3d btn-lg">Get Started</a>
                             <a href="#features" class="btn btn-outline-glass btn-lg">View Features</a>
                         </div>
                     </div>
@@ -103,7 +108,8 @@
                 <div class="glass-card p-4 text-center h-100">
                     <i class="fas fa-shield-alt fa-3x text-success mb-3"></i>
                     <h4>Secure Data</h4>
-                    <p class="small opacity-75">Role based security (Admin, Teacher, Student) data ko safe rakhti hai.</p>
+                    <p class="small opacity-75">Role based security (Admin, Teacher, Student) data ko safe rakhti hai.
+                    </p>
                 </div>
             </div>
         </div>
@@ -126,4 +132,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
