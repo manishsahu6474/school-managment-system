@@ -22,19 +22,11 @@ Route::get('/', function () {
     return view('welcome');
 })->middleware('prevent-back');
 
-Route::get('/dashboard', function () {
-
-    $role = Auth::user()->role;
-    if ($role === 'admin') {
-        return redirect()->route('admin.dashboard');
-    } elseif ($role === 'teacher') {
-        return view('teachers.dashboard');
-    } else {
-        return view('students.dashboard');
-    }
-})->middleware(['auth', 'verified', 'prevent-back'])->name('dashboard');
-
-Route::middleware(['auth', 'verified', 'prevent-back'])
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified', 'prevent-back'])
+    ->name('dashboard');
+    
+Route::middleware(['auth','isAdmin', 'verified', 'prevent-back'])
     ->prefix('admin')    
     ->name('admin.')        
     ->group(function () {
@@ -42,7 +34,6 @@ Route::middleware(['auth', 'verified', 'prevent-back'])
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
         Route::get('profile', [AdminController::class, 'showprofile'])->name('profile');
         Route::post('update-profile', [AdminController::class, 'update'])->name('update-profile');
-
         Route::prefix('students')->name('students.')->group(function () {
 
             Route::post('/bulk-approve', [StudentController::class, 'bulkApprove'])->name('bulkApprove');
@@ -62,16 +53,13 @@ Route::middleware(['auth', 'verified', 'prevent-back'])
             Route::post('/bulk-approve', [TeacherController::class, 'bulkApprove'])->name('bulkApprove');
             Route::post('/bulk-inactivate', [TeacherController::class, 'bulkInactivate'])->name('bulkInactivate');
             Route::post('/bulk-delete', [TeacherController::class, 'bulkDelete'])->name('bulkDelete');
-
             Route::post('/{id}/approve', [TeacherController::class, 'approve'])->name('approve');
             Route::post('/status/{id}', [TeacherController::class, 'toggleStatus'])->name('status');
         });
 
         Route::resource('teachers', TeacherController::class);
-
         Route::get('classes/{class_name}', [ClassesController::class, 'showStudents'])->name('classes.students');
         Route::resource('classes', ClassesController::class);
-
         Route::resource('subjects', SubjectController::class);
     });
 require __DIR__ . '/auth.php';
