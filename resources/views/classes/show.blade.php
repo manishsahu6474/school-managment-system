@@ -98,13 +98,16 @@
 
                                 <td class="fw-bold">{{ $student->user->name ?? 'N/A' }}</td>
                                 <td>{{ $student->father_name ?? 'N/A' }}</td>
-                                <td>{{ $student->roll_no ?? 'N/A' }}</td>
+                                <td class="text-center">
+                                    <span
+                                        class="badge bg-light text-dark border">{{ $student->roll_no ?? 'N/A' }}</span>
+                                </td>
                                 <td>{{ $student->dob ? \Carbon\Carbon::parse($student->dob)->format('d-M-Y') : 'Not Set' }}
                                 </td>
                                 <td>{{ $student->phone ?? 'N/A' }}</td>
                                 <td class="text-center">
                                     <span
-                                        class="badge rounded-pill bg-info text-dark">{{ $student->classes->class_name }}<sup>th</sup></span>
+                                        class="badge rounded-pill bg-info text-dark">{{ $classes->class_name }}<sup>th</sup></span>
                                 </td>
                                 <td data-label="Status" class="text-center">
                                     @if ($student->status == 2)

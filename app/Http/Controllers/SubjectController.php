@@ -10,10 +10,11 @@ class SubjectController extends Controller
 {
     public function index()
     {
-        $subjects = Subject::with('classes')->latest()->paginate(10);
+        $subjects = Subject::select('id', 'subject_name')
+            ->with('classes:id,class_name')->latest()->paginate(10);
         return view('subjects.index', compact('subjects'));
     }
- 
+
     public function store(Request $request)
     {
         $request->validate([
@@ -21,15 +22,15 @@ class SubjectController extends Controller
         ]);
         DB::beginTransaction();
         try {
-            Subject::create([
-                'subject_name' => $request->subject_name,
-            ]);
+            Subject::create($request->only('subject_name'));
             DB::commit();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Subject successfully kar diya gaya!'
             ]);
         } catch (\Exception $e) {
+            DB::rollBack();
+
             return response()->json([
                 'status' => 'error',
                 'message' => 'Subject add fail ho gaya: ' . $e->getMessage()
@@ -37,11 +38,10 @@ class SubjectController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy(Subject $subject)
     {
         DB::beginTransaction();
         try {
-            $subject = Subject::findOrFail($id);
 
             if ($subject->teachers()->exists()) {
                 return response()->json([

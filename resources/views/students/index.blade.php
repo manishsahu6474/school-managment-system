@@ -11,8 +11,8 @@
             </div>
 
             <div class="text-center text-md-end" style="min-width: 180px;">
-                <a href="{{ route('admin.students.create') }}" 
-                    class=" btn btn-success btn-3d-success shadow-sm w-100 fw-bold px-4" >
+                <a href="{{ route('admin.students.create') }}"
+                    class=" btn btn-success btn-3d-success shadow-sm w-100 fw-bold px-4">
                     <i class="fas fa-plus-circle me-2"></i> Add Student
                 </a>
             </div>
@@ -26,8 +26,7 @@
                         <div class="col-md-7">
                             <div class="morpihsm-input">
                                 <input type="text" name="search" class="form-control text-truncate border-start-0 "
-                                    placeholder="Search Name, Roll No & Class(e.g.9th)..."
-                                    value="{{ $search ?? '' }}">
+                                    placeholder="Search Name, Roll No & Class(e.g.9th)..." value="{{ $search ?? '' }}">
                             </div>
                         </div>
                         <div class="col-md-5 d-flex gap-2">
@@ -138,7 +137,10 @@
 
                                 <td class="fw-bold">{{ $student->user->name ?? 'N/A' }}</td>
                                 <td>{{ $student->father_name ?? 'N/A' }}</td>
-                                <td>{{ $student->roll_no ?? 'N/A' }}</td>
+                                <td class="text-center">
+                                    <span
+                                        class="badge bg-light text-dark border">{{ $student->roll_no ?? 'N/A' }}</span>
+                                </td>
                                 <td>{{ $student->dob ? \Carbon\Carbon::parse($student->dob)->format('d-M-Y') : 'Not Set' }}
                                 </td>
                                 <td>{{ $student->phone ?? 'N/A' }}</td>

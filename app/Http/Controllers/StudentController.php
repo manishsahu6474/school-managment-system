@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 
 class StudentController extends Controller
 {
-    public function toggleStatus(Request $request, $id)
+    public function toggleStatus(Request $request, Student $student)
     {
         if (!$request->ajax()) {
             return response()->json(['status' => 'error', 'message' => 'Invalid Request'], 400);
@@ -21,8 +21,6 @@ class StudentController extends Controller
         try {
             DB::beginTransaction();
 
-            $student = Student::findOrFail($id);
-
             if ($student->status != 2) {
                 return response()->json([
                     'status' => 'info',
@@ -30,8 +28,7 @@ class StudentController extends Controller
                 ]);
             }
 
-            $student->status = 1; // 1 = Active
-            $student->save();
+            $student->update(['status' => 1]);
 
             DB::commit();
 
@@ -57,7 +54,10 @@ class StudentController extends Controller
     {
         $search = $request->search;
         $status = $request->get('status');
-        $query = Student::with(['user', 'Classes']);
+        $query = Student::select('id', 'user_id', 'class_id', 'father_name', 'roll_no', 'phone', 'dob', 'status')
+        ->with(['user:id,name', 'Classes:id,class_name'])
+        ->latest();
+
         if ($status === 'pending') {
             $query->where('status', 0);
         } elseif ($status === 'inactive') {
@@ -78,7 +78,8 @@ class StudentController extends Controller
             });
         }
 
-        $students = $query->latest()->paginate(10);
+        $students = $query->paginate(10);
+
         $pendingCount = Student::where('status', 0)->count();
 
         return view('students.index', compact('students', 'search', 'pendingCount'));
@@ -93,7 +94,7 @@ class StudentController extends Controller
     public function create()
     {
         $student = new Student();
-        $classes = Classes::all();
+        $classes = Classes::select('id', 'class_name')->get();
         return view('students.create', compact('student', 'classes'));
     }
 
@@ -116,23 +117,22 @@ class StudentController extends Controller
         ]);
         try {
             DB::beginTransaction();
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
+            $userData  = $request->only(['name', 'email']);
+            $user = User::create($userData + [
                 'password' => Hash::make('student123'),
                 'role' => 'student',
             ]);
 
-            $user->student()->create(
+            $user->student()->create($request->only(
                 [
-                    'dob' => $request->dob,
-                    'class_id' => $request->class_id,
-                    'phone' => $request->phone,
-                    'roll_no' => $request->roll_no,
-                    'father_name' => $request->father_name,
-                    'status' => '0',
+                    'dob',
+                    'class_id',
+                    'phone',
+                    'roll_no',
+                    'father_name'
                 ]
-            );
+            ) + ['status' => '0']);
+
             DB::commit();
 
             return redirect()->route('admin.students.index')
@@ -159,10 +159,9 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Student $student)
     {
-        $student = Student::with('user')->findOrFail($id);
-        $classes = Classes::all();
+        $classes = Classes::select('id', 'class_name')->get();
         return view('students.edit', compact('student', 'classes'));
     }
 
@@ -173,9 +172,8 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Student $student)
     {
-        $student = Student::findOrFail($id);
         $user = $student->user;
 
         $request->validate([
@@ -190,18 +188,19 @@ class StudentController extends Controller
         try {
 
             DB::beginTransaction();
-            $user->update([
-                'name' => $request->name,
-                'email' => $request->email,
-            ]);
+            $user->update($request->only([
+                'name',
+                'email'
+            ]));
 
-            $student->update([
-                'roll_no' => $request->roll_no,
-                'class_id' => $request->class_id,
-                'father_name' => $request->father_name,
-                'phone' => $request->phone,
-                'dob' => $request->dob,
-            ]);
+            $student->update($request->only([
+                'roll_no',
+                'class_id',
+                'father_name',
+                'phone',
+                'dob'
+            ]));
+
             DB::commit();
             return redirect()->route('admin.students.index')
                 ->with('success', 'Student profile updated successfully!');
@@ -219,9 +218,8 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Student $student)
     {
-        $student = Student::findOrFail($id);
 
         DB::beginTransaction();
 
@@ -253,14 +251,14 @@ class StudentController extends Controller
                 'message' => 'Student is already Inactive or Invalid Status!'
             ], 403);
         } catch (\Exception $e) {
-            DB::rollBack(); 
+            DB::rollBack();
             return response()->json([
                 'status' => 'error',
                 'message' => 'Something went wrong: ' . $e->getMessage()
             ], 500);
         }
     }
-   
+
     public function bulkPromote(Request $request)
     {
         if (empty($request->ids)) return response()->json(['status' => 'error', 'message' => 'Select students!'], 400);
@@ -289,8 +287,8 @@ class StudentController extends Controller
 
         try {
 
-            Student::whereIn('id', $ids)->update(['status' => $newStatus]);
-
+            $query = Student::whereIn('id', $ids)->update(['status' => $newStatus]);
+            
             DB::commit();
             return response()->json(['status' => 'success', 'message' => $successMsg]);
         } catch (\Exception $e) {
@@ -298,10 +296,9 @@ class StudentController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Database error: Action perform nahi ho paya.'], 500);
         }
     }
-     public function approve($id)
+    public function approve(Student $student)
     {
-        Student::findorfail($id);
-        return $this->performBulkStatusUpdate([$id], 1, 'Student Admission Approved Successfully!');
+        return $this->performBulkStatusUpdate([$student->id], 1, 'Student Admission Approved Successfully!');
     }
 
 

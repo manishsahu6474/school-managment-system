@@ -26,7 +26,7 @@
                         <tr class="text-uppercase" style="font-size: .85rem; letter-spacing: 0.5px;">
                             <th class="text-center">S.No.</th>
                             <th>Subject Name</th>
-                            <th class="text-center">Subject Teacher Name</th>
+                            <th class="text-center">Teacher Name</th>
                             <th class="text-center">Class Name</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -81,6 +81,9 @@
             <div class="pagination-info small text-muted mb-2 mb-md-0">
                 Showing {{ $subjects->firstItem() }} to {{ $subjects->lastItem() }} of {{ $subjects->total() }}
                 subjects
+            </div>
+            <div class="pagination-3d">
+                {{ $subjects->links() }}
             </div>
         </div>
     </div>

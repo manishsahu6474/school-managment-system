@@ -43,8 +43,8 @@ Route::middleware(['auth','isAdmin', 'verified', 'prevent-back'])
             Route::post('/bulk-delete', [StudentController::class, 'bulkDelete'])->name('bulkDelete');
 
             // --- Individual Actions ---
-            Route::post('/{id}/approve', [StudentController::class, 'approve'])->name('approve');
-            Route::post('/status/{id}', [StudentController::class, 'toggleStatus'])->name('status');
+            Route::post('/{student}/approve', [StudentController::class, 'approve'])->name('approve');
+            Route::post('/status/{student}', [StudentController::class, 'toggleStatus'])->name('status');
         });
         Route::resource('students', StudentController::class);
 
@@ -53,12 +53,12 @@ Route::middleware(['auth','isAdmin', 'verified', 'prevent-back'])
             Route::post('/bulk-approve', [TeacherController::class, 'bulkApprove'])->name('bulkApprove');
             Route::post('/bulk-inactivate', [TeacherController::class, 'bulkInactivate'])->name('bulkInactivate');
             Route::post('/bulk-delete', [TeacherController::class, 'bulkDelete'])->name('bulkDelete');
-            Route::post('/{id}/approve', [TeacherController::class, 'approve'])->name('approve');
-            Route::post('/status/{id}', [TeacherController::class, 'toggleStatus'])->name('status');
+            Route::post('/{teacher}/approve', [TeacherController::class, 'approve'])->name('approve');
+            Route::post('/status/{teacher}', [TeacherController::class, 'toggleStatus'])->name('status');
         });
 
         Route::resource('teachers', TeacherController::class);
-        Route::get('classes/{class_name}', [ClassesController::class, 'showStudents'])->name('classes.students');
+        Route::get('classes/{classes}', [ClassesController::class, 'showStudents'])->name('classes.students');
         Route::resource('classes', ClassesController::class);
         Route::resource('subjects', SubjectController::class);
     });

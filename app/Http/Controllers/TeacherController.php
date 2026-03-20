@@ -13,16 +13,35 @@ use Illuminate\Support\Facades\Hash;
 
 class TeacherController extends Controller
 {
-    public function toggleStatus($id)
+    public function toggleStatus(Request $request, Teacher $teacher)
     {
-        $teacher = Teacher::findOrFail($id);
-        $newStatus = ($teacher->status == 1) ? 0 : 1;
-        $teacher->update(['status' => $newStatus]);
-        return response()->json([
-            'status' => 'success',
-            'newStatus' => $newStatus,
-            'message' => 'Teacher Activated  successfully!'
-        ]);
+        if (!$request->ajax()) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid Request'], 400);
+        }
+        try {
+            DB::beginTransaction();
+
+            if ($teacher->status != 2) {
+                return response()->json([
+                    'status' => 'info',
+                    'message' => 'Teacher already Activated/Pending.'
+                ]);
+            }
+
+            $teacher->update(['status' => 1]);
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Teacher Activated  successfully!'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Something wents wrong: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -34,9 +53,10 @@ class TeacherController extends Controller
     {
         $search = $request->search;
         $status = $request->get('status');
-        $query = Teacher::with('user')->whereHas('user', function ($q) {
-            $q->where('role', 'teacher');
-        });
+
+        $query = Teacher::select('id', 'user_id', 'phone', 'qualification', 'salary', 'joining_date', 'status')
+            ->with(['user:id,name', 'subjects:id,subject_name', 'classes:id,class_name'])
+            ->latest();
 
         if ($status === 'pending') {
             $query->where('status', 0);
@@ -58,7 +78,7 @@ class TeacherController extends Controller
             });
         }
 
-        $teachers = $query->with(['user', 'subjects'])->latest()->paginate(10);
+        $teachers = $query->paginate(10);
         $pendingCount = Teacher::where('status', 0)->count();
 
         return view('teachers.index', compact('teachers', 'search', 'pendingCount'));
@@ -71,10 +91,10 @@ class TeacherController extends Controller
      */
     public function create()
     {
-        //
-        $subjects = Subject::all();
-        $classes = Classes::all();
-        return view('teachers.create', compact('subjects', 'classes'));
+        $teacher = new Teacher();
+        $subjects = Subject::select('id', 'subject_name')->get();
+        $classes = Classes::select('id', 'class_name')->get();
+        return view('teachers.create', compact('teacher', 'subjects', 'classes'));
     }
 
     /**
@@ -102,29 +122,27 @@ class TeacherController extends Controller
         );
         DB::beginTransaction();
         try {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
+            $user = User::create($request->only(['name', 'email']) + [
                 'password' => Hash::make($request->password),
                 'role' => 'teacher',
             ]);
 
-            $teacher = Teacher::create([
-                'user_id' => $user->id,
-                'joining_date' => $request->joining_date,
-                'qualification' => $request->qualification,
-                'experience' => $request->experience,
-                'salary' => $request->salary,
-                'gender' => $request->gender,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'status'  => 0,
-            ]);
+            $teacher = $user->teacher()->create($request->only([
+                'joining_date',
+                'qualification',
+                'experience',
+                'salary',
+                'gender',
+                'phone',
+                'address'
+            ]) + ['status' => 0]);
+
             if ($request->subject_id && $request->class_id) {
                 $teacher->subjects()->attach($request->subject_id, [
                     'class_id' => $request->class_id
                 ]);
             }
+
             DB::commit();
             return redirect()->route('admin.teachers.index')->with('success', 'New Teacher Added Successfully!');
         } catch (\Exception $e) {
@@ -152,12 +170,12 @@ class TeacherController extends Controller
      * @param  \App\Models\user  $user
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Teacher $teacher)
     {
-        //
-        $teacher = Teacher::with('user', 'subjects')->findorfail($id);
-        $subjects = Subject::all();
-        $classes = Classes::all();
+
+
+        $subjects = Subject::select('id', 'subject_name')->get();
+        $classes = Classes::select('id', 'class_name')->get();
         return view('teachers.edit', compact('teacher', 'subjects', 'classes'));
     }
 
@@ -168,10 +186,8 @@ class TeacherController extends Controller
      * @param  \App\Models\user  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Teacher $teacher)
     {
-        // 
-        $teacher = Teacher::findorfail($id);
         $user = $teacher->user;
 
         $request->validate(
@@ -192,24 +208,20 @@ class TeacherController extends Controller
         );
         DB::beginTransaction();
         try {
-            $userData = [
-                'name' => $request->name,
-                'email' => $request->email,
+            $user->update($request->only(['name', 'email']));
 
-            ];
             if ($request->filled('password')) {
-                $userData['password'] = Hash::make($request->password);
+                $user->update(['password' => Hash::make($request->password)]);
             }
-            $user->update($userData);
-            $teacher->update([
-                'phone'         => $request->phone,
-                'qualification' => $request->qualification,
-                'experience'    => $request->experience,
-                'salary'        => $request->salary,
-                'joining_date'  => $request->joining_date,
-                'address'       => $request->address,
-                'gender'        => $request->gender,
-            ]);
+            $teacher->update($request->only([
+                'phone',
+                'qualification',
+                'experience',
+                'salary',
+                'joining_date',
+                'address',
+                'gender',
+            ]));
             if ($request->subject_id && $request->class_id) {
                 $teacher->subjects()->syncWithPivotValues($request->subject_id, [
                     'class_id' => $request->class_id
@@ -232,9 +244,8 @@ class TeacherController extends Controller
      * @param  \App\Models\user  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Teacher $teacher)
     {
-        $teacher = Teacher::findOrFail($id);
         DB::beginTransaction();
         try {
             if ($teacher->status == 1) {
@@ -283,9 +294,9 @@ class TeacherController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Database error: Action perform nahi ho paya.'], 500);
         }
     }
-    public function approve($id)
+    public function approve(Teacher $teacher)
     {
-        return $this->performBulkStatusUpdate([$id], 1, 'Teacher Joining Approved Successfully!');
+        return $this->performBulkStatusUpdate([$teacher->id], 1, 'Teacher Joining Approved Successfully!');
     }
     public function bulkApprove(Request $request)
     {

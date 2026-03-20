@@ -145,11 +145,10 @@
                                     @endforelse
                                 </td>
                                 <td class="text-center">
-                                    @forelse ($teacher->subjects as $subject)
+                                    @forelse ($teacher->classes as $class)
                                         <span
                                             class="badge bg-primary-subtle text-primary border border-primary-subtle mb-1">
-                                            @php $cls = \App\Models\Classes::find($subject->pivot->class_id); @endphp
-                                            {{ $cls->class_name ?? 'N/A' }}<sup>th</sup>
+                                            {{ $class->class_name}}<sup>th</sup>
                                         </span><br>
                                     @empty
                                         <span class="text-muted small">Not Assigned</span>

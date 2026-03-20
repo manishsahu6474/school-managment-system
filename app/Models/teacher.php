@@ -29,6 +29,12 @@ class Teacher extends Model
             ->withPivot('class_id')
             ->withTimestamps();
     }
+     public function classes()
+    {
+        return $this->belongsToMany(Classes::class, 'teacher_subjects_classes', 'teacher_id', 'class_id')
+            ->withPivot('subject_id')
+            ->withTimestamps();
+    }
     protected $casts = [
         'joining_date' => 'date',
     ];

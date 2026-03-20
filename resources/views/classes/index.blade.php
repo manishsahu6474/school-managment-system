@@ -3,7 +3,7 @@
         <div class="row g-4">
             @foreach ($classdata as $class)
                 <div class="col-xl-6 col-md-6">
-                    <a href="{{route('admin.classes.students',['class_name'=>$class->id]) }}"
+                    <a href="{{route('admin.classes.students',['classes'=>$class->id]) }}"
                          class="{{ $class->students_count == 0 ? 'link-disabled' : '' }} " style="text-decoration: none;">
                         <div class="card card-3d border-0 shadow-sm h-100"
                             style="background: linear-gradient(145deg, #ffffff, #f0f0f0);">
