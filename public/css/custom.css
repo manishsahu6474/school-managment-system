@@ -450,6 +450,22 @@ select.morphism-input {
 
 }
 
+.swal2-timer-progress-bar {
+    background: rgba(0, 122, 255, 0.8) !important;
+    box-shadow: 0 0 10px rgba(0, 122, 255, 0.5); 
+    height: 3px;
+    border-radius: 0 10px 10px 0; 
+}
+
+.swal2-styled:focus, 
+.swal2-confirm:focus, 
+.swal2-cancel:focus,
+.btn-3d-danger:focus, 
+.btn-3d-success:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
 @media (max-width: 1199px) {
 
 

@@ -9,13 +9,16 @@ const showAlert = (title, text, icon, colorClass = 'text-primary') => {
         background: 'rgba(255, 255, 255, 0.9)',
         backdrop: `rgba(0, 122, 255, 0.1) blur(4px)`,
         timer: 3000,
+        confirmButtonText: 'OK',
         timerProgressBar: true,
+        focusConfirm: false,
+        buttonsStyling: false,
         showClass: { popup: 'animate__animated animate__fadeInDown' },
         hideClass: { popup: 'animate__animated animate__fadeOutUp' },
         customClass: {
             popup: 'card-morphism border-0 shadow-lg',
             title: `fw-bold ${colorClass}`,
-            cancelButton: 'btn-3d-secondary'
+            confirmButton: 'btn-3d-primary'
         },
     });
 };
@@ -89,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('click', (e) => {
-        if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
+        if (window.innerWidth <= 1199 && !sidebar.contains(e.target) && !toggleBtn.contains(e.target)) {
             sidebar.classList.remove('active');
         }
     });
@@ -103,20 +106,21 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 $(document).ready(() => {
     const alerts = {
-        delete_success_msg: 'text-danger',
-        activated_success_msg: 'text-success',
-        update_success_msg: 'text-primary',
-        error_msg: 'text-danger'
+        delete_success_msg: { icon: 'success', class: 'text-danger' },
+        activated_success_msg: { icon: 'success', class: 'text-success' },
+        update_success_msg: { icon: 'success', class: 'text-primary' },
+        error_msg: { icon: 'error', class: 'text-danger' }
     };
 
     Object.keys(alerts).forEach(key => {
         const msg = localStorage.getItem(key);
         if (msg) {
-            Swal.fire({
-                text: msg, icon: key.includes('error') ? 'error' : 'success',
-                timer: 2000, timerProgressBar: true,
-                customClass: { popup: 'card-morphism', title: `fw-bold ${alerts[key]}` }
-            });
+            showAlert(
+                key.includes('error') ? 'Error!' : 'Success!',
+                msg,
+                alerts[key].icon,
+                alerts[key].class
+            );
             localStorage.removeItem(key);
         }
     });
@@ -368,9 +372,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const colors = [
             getGradient(ctx, 'rgba(0, 122, 255, 1)', 'rgba(0, 122, 255, 0.6)'),
-            getGradient(ctx, 'rgba(52, 199, 89, 1)', 'rgba(52, 199, 89, 0.6)'), 
-            getGradient(ctx, 'rgba(255, 59, 48, 1)', 'rgba(255, 59, 48, 0.6)'), 
-            getGradient(ctx, 'rgba(88, 86, 214, 1)', 'rgba(88, 86, 214, 0.6)')   
+            getGradient(ctx, 'rgba(52, 199, 89, 1)', 'rgba(52, 199, 89, 0.6)'),
+            getGradient(ctx, 'rgba(255, 59, 48, 1)', 'rgba(255, 59, 48, 0.6)'),
+            getGradient(ctx, 'rgba(88, 86, 214, 1)', 'rgba(88, 86, 214, 0.6)')
         ];
 
         Chart.getChart(id)?.destroy();
@@ -384,7 +388,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     backgroundColor: colors,
                     borderColor: 'rgba(255, 255, 255, 0.8)',
                     borderWidth: 2,
-                    borderRadius: isPie ? 0 : 12, 
+                    borderRadius: isPie ? 0 : 12,
                     cutout: isPie ? '70%' : null,
                     hoverOffset: 5
                 }]
@@ -394,7 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: isPie, 
+                        display: isPie,
                         position: 'bottom',
                         labels: { usePointStyle: true, font: { weight: 'bold' } }
                     },
