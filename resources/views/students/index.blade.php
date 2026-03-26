@@ -150,7 +150,7 @@
                                 </td>
                                 <td data-label="Status" class="text-center">
                                     @if ($student->status == 2)
-                                        <form action="{{ route('admin.students.status', $student->id) }}"
+                                        <form action="{{ route('admin.students.toggle-status', $student->id) }}"
                                             method="POST">
                                             @csrf
                                             <button type="button" onclick="activateStudent(this)"

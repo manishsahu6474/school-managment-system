@@ -30,9 +30,22 @@ const csrfToken = $('meta[name="csrf-token"]').attr('content');
 // Common Ajax Error Handler
 const handleAjaxError = (xhr, status, $btn, originalHtml) => {
     if ($btn) $btn.prop('disabled', false).html(originalHtml);
+    //403: Forbidden
     if (xhr.status === 403) {
         const res = xhr.responseJSON;
         return showAlert('Access Denied!', res.message, 'error', 'text-danger');
+    }
+    // 404: Not Found 
+    else if (xhr.status === 404) {
+        const msg = xhr.responseJSON?.message || 'Record database mein nahi mila ya URL galat hai.';
+        return showAlert('Not Found!', msg, 'error', 'text-danger');
+    }
+
+    // 422: Validation Error 
+    else if (xhr.status === 422) {
+        let errors = xhr.responseJSON.errors;
+        let firstError = Object.values(errors)[0][0]; // Pehli galti pakadne ke liye
+        return showAlert('Validation Error!', firstError, 'warning', 'text-warning');
     }
     let msg = 'Connection lost. Please try again.';
     if (status === 'timeout') msg = 'Server slow! Request timed out.';

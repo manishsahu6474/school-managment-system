@@ -44,7 +44,7 @@ Route::middleware(['auth','isAdmin', 'verified', 'prevent-back'])
 
             // --- Individual Actions ---
             Route::post('/{student}/approve', [StudentController::class, 'approve'])->name('approve');
-            Route::post('/status/{student}', [StudentController::class, 'toggleStatus'])->name('status');
+            Route::post('/status/{student}/toggel-status', [StudentController::class, 'toggleStatus'])->name('toggle-status');
         });
         Route::resource('students', StudentController::class);
 

@@ -19,6 +19,15 @@ class Student extends Model
     {
         $this->attributes['father_name'] = ucwords(strtolower($value));
     }
+    public static function formatRollno($value){
+        if(empty($value)) return null;
+        return str_starts_with($value,'STU-') ? $value : 'STU-' . $value;
+        
+    }
+     public function setRollNoAttribute($value)
+    {
+        $this->attributes['roll_no'] = self::formatRollno($value);
+    }
 
     protected $casts = [
         'dob' => 'date',

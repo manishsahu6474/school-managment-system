@@ -23,7 +23,7 @@ class AdminCheckMiddleware
         $name = auth()->user()->name;
         $role = ucfirst(auth()->user()->role);
         $msg = "Hey $name, as a $role you do not have Admin permissions.";
-        if ($request->ajax()) {
+        if ($request->expectsJson()) {
             return response()->json([
                 'status' => 'error',
                 'message' => $msg
