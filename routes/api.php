@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\StudentController;
+use App\Http\Controllers\Api\TeacherController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -32,9 +33,21 @@ Route::middleware('auth:sanctum', 'isAdmin')->group(function () {
         Route::delete('bulk-delete', [StudentController::class, 'bulkDelete']);
 
         // 2. Specific Action 
-        Route::post('{student}/approve', [StudentController::class, 'approve']);
         Route::patch('{student}/toggle-status', [StudentController::class, 'toggleStatus']);
     });
     // 3. Standard API Resource
     Route::apiResource('/students', StudentController::class);
+
+    Route::prefix('teachers')->group(function () {
+        // 1. Bulk Operations 
+        Route::post('bulk-approve', [TeacherController::class, 'bulkApprove']);
+        Route::post('bulk-activate', [TeacherController::class, 'bulkActivate']);
+        Route::post('bulk-inactivate', [TeacherController::class, 'bulkInactivate']);
+        Route::delete('bulk-delete', [TeacherController::class, 'bulkDelete']);
+
+        // 2. Specific Action 
+        Route::patch('{teacher}/toggle-status', [TeacherController::class, 'toggleStatus']);
+    });
+    // 3. Standard API Resource
+    Route::apiResource('/teachers', TeacherController::class);
 });
