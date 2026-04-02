@@ -191,7 +191,7 @@
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-2">
                                         @if ($teacher->status == 0)
-                                            <form action="{{ route('admin.teachers.approve', $teacher->id) }}"
+                                            <form action="{{ route('admin.teachers.status', $teacher->id) }}"
                                                 method="POST" class="d-inline">
                                                 @csrf
                                                 <button type="button" onclick="approveteacher(this)"

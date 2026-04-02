@@ -7,43 +7,17 @@ use App\Models\User;
 use App\Models\Subject;
 use App\Models\Classes;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use App\Services\TeacherService;
 
 class TeacherController extends Controller
 {
-    public function toggleStatus(Request $request, Teacher $teacher)
+    protected $teacherService;
+
+    public function __construct(TeacherService $teacherService)
     {
-        if (!$request->ajax()) {
-            return response()->json(['status' => 'error', 'message' => 'Invalid Request'], 400);
-        }
-        try {
-            DB::beginTransaction();
-
-            if ($teacher->status != 2) {
-                return response()->json([
-                    'status' => 'info',
-                    'message' => 'Teacher already Activated/Pending.'
-                ]);
-            }
-
-            $teacher->update(['status' => 1]);
-            DB::commit();
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Teacher Activated  successfully!'
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Something wents wrong: ' . $e->getMessage()
-            ], 500);
-        }
+        $this->teacherService = $teacherService;
     }
-
     /**
      * Display a listing of the resource.
      *
@@ -71,9 +45,10 @@ class TeacherController extends Controller
                 $sub->whereHas('user', function ($u) use ($search) {
                     $u->where('name', 'like', "%$search%");
                 })
-
                     ->orWhereHas('subjects', function ($s) use ($search) {
                         $s->where('subject_name', 'like', "%$search%");
+                    })->orWhereHas('classes', function ($c) use ($search) {
+                        $c->where('class_name', 'like', "%$search%");
                     });
             });
         }
@@ -105,51 +80,33 @@ class TeacherController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
         $request->validate(
             [
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email',
-                'joining_date' => 'required|date',
-                'qualification' => 'required',
-                'experience' => 'nullable|numeric',
-                'salary' => 'nullable|numeric',
-                'gender' => 'required',
+                'joining_date' => [
+                    'required',
+                    'date',
+                    'before_or_equal:today',
+                    'after_or_equal:' . now()->subMonths(6)->format('Y-m-d'),
+                ],
+                'qualification' => 'required|string',
+                'experience' => 'required|numeric|min:0|max:30',
+                'salary' => 'required|numeric|min:1000',
+                'gender' => 'required|in:male,female,other',
                 'phone' => 'required|digits:10',
-                'address' => 'nullable|string',
+                'address' => 'nullable|string|min:10|max:500',
                 'password' => 'required|min:8',
             ]
         );
-        DB::beginTransaction();
         try {
-            $user = User::create($request->only(['name', 'email']) + [
-                'password' => Hash::make($request->password),
-                'role' => 'teacher',
-            ]);
-
-            $teacher = $user->teacher()->create($request->only([
-                'joining_date',
-                'qualification',
-                'experience',
-                'salary',
-                'gender',
-                'phone',
-                'address'
-            ]) + ['status' => 0]);
-
-            if ($request->subject_id && $request->class_id) {
-                $teacher->subjects()->attach($request->subject_id, [
-                    'class_id' => $request->class_id
-                ]);
-            }
-
-            DB::commit();
+            $teacher = $this->teacherService->storeTeacher($request->all());
             return redirect()->route('admin.teachers.index')->with('success', 'New Teacher Added Successfully!');
         } catch (\Exception $e) {
-            DB::rollBack();
             return back()
                 ->withInput()
-                ->with('error', 'Teacher add nahi ho paya: ' . $e->getMessage());
+                ->with('error', 'Something Went Wrong: ' . $e->getMessage());
         }
     }
 
@@ -195,46 +152,32 @@ class TeacherController extends Controller
                 'name'          => 'required|string|max:255',
                 'email'         => 'required|email|unique:users,email,' . $user->id,
                 'phone'         => 'required|digits:10',
-                'qualification' => 'required',
-                'experience'    => 'nullable|numeric|min:0',
-                'salary'        => 'nullable|numeric|min:0',
-                'joining_date'  => 'required|date',
+                'qualification' => 'required|string',
+                'experience'    => 'required|numeric|min:0|max:30',
+                'salary'        => 'required|numeric|min:1000',
+                'joining_date' => [
+                    'required',
+                    'date',
+                    'before_or_equal:today',
+                    'after_or_equal:' . now()->subMonths(6)->format('Y-m-d'),
+                ],
                 'address'       => 'nullable|string|max:500',
                 'password'      => 'nullable|min:8',
-                'subject_id'    =>  'required',
-                'class_id'    =>  'required'
+                'subject_id'    =>  'required|integer',
+                'class_id'    =>  'required|integer'
             ]
 
         );
-        DB::beginTransaction();
         try {
-            $user->update($request->only(['name', 'email']));
 
-            if ($request->filled('password')) {
-                $user->update(['password' => Hash::make($request->password)]);
-            }
-            $teacher->update($request->only([
-                'phone',
-                'qualification',
-                'experience',
-                'salary',
-                'joining_date',
-                'address',
-                'gender',
-            ]));
-            if ($request->subject_id && $request->class_id) {
-                $teacher->subjects()->syncWithPivotValues($request->subject_id, [
-                    'class_id' => $request->class_id
-                ]);
-            }
-            DB::commit();
+            $this->teacherService->updateTeacher($teacher, $request->all());
+
             return Redirect()->route('admin.teachers.index')
                 ->with('success', 'Teacher updated successfully!');
         } catch (\Exception $e) {
-            DB::rollBack();
             return back()
                 ->withInput()
-                ->with('error', 'Teacher Update nahi ho paya: ' . $e->getMessage());
+                ->with('error', 'Something went wrong: ' . $e->getMessage());
         }
     }
 
@@ -246,29 +189,13 @@ class TeacherController extends Controller
      */
     public function destroy(Teacher $teacher)
     {
-        DB::beginTransaction();
         try {
-            if ($teacher->status == 1) {
-                $teacher->update(['status' => 2]);
-                DB::commit();
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Teacher successfully moved to Inactive list!'
-                ]);
-            }
-            if ($teacher->status == 0) {
-                if ($teacher->user) {
-                    $teacher->user->delete();
-                }
-                $teacher->delete();
-                DB::commit();
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Teacher registration rejected and permanently deleted!'
-                ]);
-            }
+            $result = $this->teacherService->smartDelete($teacher);
+            return response()->json([
+                'status' => 'success',
+                'message' => $result['message']
+            ], 200);
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json([
                 'status' => 'error',
                 'message' => 'Something went wrong: ' . $e->getMessage()
@@ -277,60 +204,73 @@ class TeacherController extends Controller
     }
     private function performBulkStatusUpdate($ids, $newStatus, $successMsg)
     {
-        if (empty($ids)) {
-            return response()->json(['status' => 'error', 'message' => 'Pehle Teachers select karein!'], 400);
-        }
-
-        DB::beginTransaction();
-
         try {
 
-            Teacher::whereIn('id', $ids)->update(['status' => $newStatus]);
+            $result = $this->teacherService->bulkStatusUpdate(Teacher::class, (array)$ids, $newStatus);
+            $updateCount = $result['count'];
+            $hasInactive = $result['hasInactive'];
+            $hasPending = $result['hasPending'];
+            if ($updateCount == 0) {
+                return response()->json(['status' => 'info', 'message' => 'No Data has been updated, already in targeted state!']);
+            }
 
-            DB::commit();
-            return response()->json(['status' => 'success', 'message' => $successMsg]);
+            $finalMsg = $successMsg;
+            if ($newStatus == 1) {
+                if ($hasInactive && $hasPending) {
+                    $finalMsg = "Processed (Approved & Re-activated) successfully!";
+                } elseif ($hasInactive) {
+                    $finalMsg = "Re-activated successfully!";
+                } elseif ($hasPending) {
+                    $finalMsg = "Approved successfully!";
+                }
+            }
+
+            $label = ($updateCount > 1) ? 'Teachers' : 'Teacher';
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => "{$updateCount} {$label} {$finalMsg}"
+            ], 200);
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json(['status' => 'error', 'message' => 'Database error: Action perform nahi ho paya.'], 500);
         }
     }
-    public function approve(Teacher $teacher)
+    public function toggleStatus(Request $request, Teacher $teacher)
     {
-        return $this->performBulkStatusUpdate([$teacher->id], 1, 'Teacher Joining Approved Successfully!');
+        if (!$request->ajax()) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid Request'], 400);
+        }
+        return $this->performBulkStatusUpdate([$teacher->id], 1, 'Status Changed Successfully!');
     }
+
+
     public function bulkApprove(Request $request)
     {
-        return $this->performBulkStatusUpdate($request->ids, 1, 'Selected Teachers approve ho gaye hain!');
+        return $this->performBulkStatusUpdate($request->ids, 1, 'approve ho gaye hain!');
     }
 
     public function bulkActivate(Request $request)
     {
-        return $this->performBulkStatusUpdate($request->ids, 1, 'Selected Teachers re-activate ho gaye hain!');
+        return $this->performBulkStatusUpdate($request->ids, 1, ' re-activate ho gaye hain!');
     }
 
     public function bulkInactivate(Request $request)
     {
-        return $this->performBulkStatusUpdate($request->ids, 2, 'Selected Teachers inactive list mein move ho gaye!');
+        return $this->performBulkStatusUpdate($request->ids, 2, ' inactive list mein move ho gaye!');
     }
 
     public function bulkDelete(Request $request)
     {
-        if (empty($request->ids)) {
-            return response()->json(['status' => 'error', 'message' => 'Selection khali hai!'], 400);
-        }
-
-        DB::beginTransaction();
         try {
-            $userIds = Teacher::whereIn('id', $request->ids)->pluck('user_id')->toArray();
-            if (!empty($userIds)) {
-                User::whereIn('id', $userIds)->delete();
+            $result = $this->teacherService->bulkDelete(Teacher::class, $request->ids);
+            if ($result['count'] == 0) {
+                return response()->json(['status' => 'info', 'message' => 'No pending records found to delete.'], 200);
             }
 
-            DB::commit();
-            return response()->json(['status' => 'success', 'message' => 'Selected records delete kar diye gaye!']);
+            $entity = Str::plural('Teacher', $result['count']);
+            return response()->json(['status' => 'success', 'message' => "{$result['count']} Pending {$entity} deleted permanently."], 200);
         } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['status' => 'error', 'message' => 'Deletion failed. Try again.'], 500);
+            return response()->json(['status' => 'error', 'message' => 'Deletion failed. Try again.'], 422);
         }
     }
 }

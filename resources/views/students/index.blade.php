@@ -172,7 +172,7 @@
 
                                         {{-- 1. Approve Button (Icon Only for Balance) --}}
                                         @if ($student->status == 0)
-                                            <form action="{{ route('admin.students.approve', $student->id) }}"
+                                            <form action="{{ route('admin.students.toggle-status', $student->id) }}"
                                                 method="POST" class="d-inline">
                                                 @csrf
                                                 <button type="button" onclick="approveStudent(this)"

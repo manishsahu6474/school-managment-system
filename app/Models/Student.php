@@ -19,12 +19,16 @@ class Student extends Model
     {
         $this->attributes['father_name'] = ucwords(strtolower($value));
     }
-    public static function formatRollno($value){
-        if(empty($value)) return null;
-        return str_starts_with($value,'STU-') ? $value : 'STU-' . $value;
-        
+    public static function formatRollno($value)
+    {
+        if (empty($value)) return null;
+        $numberOnly = preg_replace('/[^0-9]/', '', $value);
+
+        if (empty($numberOnly)) return null;
+
+        return 'STU-' . $numberOnly;
     }
-     public function setRollNoAttribute($value)
+    public function setRollNoAttribute($value)
     {
         $this->attributes['roll_no'] = self::formatRollno($value);
     }
@@ -32,7 +36,7 @@ class Student extends Model
     protected $casts = [
         'dob' => 'date',
     ];
-    public function Classes()
+    public function classes()
     {
         return $this->belongsTo(Classes::class, 'class_id');
     }

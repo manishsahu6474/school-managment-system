@@ -2,48 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Student;
 use App\Models\Classes;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-
+use App\Services\StudentService;
+use Illuminate\Support\Str;
 
 class StudentController extends Controller
 {
-    public function toggleStatus(Request $request, Student $student)
+    protected $studentService;
+
+    public function __construct(StudentService $studentService)
     {
-        if (!$request->ajax()) {
-            return response()->json(['status' => 'error', 'message' => 'Invalid Request'], 400);
-        }
-
-        try {
-            DB::beginTransaction();
-
-            if ($student->status != 2) {
-                return response()->json([
-                    'status' => 'info',
-                    'message' => 'Student pehle se hi Active ya Pending hai.'
-                ], 403);
-            }
-
-            $student->update(['status' => 1]);
-
-            DB::commit();
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'Student successfully activate kar diya gaya hai!'
-            ], 200);
-        } catch (\Exception $e) {
-            DB::rollback();
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Kuch galat hua: ' . $e->getMessage()
-            ], 500);
-        }
+        $this->studentService = $studentService;
     }
 
     /**
@@ -56,7 +27,7 @@ class StudentController extends Controller
         $search = $request->search;
         $status = $request->get('status');
         $query = Student::select('id', 'user_id', 'class_id', 'father_name', 'roll_no', 'phone', 'dob', 'status')
-            ->with(['user:id,name', 'Classes:id,class_name'])
+            ->with(['user:id,name', 'classes:id,class_name'])
             ->latest();
 
         if ($status === 'pending') {
@@ -73,7 +44,7 @@ class StudentController extends Controller
                     $u->where('name', 'like', "%$search%");
                 })
                     ->orWhere('roll_no', 'like', "%$search%")
-                    ->orWhereHas('Classes', function ($c) use ($search) {
+                    ->orWhereHas('classes', function ($c) use ($search) {
                         $c->where('class_name', 'like', "%$search%");
                     });
             });
@@ -108,44 +79,25 @@ class StudentController extends Controller
     public function store(Request $request)
     {
         $request->merge(['roll_no' => Student::formatRollno($request->roll_no)]);
-
         $request->validate([
             'name'  => 'required|string|max:100',
             'email' => 'required|email|unique:users,email',
-            'father_name' => 'nullable|string|max:100',
+            'father_name' => 'required|string|max:100',
             'roll_no'  => 'nullable|string|max:10|unique:students,roll_no',
-            'dob'   => 'required|date',
+            'dob' => ['required','date','before:'. now()->subYears(5)->format('Y-m-d'), 'after:'.now()->subYears(20)->format('Y-m-d') ],
             'class_id' => 'required|exists:classes,id',
             'phone' => 'required|digits:10',
         ]);
 
         try {
-            DB::beginTransaction();
-            $userData  = $request->only(['name', 'email']);
-            $user = User::create($userData + [
-                'password' => Hash::make('student123'),
-                'role' => 'student',
-            ]);
 
-            $user->student()->create($request->only(
-                [
-                    'dob',
-                    'class_id',
-                    'phone',
-                    'roll_no',
-                    'father_name'
-                ]
-            ) + ['status' => '0']);
-
-            DB::commit();
-
+            $this->studentService->storeStudent($request->all());
             return redirect()->route('admin.students.index')
                 ->with('success', 'Student Added Successfully!');
         } catch (\Exception $e) {
-            DB::rollBack();
             return back()
                 ->withInput()
-                ->with('error_msg', 'Update fail ho gaya: ' . $e->getMessage());
+                ->with('error_msg', 'Something went wrong! : ' . $e->getMessage());
         }
     }
 
@@ -179,42 +131,26 @@ class StudentController extends Controller
     public function update(Request $request, Student $student)
     {
         $request->merge(['roll_no' => Student::formatRollno($request->roll_no)]);
-
         $user = $student->user;
 
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'father_name' => 'nullable|string|max:100',
-            'roll_no' => 'nullable|string|max:10|unique:students,roll_no,' . $student->id,
-            'dob'   => 'required|date',
+            'father_name' => 'required|string|max:100',
+            'roll_no' => 'required|string|max:10|unique:students,roll_no,' . $student->id,
+            'dob' => ['required','date','before:'. now()->subYears(5)->format('Y-m-d'), 'after:'.now()->subYears(20)->format('Y-m-d') ],
             'class_id' => 'required|exists:classes,id',
-            'phone' => 'nullable|digits:10',
+            'phone' => 'required|digits:10',
         ]);
         try {
 
-            DB::beginTransaction();
-            $user->update($request->only([
-                'name',
-                'email'
-            ]));
-
-            $student->update($request->only([
-                'roll_no',
-                'class_id',
-                'father_name',
-                'phone',
-                'dob'
-            ]));
-
-            DB::commit();
+            $this->studentService->updateStudent($student, $request->all());
             return redirect()->route('admin.students.index')
                 ->with('success', 'Student profile updated successfully!');
         } catch (\Exception $e) {
-            DB::rollBack();
             return back()
                 ->withInput()
-                ->with('error_msg', 'Update fail ho gaya: ' . $e->getMessage());
+                ->with('error_msg', 'Something went wrong!: ' . $e->getMessage());
         }
     }
 
@@ -226,193 +162,116 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
-
-        DB::beginTransaction();
-
         try {
-            if ($student->status == 1) {
-                $student->update(['status' => 2]);
-                DB::commit();
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Student Successfully Inactivated!'
-                ]);
-            } elseif ($student->status == 0) {
-                if ($student->user) {
-                    $student->user->delete();
-                }
-                $student->delete();
-
-                DB::commit();
-                return response()->json([
-                    'status' => 'success',
-                    'message' => 'Pending request rejected and successfully Deleted!'
-                ]);
-            }
-
+            $result = $this->studentService->smartDelete($student);
             return response()->json([
-                'status' => 'error',
-                'message' => 'Student is already Inactive or Invalid Status!'
-            ], 403);
+                'status' => 'success',
+                'message' => $result['message']
+            ]);
         } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Something went wrong: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
 
     public function bulkPromote(Request $request)
     {
-        $rawids = $request->ids;
-        if (empty($rawids) || !is_array($rawids)) {
-            return response()->json(['status' => 'error', 'message' => 'Please select valid ids !'], 400);
-        }
-        $ids = array_unique($rawids);
 
-        if (count($ids) > 50) {
-            return response()->json(['status' => 'error', 'message' => 'Only 50 selection are processed.'], 400);
-        }
-
-        $validator = Validator::make(['ids' => $ids], [
-            'ids.*' => 'integer|exists:students,id',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Some ids invalids does not match in database.'
-            ], 422);
-        }
-        DB::beginTransaction();
         try {
-
-            $passoutCount =  Student::whereIn('id', $ids)->where('status', 1)->where('class_id', 4)->update(['status' => 2]);
-            $promotedCount =  Student::whereIn('id', $ids)->where('status', 1)->where('class_id', '<', 4)->increment('class_id');
-
-            DB::commit();
-
-            $totalprocessed = $promotedCount + $passoutCount;
-            if ($totalprocessed == 0) {
-                return response()->json([
-                    'status' => 'info',
-                    'message' => 'Please check students status then promote only active students are promoted! '
-                ]);
-            }
-            return response()->json(['status' => 'success', 'message' => $totalprocessed . ' Students promoted successfully!']);
+            $result = $this->studentService->bulkPromote($request->ids);
+            return response()->json(
+                [
+                    'status' => 'success',
+                    'message' => $result['count'] . ' ' . Str::plural('Student', $result['count']) . ' promoted!'
+                ]
+            );
         } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['status' => 'error', 'message' => 'Promotion failed.'], 500);
+            return response()->json(
+                [
+                    'status' => 'error',
+                    'message' => $e->getMessage()
+                ],
+                422
+            );
         }
     }
 
     private function performBulkStatusUpdate($ids, $newStatus, $successMsg)
     {
-        if (empty($ids) || !is_array($ids)) {
-            return response()->json(['status' => 'error', 'message' => 'Please select valid ids !'], 400);
-        }
-
-        if (count($ids) > 50) {
-            return response()->json(['status' => 'error', 'message' => 'Only 50 selection are processed.'], 400);
-        }
-
-        $validator = Validator::make(['ids' => $ids], [
-            'ids.*' => 'integer|exists:students,id',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Some ids invalids does not match in database.'
-            ], 422);
-        }
-        DB::beginTransaction();
 
         try {
 
+            $result = $this->studentService->bulkStatusUpdate(Student::class, (array)$ids, $newStatus);
 
-            $query = Student::whereIn('id', $ids)->where('status', '!=', $newStatus);
-
-            if ($newStatus == 1) {
-                $query->whereIn('status', [0, 2]);
-            } elseif ($newStatus == 2) {
-                $query->where('status', 1);
+            $updatedCount = $result['count'];
+            $hasPending   = $result['hasPending'];
+            $hasInactive  = $result['hasInactive'];
+            if ($updatedCount == 0) {
+                return response()->json([
+                    'status'  => 'info',
+                    'message' => 'No changes made. Records are already in the target state.'
+                ], 200);
             }
-            $updatedCount = $query->update(['status' => $newStatus]);
-            DB::commit();
-            return response()->json(['status' => 'success', 'message' => $successMsg]);
+
+            $finalMsg = $successMsg;
+            if ($newStatus == 1) {
+                if ($hasInactive && $hasPending) {
+                    $finalMsg = "Processed (Approved & Re-activated) successfully!";
+                } elseif ($hasInactive) {
+                    $finalMsg = "Re-activated successfully!";
+                } elseif ($hasPending) {
+                    $finalMsg = "Approved successfully!";
+                }
+            }
+
+            $label = ($updatedCount > 1) ? 'Students' : 'Student';
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => "{$updatedCount} {$label} {$finalMsg}"
+            ], 200);
         } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['status' => 'error', 'message' => 'Database error: Action perform nahi ho paya.'], 500);
+            return response()->json([
+                'status'  => 'error',
+                'message' => $e->getMessage()
+            ], 422);
         }
     }
-    public function approve(Student $student)
+    public function toggleStatus(Request $request, Student $student)
     {
-        return $this->performBulkStatusUpdate([$student->id], 1, 'Student Admission Approved Successfully!');
+        if (!$request->ajax()) {
+            return response()->json(['status' => 'error', 'message' => 'Invalid Request'], 400);
+        }
+        return $this->performBulkStatusUpdate([$student->id], 1, 'Status Changed Successfully!');
     }
-
-
     public function bulkApprove(Request $request)
     {
-        return $this->performBulkStatusUpdate($request->ids, 1, 'Selected students approve ho gaye hain!');
+        return $this->performBulkStatusUpdate($request->ids, 1, ' Processed Successfully!');
     }
 
     public function bulkActivate(Request $request)
     {
-        return $this->performBulkStatusUpdate($request->ids, 1, 'Selected students re-activate ho gaye hain!');
+        return $this->performBulkStatusUpdate($request->ids, 1, ' Re-activate successfully!');
     }
 
     public function bulkInactivate(Request $request)
     {
-        return $this->performBulkStatusUpdate($request->ids, 2, 'Selected students inactive list mein move ho gaye!');
+        return $this->performBulkStatusUpdate($request->ids, 2, ' moved to inactive list successfully!');
     }
 
     public function bulkDelete(Request $request)
     {
-        $rawids = $request->ids;
-        if (empty($rawids) || !is_array($rawids)) {
-            return response()->json(['status' => 'error', 'message' => 'Please select valid ids !'], 400);
-        }
-        $ids = array_unique($rawids);
 
-        if (count($ids) > 50) {
-            return response()->json(['status' => 'error', 'message' => 'Only 50 selection are processed.'], 400);
-        }
-
-        $validator = Validator::make(['ids' => $ids], [
-            'ids.*' => 'integer|exists:students,id',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Some ids invalids does not match in database.'
-            ], 422);
-        }
-
-        DB::beginTransaction();
         try {
-            $userIds = Student::whereIn('id', $ids)
-                ->where('status', 0)
-                ->pluck('user_id');
+            $result = $this->studentService->BulkDelete(Student::class, $request->ids);
 
-            $deleteCount = $userIds->count();
-
-            if ($deleteCount == 0) {
-                return response()->json([
-                    'status' => 'info',
-                    'message' => 'Koi bhi Pending student nahi mila delete karne ke liye. Active students delete nahi kiye ja sakte!'
-                ], 200);
+            if ($result['count'] == 0) {
+                return response()->json(['status' => 'info', 'message' => 'No pending records found to delete.'], 200);
             }
 
-            User::whereIn('id', $userIds)->delete();
-
-            DB::commit();
-            return response()->json(['status' => 'success', 'message' => $deleteCount . ' Selected records delete kar diye gaye!']);
+            $entity = Str::plural('Student', $result['count']);
+            return response()->json(['status' => 'success', 'message' => "{$result['count']} Pending {$entity} deleted permanently."], 200);
         } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['status' => 'error', 'message' => 'Deletion failed. Try again.'], 500);
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
         }
     }
 }

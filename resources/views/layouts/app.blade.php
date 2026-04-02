@@ -62,8 +62,8 @@
             @if (session('info'))
                 showAlert("Info!", "{{ session('info') }}", "info", "text-info");
             @endif
-            @if (session('error'))
-                showAlert("Error!", "{{ session('error') }}", "error", "text-danger");
+            @if (session('error_msg'))
+                showAlert("Error!", "{{ session('error_msg') }}", "error", "text-danger");
             @endif
             if (window.history.replaceState) {
                 window.history.replaceState(null, null, window.location.href);
