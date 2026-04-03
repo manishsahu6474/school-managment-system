@@ -9,6 +9,8 @@ use App\Models\Classes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Services\TeacherService;
+use App\Http\Requests\StoreTeacherRequest;
+use App\Http\Requests\UpdateTeacherRequest;
 
 class TeacherController extends Controller
 {
@@ -50,30 +52,10 @@ class TeacherController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreTeacherRequest $request)
     {
-
-        $request->validate(
-            [
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email',
-                'joining_date' => [
-                    'required',
-                    'date',
-                    'before_or_equal:today',
-                    'after_or_equal:' . now()->subMonths(6)->format('Y-m-d'),
-                ],
-                'qualification' => 'required|string',
-                'experience' => 'required|numeric|min:0|max:30',
-                'salary' => 'required|numeric|min:1000',
-                'gender' => 'required|in:male,female,other',
-                'phone' => 'required|digits:10',
-                'address' => 'nullable|string|min:10|max:500',
-                'password' => 'required|min:8',
-            ]
-        );
         try {
-            $teacher = $this->teacherService->storeTeacher($request->all());
+            $this->teacherService->storeTeacher($request->validated());
             return redirect()->route('admin.teachers.index')->with('success', 'New Teacher Added Successfully!');
         } catch (\Exception $e) {
             return back()
@@ -115,35 +97,11 @@ class TeacherController extends Controller
      * @param  \App\Models\user  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Teacher $teacher)
+    public function update(UpdateTeacherRequest $request, Teacher $teacher)
     {
-        $user = $teacher->user;
-
-        $request->validate(
-            [
-                'name'          => 'required|string|max:255',
-                'email'         => 'required|email|unique:users,email,' . $user->id,
-                'phone'         => 'required|digits:10',
-                'qualification' => 'required|string',
-                'experience'    => 'required|numeric|min:0|max:30',
-                'salary'        => 'required|numeric|min:1000',
-                'joining_date' => [
-                    'required',
-                    'date',
-                    'before_or_equal:today',
-                    'after_or_equal:' . now()->subMonths(6)->format('Y-m-d'),
-                ],
-                'address'       => 'nullable|string|max:500',
-                'password'      => 'nullable|min:8',
-                'subject_id'    =>  'required|integer',
-                'class_id'    =>  'required|integer'
-            ]
-
-        );
         try {
 
-            $this->teacherService->updateTeacher($teacher, $request->all());
-
+            $this->teacherService->updateTeacher($teacher, $request->validated());
             return Redirect()->route('admin.teachers.index')
                 ->with('success', 'Teacher updated successfully!');
         } catch (\Exception $e) {

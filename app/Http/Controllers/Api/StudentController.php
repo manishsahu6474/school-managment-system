@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\UpdateStudentRequest; 
 use App\Models\Student;
 use Illuminate\Support\Str;
 use App\Services\StudentService;
+use App\Http\Requests\StoreStudentRequest;
 
 
 class StudentController extends Controller
@@ -44,34 +45,10 @@ class StudentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreStudentRequest $request)
     {
-        $request->merge(['roll_no' => Student::formatRollno($request->roll_no)]);
-
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'name'  => 'required|string|max:100',
-                'email' => 'required|email|unique:users,email',
-                'father_name' => 'nullable|string|max:100',
-                'roll_no'  => 'nullable|string|max:10|unique:students,roll_no',
-                'dob' => ['required', 'date', 'before:' . now()->subYears(5)->format('Y-m-d'), 'after:' . now()->subYears(20)->format('Y-m-d')],
-                'class_id' => 'required|exists:classes,id',
-                'phone' => 'required|digits:10',
-            ]
-        );
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         try {
-
-            $user = $this->studentService->storeStudent($request->all());
-
+            $user = $this->studentService->storeStudent($request->validated());
             return response()->json([
                 'status' => 'success',
                 'message' => 'Data Saved Successfully!',
@@ -103,30 +80,10 @@ class StudentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Student $student)
+    public function update(UpdateStudentRequest $request, Student $student)
     {
-        $request->merge(['roll_no' => Student::formatRollno($request->roll_no)]);
-        $user = $student->user;
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|unique:users,email,' . $user->id,
-                'father_name' => 'nullable|string|max:100',
-                'roll_no' => 'required|string|max:10|unique:students,roll_no,' . $student->id,
-                'dob' => ['required', 'date', 'before:' . now()->subYears(5)->format('Y-m-d'), 'after:' . now()->subYears(20)->format('Y-m-d')],
-                'class_id' => 'required|exists:classes,id',
-                'phone' => 'nullable|digits:10',
-            ]
-        );
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'errors' => $validator->errors()
-            ], 422);
-        }
         try {
-            $this->studentService->updateStudent($student, $request->all());
+            $this->studentService->updateStudent($student, $request->validated());
             return response()->json([
                 'status' => 'success',
                 'message' => 'Student Data Updated Successfully!',

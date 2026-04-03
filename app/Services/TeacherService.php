@@ -117,11 +117,11 @@ class TeacherService extends BaseService
             $teacher->update([
                 'qualification' => $data['qualification'],
                 'joining_date' => $data['joining_date'],
-                'experience' => $data['experience'] ?? null,
+                'experience' => $data['experience'] ?? $teacher->experience,
                 'gender' => $data['gender'],
                 'phone' => $data['phone'],
-                'salary' => $data['salary'] ?? null,
-                'address' => $data['address'] ?? null,
+                'salary' => $data['salary'] ?? $teacher->salary,
+                'address' => $data['address'] ?? $teacher->address,
                 'status' => $teacher->status
 
             ]);

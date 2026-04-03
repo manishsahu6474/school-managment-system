@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Teacher;
 use App\Services\TeacherService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreTeacherRequest;
+use App\Http\Requests\UpdateTeacherRequest;
 use Illuminate\Support\Str;
 use Exception;
 
@@ -42,37 +43,14 @@ class TeacherController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreTeacherRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'joining_date' => [
-                'required',
-                'date',
-                'before_or_equal:today',
-                'after_or_equal:' . now()->subMonths(6)->format('Y-m-d'),
-            ],
-            'qualification' => 'required|string',
-            'experience' => 'required|numeric|min:0|max:30',
-            'salary' => 'required|numeric|min:1000',
-            'gender' => 'required|in:male,female,other',
-            'phone' => 'required|unique:teachers,phone|digits:10',
-            'address' => 'nullable|string|min:10|max:500',
-            'password' => 'required|min:8'
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'errors' => $validator->errors()
-            ], 422);
-        }
         try {
-            $result = $this->teacherService->storeTeacher($request->all());
-
+            $result = $this->teacherService->storeTeacher($request->validated());
             return response()->json([
                 'status' => 'success',
                 'message' => 'Teacher Data Saved Successfully!',
+                'teacher_id' => $result->id
             ], 201);
         } catch (Exception $e) {
 
@@ -102,45 +80,15 @@ class TeacherController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Teacher $teacher)
+    public function update(UpdateTeacherRequest $request, Teacher $teacher)
     {
-        $user = $teacher->user;
-
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'name'          => 'required|string|max:255',
-                'email'         => 'required|email|unique:users,email,' . $user->id,
-                'phone'         => 'required|digits:10|unique:teachers,phone,' . $teacher->id,
-                'qualification' => 'required|string',
-                'experience'    => 'required|numeric|min:0|max:30',
-                'salary'        => 'required|numeric|min:1000',
-                'joining_date' => [
-                    'required',
-                    'date',
-                    'before_or_equal:today',
-                    'after_or_equal:' . now()->subMonths(6)->format('Y-m-d'),
-                ],
-                'address'       => 'nullable|string|min:10|max:500',
-                'password'      => 'nullable|min:8',
-                'subject_id'    =>  'required|integer',
-                'class_id'    =>  'required|integer'
-            ]
-
-        );
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
+       
         try {
-            $this->teacherService->updateTeacher($teacher, $request->all());
+           $result = $this->teacherService->updateTeacher($teacher, $request->validated());
             return response()->json([
                 'status' => 'success',
                 'message' => 'Teacher Data Updated Successfully!',
+                'teacher_id' => $result->id
             ], 200);
         } catch (Exception $e) {
             return response()->json([

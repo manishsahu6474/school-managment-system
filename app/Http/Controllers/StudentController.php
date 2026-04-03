@@ -7,6 +7,8 @@ use App\Models\Classes;
 use Illuminate\Http\Request;
 use App\Services\StudentService;
 use Illuminate\Support\Str;
+use App\Http\Requests\StoreStudentRequest;
+use App\Http\Requests\UpdateStudentRequest;
 
 class StudentController extends Controller
 {
@@ -43,22 +45,11 @@ class StudentController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreStudentRequest $request)
     {
-        $request->merge(['roll_no' => Student::formatRollno($request->roll_no)]);
-        $request->validate([
-            'name'  => 'required|string|max:100',
-            'email' => 'required|email|unique:users,email',
-            'father_name' => 'required|string|max:100',
-            'roll_no'  => 'nullable|string|max:10|unique:students,roll_no',
-            'dob' => ['required', 'date', 'before:' . now()->subYears(5)->format('Y-m-d'), 'after:' . now()->subYears(20)->format('Y-m-d')],
-            'class_id' => 'required|exists:classes,id',
-            'phone' => 'required|digits:10',
-        ]);
-
         try {
 
-            $this->studentService->storeStudent($request->all());
+            $this->studentService->storeStudent($request->validated());
             return redirect()->route('admin.students.index')
                 ->with('success', 'Student Added Successfully!');
         } catch (\Exception $e) {
@@ -95,23 +86,11 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Student $student)
+    public function update(UpdateStudentRequest $request, Student $student)
     {
-        $request->merge(['roll_no' => Student::formatRollno($request->roll_no)]);
-        $user = $student->user;
-
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'father_name' => 'required|string|max:100',
-            'roll_no' => 'required|string|max:10|unique:students,roll_no,' . $student->id,
-            'dob' => ['required', 'date', 'before:' . now()->subYears(5)->format('Y-m-d'), 'after:' . now()->subYears(20)->format('Y-m-d')],
-            'class_id' => 'required|exists:classes,id',
-            'phone' => 'required|digits:10',
-        ]);
+        
         try {
-
-            $this->studentService->updateStudent($student, $request->all());
+            $this->studentService->updateStudent($student, $request->validated());
             return redirect()->route('admin.students.index')
                 ->with('success', 'Student profile updated successfully!');
         } catch (\Exception $e) {

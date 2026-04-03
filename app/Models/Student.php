@@ -16,7 +16,7 @@ class Student extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function setFatherNameAttribute($value)
+    public function setFatherNameAttribute($value = null)
     {
         $this->attributes['father_name'] = ucwords(strtolower($value));
     }
