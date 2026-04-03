@@ -38,4 +38,5 @@ class Teacher extends Model
     protected $casts = [
         'joining_date' => 'date',
     ];
+    protected $hidden = ['user_id'];
 }

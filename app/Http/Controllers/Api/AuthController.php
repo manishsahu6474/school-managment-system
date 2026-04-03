@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    // user check for security API side
     public function login(Request $request) {
         
     $request->validate(

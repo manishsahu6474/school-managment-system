@@ -3,45 +3,30 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Student;
 use App\Models\Classes;
+use App\Services\ClassesService;
 
 class ClassesController extends Controller
 {
-    //
-    public function index(Request $request)
+    public function __construct(protected ClassesService $classesService) {}
+    public function index()
     {
-        $classdata = Classes::select('id', 'class_name')
-            ->withCount(['students' => function ($query) {
-                $query->where('status', 1);
-            }])->get();
-        return view('classes.index', compact('classdata'));
+        try {
+            $classdata = $this->classesService->getAllClassWithCount();
+            return view('classes.index', compact('classdata'));
+        } catch (\Exception $e) {
+            return back()->with('error_msg', 'Something went Wrong: ' . $e->getMessage());
+        }
     }
 
     public function showStudents(Request $request, Classes $classes)
     {
-        $search = $request->search;
-        $id = $classes->id;
-
-        $query = $classes->students()
-            ->select('id', 'user_id', 'class_id', 'roll_no', 'status', 'phone', 'dob', 'father_name')
-            ->with(['user:id,name'])
-            ->where('status', 1);
-
-        if ($search) {
-            $query->where(function ($sub) use ($search) {
-                $sub->whereHas('user', function ($u) use ($search) {
-                    $u->where('name', 'like', "%$search%");
-                })
-                    ->orWhere('roll_no', 'like', "%$search%")
-                    ->orWhereHas('Classes', function ($c) use ($search) {
-                        $c->where('class_name', 'like', "%$search%");
-                    });
-            });
+        try {
+            $students = $this->classesService->getStudentsByClass($classes, $request->search);
+            $search = $request->search;
+            return view('classes.show', compact('students', 'search', 'classes'));
+        } catch (\Exception $e) {
+            return back()->with('error_msg', 'Something went Wrong: ' . $e->getMessage());
         }
-
-        $students = $query->latest()->paginate(10);
-
-        return view('classes.show', compact('students', 'search', 'classes'));
     }
 }

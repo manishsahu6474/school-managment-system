@@ -9,6 +9,7 @@ class Subject extends Model
 {
     use HasFactory;
     protected $fillable = ['subject_name'];
+    protected $hidden = ['pivot'];
     public function classes()
     {
         return $this->belongsToMany(Classes::class, 'teacher_subjects_classes', 'subject_id', 'class_id')

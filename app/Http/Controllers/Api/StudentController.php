@@ -9,16 +9,10 @@ use App\Models\Student;
 use Illuminate\Support\Str;
 use App\Services\StudentService;
 
-use Symfony\Component\HttpFoundation\Response;
 
 class StudentController extends Controller
 {
-    protected $studentService;
-
-    public function __construct(StudentService $studentService)
-    {
-        $this->studentService = $studentService;
-    }
+    public function __construct(protected StudentService $studentService) {}
     /**
      * Display a listing of the resource.
      *
@@ -27,43 +21,13 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         try {
-            $search = $request->search;
             $request->validate(['status' => 'nullable|in:active,pending,inactive']);
-
-            $query = Student::select('id', 'user_id', 'class_id', 'father_name', 'roll_no', 'phone', 'dob', 'status')
-                ->with(['user:id,name', 'classes:id,class_name'])
-                ->latest();
-
-            if ($request->filled('status')) {
-                $status = $request->status;
-                if ($status === 'pending') {
-                    $query->where('status', 0);
-                } elseif ($status === 'inactive') {
-                    $query->where('status', 2);
-                } else {
-                    $query->where('status', 1);
-                }
-            } else {
-                $query->where('status', 1);
-            }
-
-            if ($search) {
-                $query->where(function ($sub) use ($search) {
-                    $sub->whereHas('user', function ($u) use ($search) {
-                        $u->where('name', 'like', "%$search%");
-                    })
-                        ->orWhere('roll_no', 'like', "%$search%")
-                        ->orWhereHas('classes', function ($c) use ($search) {
-                            $c->where('class_name', 'like', "%$search%");
-                        });
-                });
-            }
-
-            $students = $query->paginate(10);
+            $data = $this->studentService->getStudentsList($request->all());
             return response()->json([
                 'status' => 'success',
-                'total_pending' => Student::where('status', 0)->count(),
-                'data' => $students
+                'search' => $request->search,
+                'total_pending' => $data['pending_count'],
+                'data' => $data['students']
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -103,7 +67,7 @@ class StudentController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-        
+
         try {
 
             $user = $this->studentService->storeStudent($request->all());

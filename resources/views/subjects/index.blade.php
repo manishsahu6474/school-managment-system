@@ -39,7 +39,7 @@
                                 <td class="fw-bold">{{ $subject->subject_name ?? 'N/A' }}</td>
                                 <td class="text-center">
                                     @forelse($subject->classes as $class)
-                                        <span class="text-primary">
+                                        <span class=" badge bg-primar text-primary border border-warning-subtle mb-1">
                                             @php $t = \App\Models\Teacher::with('user')->find($class->pivot->teacher_id); @endphp
                                             {{ $t->user->name ?? 'N/A' }}
                                         </span>
@@ -49,7 +49,7 @@
                                 </td>
                                 <td class="text-center">
                                     @forelse($subject->classes as $class)
-                                        <span class="badge bg-primar text-primary border border-info-subtle mb-1">
+                                        <span class="badge bg-primar text-primary border border-warning-subtle mb-1">
                                             {{ $class->class_name }}<sup>th</sup>
                                         </span>
                                     @empty

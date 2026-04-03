@@ -12,12 +12,8 @@ use Exception;
 
 class TeacherController extends Controller
 {
-    protected $teacherService;
+    public function __construct(protected TeacherService $teacherService) {}
 
-    public function __construct(TeacherService $teacherService)
-    {
-        $this->teacherService = $teacherService;
-    }
     /**
      * Display a listing of the resource.
      *
@@ -26,53 +22,17 @@ class TeacherController extends Controller
     public function index(Request $request)
     {
         try {
-            $search = $request->search;
             $request->validate(['status' => 'nullable|in:active,pending,inactive']);
-
-            $query = Teacher::select('id', 'user_id', 'phone', 'qualification', 'salary', 'joining_date', 'status')
-                ->with(['user:id,name', 'subjects:id,subject_name', 'classes:id,class_name'])
-                ->latest();
-
-            if ($request->filled('status')) {
-                $status = $request->status;
-                if ($status === 'pending') {
-                    $query->where('status', 0);
-                } elseif ($status === 'inactive') {
-                    $query->where('status', 2);
-                } else {
-                    $query->where('status', 1);
-                }
-            } else {
-                $query->where('status', 1);
-            }
-
-            if ($search) {
-                $query->where(function ($sub) use ($search) {
-                    $sub->whereHas('user', function ($u) use ($search) {
-                        $u->where('name', 'like', "%$search%");
-                    })
-                        ->orWhereHas('subjects', function ($s) use ($search) {
-                            $s->where('subject_name', 'like', "%$search%");
-                        })->orWhereHas('classes', function ($c) use ($search) {
-                            $c->where('class_name', 'like', "%$search%");
-                        });
-                });
-            }
-
-            $teachers = $query->paginate(10);
+            $data = $this->teacherService->getTeachersList($request->all());
 
             return response()->json([
                 'status' => 'success',
-                'pending_count' => Teacher::where('status', 0)->count(),
-                'data' => $teachers,
-
+                'search' => $request->search,
+                'pending_count' => $data['pending_count'],
+                'data' => $data['teachers'],
             ], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Something went wrong!',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     }
 
@@ -284,5 +244,4 @@ class TeacherController extends Controller
     {
         return $this->performBulkStatusUpdate($request->ids, 2, ' inactive list mein move ho gaye!');
     }
-
 }

@@ -44,7 +44,7 @@ const handleAjaxError = (xhr, status, $btn, originalHtml) => {
     // 422: Validation Error 
     else if (xhr.status === 422) {
         let errors = xhr.responseJSON.errors;
-        let firstError = Object.values(errors)[0][0]; // Pehli galti pakadne ke liye
+        let firstError = Object.values(errors)[0][0];
         return showAlert('Validation Error!', firstError, 'warning', 'text-warning');
     }
     let msg = 'Connection lost. Please try again.';

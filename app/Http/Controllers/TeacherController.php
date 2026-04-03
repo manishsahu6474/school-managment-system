@@ -12,12 +12,7 @@ use App\Services\TeacherService;
 
 class TeacherController extends Controller
 {
-    protected $teacherService;
-
-    public function __construct(TeacherService $teacherService)
-    {
-        $this->teacherService = $teacherService;
-    }
+    public function __construct(protected TeacherService $teacherService) {}
     /**
      * Display a listing of the resource.
      *
@@ -25,38 +20,15 @@ class TeacherController extends Controller
      */
     public function index(Request $request)
     {
-        $search = $request->search;
-        $status = $request->get('status');
-
-        $query = Teacher::select('id', 'user_id', 'phone', 'qualification', 'salary', 'joining_date', 'status')
-            ->with(['user:id,name', 'subjects:id,subject_name', 'classes:id,class_name'])
-            ->latest();
-
-        if ($status === 'pending') {
-            $query->where('status', 0);
-        } elseif ($status === 'inactive') {
-            $query->where('status', 2);
-        } else {
-            $query->where('status', 1);
+        try {
+            $data = $this->teacherService->getTeachersList($request->all());
+            $teachers = $data['teachers'];
+            $pendingCount = $data['pending_count'];
+            $search = $request->search;
+            return view('teachers.index', compact('teachers', 'pendingCount', 'search'));
+        } catch (\Exception $e) {
+            return back()->with('error_msg', $e->getMessage());
         }
-
-        if ($search) {
-            $query->where(function ($sub) use ($search) {
-                $sub->whereHas('user', function ($u) use ($search) {
-                    $u->where('name', 'like', "%$search%");
-                })
-                    ->orWhereHas('subjects', function ($s) use ($search) {
-                        $s->where('subject_name', 'like', "%$search%");
-                    })->orWhereHas('classes', function ($c) use ($search) {
-                        $c->where('class_name', 'like', "%$search%");
-                    });
-            });
-        }
-
-        $teachers = $query->paginate(10);
-        $pendingCount = Teacher::where('status', 0)->count();
-
-        return view('teachers.index', compact('teachers', 'search', 'pendingCount'));
     }
 
     /**
@@ -106,7 +78,7 @@ class TeacherController extends Controller
         } catch (\Exception $e) {
             return back()
                 ->withInput()
-                ->with('error', 'Something Went Wrong: ' . $e->getMessage());
+                ->with('error_msg', 'Something Went Wrong: ' . $e->getMessage());
         }
     }
 
@@ -177,7 +149,7 @@ class TeacherController extends Controller
         } catch (\Exception $e) {
             return back()
                 ->withInput()
-                ->with('error', 'Something went wrong: ' . $e->getMessage());
+                ->with('error_msg', 'Something went wrong: ' . $e->getMessage());
         }
     }
 

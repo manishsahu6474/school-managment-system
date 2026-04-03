@@ -2,65 +2,56 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
 use App\Models\Subject;
 use Illuminate\Http\Request;
+use App\Services\SubjectService;
 
 class SubjectController extends Controller
 {
+    public function __construct(protected SubjectService $subjectService) {}
     public function index()
     {
-        $subjects = Subject::select('id', 'subject_name')
-            ->with('classes:id,class_name')->latest()->paginate(10);
-        return view('subjects.index', compact('subjects'));
+        try {
+            $subjects = $this->subjectService->getAllSubject();
+
+            return view('subjects.index', compact('subjects'));
+        } catch (\Exception $e) {
+            return back()->with('error_msg', 'Something went Wrong: ' . $e->getMessage());
+        }
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'subject_name' => 'required|string|max:100|unique:subjects,subject_name',
+            'subject_name' => 'required|regex:/^[a-zA-Z\s]+$/|max:100|unique:subjects,subject_name',
         ]);
-        DB::beginTransaction();
         try {
-            Subject::create($request->only('subject_name'));
-            DB::commit();
+            $this->subjectService->createSubject($request);
             return response()->json([
                 'status' => 'success',
-                'message' => 'Subject successfully kar diya gaya!'
-            ]);
+                'message' => 'Subject successfully Added!'
+            ], 201);
         } catch (\Exception $e) {
-            DB::rollBack();
-
             return response()->json([
                 'status' => 'error',
-                'message' => 'Subject add fail ho gaya: ' . $e->getMessage()
+                'message' => 'Something went wrong: ' . $e->getMessage()
             ], 500);
         }
     }
 
     public function destroy(Subject $subject)
     {
-        DB::beginTransaction();
         try {
 
-            if ($subject->teachers()->exists()) {
-                return response()->json([
-                    'status' => 'error',
-                    'message' => 'Ye subject delete nahi ho sakta kyunki ye kisi Teacher ko assigned hai!'
-                ], 422);
-            }
-
-            $subject->delete();
-            DB::commit();
+            $this->subjectService->deleteSubject($subject);
             return response()->json([
                 'status' => 'success',
-                'message' => 'Subject delete kar diya gaya!'
+                'message' => 'Subject deleted Successfully!'
             ]);
         } catch (\Exception $e) {
-            DB::rollBack();
             return response()->json([
                 'status' => 'error',
-                'message' => 'Deletion fail ho gaya: ' . $e->getMessage()
+                'message' => $e->getMessage()
             ], 500);
         }
     }

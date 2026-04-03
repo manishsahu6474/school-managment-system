@@ -10,13 +10,7 @@ use Illuminate\Support\Str;
 
 class StudentController extends Controller
 {
-    protected $studentService;
-
-    public function __construct(StudentService $studentService)
-    {
-        $this->studentService = $studentService;
-    }
-
+    public function __construct(protected StudentService $studentService) {}
     /**
      * Display a listing of the resource.
      *
@@ -25,39 +19,12 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         $search = $request->search;
-        $status = $request->get('status');
-        $query = Student::select('id', 'user_id', 'class_id', 'father_name', 'roll_no', 'phone', 'dob', 'status')
-            ->with(['user:id,name', 'classes:id,class_name'])
-            ->latest();
-
-        if ($status === 'pending') {
-            $query->where('status', 0);
-        } elseif ($status === 'inactive') {
-            $query->where('status', 2);
-        } else {
-            $query->where('status', 1);
-        }
-
-        if ($search) {
-            $query->where(function ($sub) use ($search) {
-                $sub->whereHas('user', function ($u) use ($search) {
-                    $u->where('name', 'like', "%$search%");
-                })
-                    ->orWhere('roll_no', 'like', "%$search%")
-                    ->orWhereHas('classes', function ($c) use ($search) {
-                        $c->where('class_name', 'like', "%$search%");
-                    });
-            });
-        }
-
-        $students = $query->paginate(10);
-
-        $pendingCount = Student::where('status', 0)->count();
-
+        $request->validate(['status' => 'nullable|in:active,pending,inactive']);
+        $data = $this->studentService->getStudentsList($request->all());
+        $students = $data['students'];
+        $pendingCount = $data['pending_count'];
         return view('students.index', compact('students', 'search', 'pendingCount'));
     }
-
-
     /**
      * Show the form for creating a new resource.
      *
@@ -84,7 +51,7 @@ class StudentController extends Controller
             'email' => 'required|email|unique:users,email',
             'father_name' => 'required|string|max:100',
             'roll_no'  => 'nullable|string|max:10|unique:students,roll_no',
-            'dob' => ['required','date','before:'. now()->subYears(5)->format('Y-m-d'), 'after:'.now()->subYears(20)->format('Y-m-d') ],
+            'dob' => ['required', 'date', 'before:' . now()->subYears(5)->format('Y-m-d'), 'after:' . now()->subYears(20)->format('Y-m-d')],
             'class_id' => 'required|exists:classes,id',
             'phone' => 'required|digits:10',
         ]);
@@ -138,7 +105,7 @@ class StudentController extends Controller
             'email' => 'required|email|unique:users,email,' . $user->id,
             'father_name' => 'required|string|max:100',
             'roll_no' => 'required|string|max:10|unique:students,roll_no,' . $student->id,
-            'dob' => ['required','date','before:'. now()->subYears(5)->format('Y-m-d'), 'after:'.now()->subYears(20)->format('Y-m-d') ],
+            'dob' => ['required', 'date', 'before:' . now()->subYears(5)->format('Y-m-d'), 'after:' . now()->subYears(20)->format('Y-m-d')],
             'class_id' => 'required|exists:classes,id',
             'phone' => 'required|digits:10',
         ]);

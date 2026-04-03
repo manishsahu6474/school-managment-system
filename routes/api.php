@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\StudentController;
 use App\Http\Controllers\Api\TeacherController;
+use App\Http\Controllers\Api\ClassesController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -50,4 +51,10 @@ Route::middleware('auth:sanctum', 'isAdmin')->group(function () {
     });
     // 3. Standard API Resource
     Route::apiResource('/teachers', TeacherController::class);
+
+
+    // 1. Specific Action 
+    Route::get('/classes/{classes}', [ClassesController::class, 'showStudents']);
+    // 2. Standard API Resource
+    Route::apiResource('/classes', ClassesController::class);
 });
