@@ -26,7 +26,7 @@ class SubjectController extends Controller
             'subject_name' => 'required|regex:/^[a-zA-Z\s]+$/|max:100|unique:subjects,subject_name',
         ]);
         try {
-            $this->subjectService->createSubject($request);
+            $this->subjectService->createSubject($request->only('subject_name'));
             return response()->json([
                 'status' => 'success',
                 'message' => 'Subject successfully Added!'

@@ -17,8 +17,8 @@ class ClassesService extends BaseService
     public function getStudentsByClass(Classes $classes, $search = null)
     {
         $query = $classes->students()
-            ->select('id', 'user_id', 'class_id', 'roll_no', 'status', 'phone', 'dob', 'father_name')
-            ->with(['user:id,name'])
+            ->select('id', 'user_id', 'class_id', 'roll_no', 'status', 'phone', 'dob', 'father_name', 'created_at')
+            ->with(['user:id,name,email','classes:id,class_name'])
             ->where('status', 1);
 
         if ($search) {

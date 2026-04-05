@@ -11,7 +11,7 @@ class SubjectService extends BaseService
     public function getAllSubject()
     {
         return Subject::select('id', 'subject_name')
-            ->with('classes:id,class_name')
+           ->with(['teachers.user:id,name', 'teachers.classes:id,class_name'])
             ->latest()->paginate(10);
     }
 

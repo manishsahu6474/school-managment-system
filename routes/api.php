@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\StudentController;
 use App\Http\Controllers\Api\TeacherController;
 use App\Http\Controllers\Api\ClassesController;
+use App\Http\Controllers\Api\SubjectController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -49,12 +50,14 @@ Route::middleware('auth:sanctum', 'isAdmin')->group(function () {
         // 2. Specific Action 
         Route::patch('{teacher}/toggle-status', [TeacherController::class, 'toggleStatus']);
     });
-    // 3. Standard API Resource
+    // 3. Standard API Resource for teachers
     Route::apiResource('/teachers', TeacherController::class);
-
 
     // 1. Specific Action 
     Route::get('/classes/{classes}', [ClassesController::class, 'showStudents']);
-    // 2. Standard API Resource
+    // 2. Standard API Resource classes
     Route::apiResource('/classes', ClassesController::class);
+
+    // 1. Standard API Resource for subjects
+    Route::apiResource('/subjects', SubjectController::class);
 });

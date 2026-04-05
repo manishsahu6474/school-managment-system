@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Subject;
 use App\Services\SubjectService;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\SubjectResource;
 
 class SubjectController extends Controller
 {
@@ -15,11 +16,10 @@ class SubjectController extends Controller
     {
         try {
             $subjects = $this->subjectService->getAllSubject();
-
-            return response()->json([
-                'status' => 'success',
-                'data' => $subjects
-            ], 200);
+            return SubjectResource::collection($subjects)
+                ->additional([
+                    'status' => 'success',
+                ]);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Something went Wrong: ' . $e->getMessage()], 500);
         }

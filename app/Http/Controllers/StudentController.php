@@ -9,10 +9,14 @@ use App\Services\StudentService;
 use Illuminate\Support\Str;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
+use App\Traits\HandlesBulkActions;
 
 class StudentController extends Controller
 {
-    public function __construct(protected StudentService $studentService) {}
+    use HandlesBulkActions;
+    protected string $resourceLabel = 'Student';
+    protected string $model = Student::class;
+    public function __construct(protected StudentService $service) {}
     /**
      * Display a listing of the resource.
      *
@@ -22,7 +26,7 @@ class StudentController extends Controller
     {
         $search = $request->search;
         $request->validate(['status' => 'nullable|in:active,pending,inactive']);
-        $data = $this->studentService->getStudentsList($request->all());
+        $data = $this->service->getStudentsList($request->all());
         $students = $data['students'];
         $pendingCount = $data['pending_count'];
         return view('students.index', compact('students', 'search', 'pendingCount'));
@@ -49,7 +53,7 @@ class StudentController extends Controller
     {
         try {
 
-            $this->studentService->storeStudent($request->validated());
+            $this->service->storeStudent($request->validated());
             return redirect()->route('admin.students.index')
                 ->with('success', 'Student Added Successfully!');
         } catch (\Exception $e) {
@@ -88,9 +92,9 @@ class StudentController extends Controller
      */
     public function update(UpdateStudentRequest $request, Student $student)
     {
-        
+
         try {
-            $this->studentService->updateStudent($student, $request->validated());
+            $this->service->updateStudent($student, $request->validated());
             return redirect()->route('admin.students.index')
                 ->with('success', 'Student profile updated successfully!');
         } catch (\Exception $e) {
@@ -106,24 +110,12 @@ class StudentController extends Controller
      * @param  \App\Models\Student  $student
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Student $student)
-    {
-        try {
-            $result = $this->studentService->smartDelete($student);
-            return response()->json([
-                'status' => 'success',
-                'message' => $result['message']
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
-        }
-    }
-
+    
     public function bulkPromote(Request $request)
     {
 
         try {
-            $result = $this->studentService->bulkPromote($request->ids);
+            $result = $this->service->bulkPromote($request->ids);
             return response()->json(
                 [
                     'status' => 'success',
@@ -138,86 +130,6 @@ class StudentController extends Controller
                 ],
                 422
             );
-        }
-    }
-
-    private function performBulkStatusUpdate($ids, $newStatus, $successMsg)
-    {
-
-        try {
-
-            $result = $this->studentService->bulkStatusUpdate(Student::class, (array)$ids, $newStatus);
-
-            $updatedCount = $result['count'];
-            $hasPending   = $result['hasPending'];
-            $hasInactive  = $result['hasInactive'];
-            if ($updatedCount == 0) {
-                return response()->json([
-                    'status'  => 'info',
-                    'message' => 'No changes made. Records are already in the target state.'
-                ], 200);
-            }
-
-            $finalMsg = $successMsg;
-            if ($newStatus == 1) {
-                if ($hasInactive && $hasPending) {
-                    $finalMsg = "Processed (Approved & Re-activated) successfully!";
-                } elseif ($hasInactive) {
-                    $finalMsg = "Re-activated successfully!";
-                } elseif ($hasPending) {
-                    $finalMsg = "Approved successfully!";
-                }
-            }
-
-            $label = ($updatedCount > 1) ? 'Students' : 'Student';
-
-            return response()->json([
-                'status'  => 'success',
-                'message' => "{$updatedCount} {$label} {$finalMsg}"
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status'  => 'error',
-                'message' => $e->getMessage()
-            ], 422);
-        }
-    }
-    public function toggleStatus(Request $request, Student $student)
-    {
-        if (!$request->ajax()) {
-            return response()->json(['status' => 'error', 'message' => 'Invalid Request'], 400);
-        }
-        return $this->performBulkStatusUpdate([$student->id], 1, 'Status Changed Successfully!');
-    }
-    public function bulkApprove(Request $request)
-    {
-        return $this->performBulkStatusUpdate($request->ids, 1, ' Processed Successfully!');
-    }
-
-    public function bulkActivate(Request $request)
-    {
-        return $this->performBulkStatusUpdate($request->ids, 1, ' Re-activate successfully!');
-    }
-
-    public function bulkInactivate(Request $request)
-    {
-        return $this->performBulkStatusUpdate($request->ids, 2, ' moved to inactive list successfully!');
-    }
-
-    public function bulkDelete(Request $request)
-    {
-
-        try {
-            $result = $this->studentService->BulkDelete(Student::class, $request->ids);
-
-            if ($result['count'] == 0) {
-                return response()->json(['status' => 'info', 'message' => 'No pending records found to delete.'], 200);
-            }
-
-            $entity = Str::plural('Student', $result['count']);
-            return response()->json(['status' => 'success', 'message' => "{$result['count']} Pending {$entity} deleted permanently."], 200);
-        } catch (\Exception $e) {
-            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 422);
         }
     }
 }

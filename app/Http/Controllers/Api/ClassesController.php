@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Classes;
 use App\Services\ClassesService;
+use App\Http\Resources\ClassesResource;
+use App\Http\Resources\StudentResource;
 
 class ClassesController extends Controller
 {
@@ -14,10 +16,10 @@ class ClassesController extends Controller
     {
         try {
             $classdata = $this->classesService->getAllClassWithCount();
-            return response()->json([
-                'status' => 'success',
-                'class_data' => $classdata
-            ], 200);
+            return ClassesResource::collection($classdata)
+                ->additional([
+                    'status' => 'success',
+                ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -30,13 +32,16 @@ class ClassesController extends Controller
     public function showStudents(Request $request, Classes $classes)
     {
         try {
-            $search = $request->search;
             $students = $this->classesService->getStudentsByClass($classes, $request->search);
-            return response()->json([
-                'status' => 'success',
-                'search' => $search,
-                'data' => $students
-            ], 200);
+            return StudentResource::collection($students)
+                ->additional([
+                    'status' => 'success',
+                    'search' => $request->search,
+                    'class_info' => [
+                        'id' => $classes->id,
+                        'name' => $classes->class_name
+                    ]
+                ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',

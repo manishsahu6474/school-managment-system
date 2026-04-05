@@ -15,8 +15,8 @@ class StudentService extends BaseService
         $search = $filters['search'] ?? null;
         $status = $filters['status'] ?? 'active';
 
-        $query = Student::select('id', 'user_id', 'class_id', 'father_name', 'roll_no', 'phone', 'dob', 'status')
-            ->with(['user:id,name', 'classes:id,class_name'])
+        $query = Student::select('id', 'user_id', 'class_id', 'father_name', 'roll_no', 'phone', 'dob', 'status', 'created_at')
+            ->with(['user:id,name,email', 'classes:id,class_name'])
             ->latest();
 
         if ($status === 'pending') {

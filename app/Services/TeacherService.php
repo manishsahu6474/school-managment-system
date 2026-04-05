@@ -17,7 +17,7 @@ class TeacherService extends BaseService
         $status = $filters['status'] ?? 'active';
 
         $query = Teacher::select('id', 'user_id', 'phone', 'qualification', 'salary', 'joining_date', 'status')
-            ->with(['user:id,name', 'subjects:id,subject_name', 'classes:id,class_name'])
+            ->with(['user:id,name,email', 'subjects:id,subject_name', 'classes:id,class_name'])
             ->latest();
 
         if ($status === 'pending') {
