@@ -29,11 +29,11 @@ class StudentService extends BaseService
         if ($search) {
             $query->where(function ($sub) use ($search) {
                 $sub->whereHas('user', function ($u) use ($search) {
-                    $u->where('name', 'like', "%$search%");
+                    $u->where('name', 'like', "$search%");
                 })
-                    ->orWhere('roll_no', 'like', "%$search%")
+                    ->orWhere('roll_no', 'like', "$search%")
                     ->orWhereHas('classes', function ($c) use ($search) {
-                        $c->where('class_name', 'like', "%$search%");
+                        $c->where('class_name', 'like', "$search%");
                     });
             });
         }

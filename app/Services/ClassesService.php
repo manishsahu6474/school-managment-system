@@ -24,8 +24,8 @@ class ClassesService extends BaseService
         if ($search) {
             $query->where(function ($sub) use ($search) {
                 $sub->whereHas('user', function ($u) use ($search) {
-                    $u->where('name', 'like', "%$search%");
-                })->orWhere('roll_no', 'like', "%$search%");
+                    $u->where('name', 'like', "$search%");
+                })->orWhere('roll_no', 'like', "$search%");
             });
         }
 

@@ -31,13 +31,13 @@ class TeacherService extends BaseService
         if ($search) {
             $query->where(function ($sub) use ($search) {
                 $sub->whereHas('user', function ($u) use ($search) {
-                    $u->where('name', 'like', "%$search%");
+                    $u->where('name', 'like', "$search%");
                 })
                     ->orWhereHas('subjects', function ($s) use ($search) {
-                        $s->where('subject_name', 'like', "%$search%");
+                        $s->where('subject_name', 'like', "$search%");
                     })
                     ->orWhereHas('classes', function ($c) use ($search) {
-                        $c->where('class_name', 'like', "%$search%");
+                        $c->where('class_name', 'like', "$search%");
                     });
             });
         }
