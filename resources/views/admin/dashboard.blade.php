@@ -3,7 +3,8 @@
         <div class="container">
             <div class="card card-morphism border-0">
                 <div class="card-header morphism-header text-white">
-                    <h3 class="fs-6 fs-sm-5 fs-lg-4 m-0 text-white fw-bold text-uppercase ">Welcome to Student Management System</h3>
+                    <h3 class="fs-6 fs-sm-5 fs-lg-4 m-0 text-white fw-bold text-uppercase ">Welcome to Student Management
+                        System</h3>
                 </div>
                 <div class="card-body p-5">
                     <h6 class="fs-6 fs-sm-5 fs-lg-4 m-0 fw-bold text-dark">Hello, {{ Auth::user()->name }}!</h6>
@@ -63,17 +64,19 @@
             </div>
 
             <div class="col-xl-3 col-md-6">
-                <div class="card card-3d border-0 shadow-sm h-100"
-                    style="background: linear-gradient(145deg, #ffffff, #f0f0f0);">
-                    <div class="card-body text-center p-4">
-                        <div class="icon-box mb-3 mx-auto shadow-sm"
-                            style="background: #fdf2f2; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-book fa-2x text-danger"></i>
+                <a href="{{ route('admin.subjects.index') }}" class="text-decoration-none">
+                    <div class="card card-3d border-0 shadow-sm h-100"
+                        style="background: linear-gradient(145deg, #ffffff, #f0f0f0);">
+                        <div class="card-body text-center p-4">
+                            <div class="icon-box mb-3 mx-auto shadow-sm"
+                                style="background: #fdf2f2; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-book fa-2x text-danger"></i>
+                            </div>
+                            <h6 class="text-uppercase fw-bold text-muted mb-1">Total Subjects</h6>
+                            <h6 class="fw-bold text-dark mb-0">{{ $totalSubjects }}</h6>
                         </div>
-                        <h6 class="text-uppercase fw-bold text-muted mb-1">Total Subjects</h6>
-                        <h6 class="fw-bold text-dark mb-0">{{ $totalSubjects }}</h6>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
     </div>
@@ -92,12 +95,12 @@
                     </div>
                     <div class="row align-items-center">
                         <div class="col-7">
-                            <div class="chart-container" >
+                            <div class="chart-container">
                                 <canvas id="studentBar"></canvas>
                             </div>
                         </div>
-                        <div class="col-5 border-start" >
-                            <div class="chart-container" >
+                        <div class="col-5 border-start">
+                            <div class="chart-container">
                                 <canvas id="studentPie"></canvas>
                             </div>
                         </div>
@@ -115,7 +118,7 @@
 
                     <div class="row align-items-center">
                         <div class="col-7">
-                            <div class="chart-container" >
+                            <div class="chart-container">
                                 <canvas id="teacherBar"></canvas>
                             </div>
                         </div>
